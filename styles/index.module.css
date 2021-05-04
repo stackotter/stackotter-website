@@ -1,0 +1,25 @@
+/* text */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300&display=swap');
+
+/* containers */
+.container {
+  min-height: 100vh;
+  padding: 0 0.5rem;
+  align-items: center;
+  text-align: center;
+  height: 100vh;
+  width: 100vw;
+  padding-top: 50px;
+}
+
+.main {
+  padding: 5rem 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: left;
+  text-align: left;
+  margin: auto;
+  width: 33vw;
+}
