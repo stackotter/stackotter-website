@@ -1,6 +1,7 @@
+import { FunctionComponent } from "react";
 import Page from "../components/page";
 
-export default function Home() {
+export const Home: FunctionComponent = () => {
   return (
     <Page>
       home
