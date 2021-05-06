@@ -1,7 +1,9 @@
 # TODO
 
 - [x] create neat article system
-- [ ] create dating system for articles (ordering them by date i mean)
+- [ ] clean dependencies
+- [ ] add robots.txt and security.txt and sitemap.xml
+- [ ] create metadata system for articles
 - [ ] separate out css files
 - [ ] separate out layout into component
 - [ ] create global css to override github-markdown-css styles
