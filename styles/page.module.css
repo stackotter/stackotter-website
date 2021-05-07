@@ -3,11 +3,9 @@
 
 /* containers */
 .container {
-  min-height: 100vh;
   padding: 0 0.5rem;
   align-items: center;
   text-align: center;
-  height: 100vh;
   width: 100vw;
   padding-top: 50px;
 }
@@ -25,11 +23,11 @@
 }
 
 /* markdown overrides */
-.markdown {
-  font-family: 'Cormorant Garamond', Georgia, Cambria, serif;
-  font-size: 1.1em;
+.markdown_body {
+  font-family: 'Cormorant Garamond', Georgia, Cambria, serif !important;
+  font-size: 1.3em !important;
 }
 
-.markdown h1, .markdown h2, .markdown h3 {
-  font-family: 'Montserrat', sans-serif;
+.markdown_body h1, .markdown_body h2, .markdown_body h3 {
+  font-family: 'Montserrat', sans-serif !important;
 }

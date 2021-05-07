@@ -1,19 +1,19 @@
 # TODO
 
 - [x] create neat article system
-- [ ] clean dependencies
+- [x] clean dependencies
 - [ ] convert components to ts
+- [ ] move all projects to github
 - [x] add robots.txt and sitemap.xml
 - [ ] add security.txt
-- [ ] create metadata system for articles
+- [x] create metadata system for articles
 - [ ] separate out css files
 - [ ] separate out layout into component
-- [ ] create global css to override github-markdown-css styles
-- [ ] choose fonts
-- [ ] create about article
+- [x] choose fonts
+- [x] create about article
+- [ ] check markdown styles
 - [ ] create contact page?
 - [ ] responsive layout
   - [ ] tablet
   - [ ] phone
-- [ ] check that everything works properly on netlify
-- [ ] get stackotter.dev domain
+- [x] get stackotter.dev domain

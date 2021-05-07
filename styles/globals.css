@@ -15,3 +15,8 @@ html, body {
 a {
   text-decoration: none;
 }
+
+/* markdown overwrites that must be done globally */
+.markdown-body .highlight {
+  font-size: 0.85em !important;
+}
