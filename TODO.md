@@ -2,7 +2,9 @@
 
 - [x] create neat article system
 - [ ] clean dependencies
-- [ ] add robots.txt and security.txt and sitemap.xml
+- [ ] convert components to ts
+- [x] add robots.txt and sitemap.xml
+- [ ] add security.txt
 - [ ] create metadata system for articles
 - [ ] separate out css files
 - [ ] separate out layout into component

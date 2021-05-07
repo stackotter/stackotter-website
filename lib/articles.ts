@@ -12,7 +12,7 @@ export function getArticlesFileNames(): Array<string> {
   let files = fs.readdirSync(markdownDir)
   for (var i = 0; i < files.length; i++) {
     let file = files[i]
-    if (file.endsWith('.md')) {
+    if (file.endsWith('.md') && !file.startsWith("_")) {
       paths.push(file)
     }
   }

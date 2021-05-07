@@ -3,6 +3,12 @@
   font-family: 'Cormorant Garamond', serif;
 }
 
+.header h1 {
+  font-size: 2.3em;
+  margin-top: 27px;
+  margin-bottom: 18px;
+}
+
 /* links */
 .header a {
   color: blue;
