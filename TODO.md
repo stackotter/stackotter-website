@@ -2,8 +2,8 @@
 
 - [x] create neat article system
 - [x] clean dependencies
-- [ ] convert components to ts
-- [ ] move all projects to github
+- [x] convert components to ts
+- [x] move all projects to github
 - [x] add robots.txt and sitemap.xml
 - [x] create metadata system for articles
 - [x] fix css styles from markdown to apply to anything
