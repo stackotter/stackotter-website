@@ -40,7 +40,6 @@
 .markdown_body h1, .markdown_body h2, .markdown_body h3, .markdown_body h4, .markdown_body h5, .markdown_body h6 {
   font-family: 'Montserrat', sans-serif !important;
   border: none !important;
-  margin-top: 0px !important;
 }
 
 /* markdown code block and inline code overrides */
