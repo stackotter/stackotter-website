@@ -1,6 +1,9 @@
 defaultAuthor: stackotter
 
 articles:
-  helloworld:
-    title: Helloworld
+  first-article:
+    title: First Article
+    date: 08/05/2021
+  test:
+    title: Test (just for testing my markdown styling)
     date: 07/05/2021

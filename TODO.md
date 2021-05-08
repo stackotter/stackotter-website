@@ -12,7 +12,9 @@
 - [x] choose fonts
 - [x] create about article
 - [x] check markdown styles
-- [ ] create contact page?
+- [x] create contact page?
+- [x] add blog index
+- [x] fix markdown styles
 - [ ] responsive layout
   - [ ] tablet
   - [ ] phone

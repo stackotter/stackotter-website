@@ -13,10 +13,10 @@
   padding: 3rem 0;
   text-align: left;
   margin: auto;
-  width: 33vw;
+  width: 45vw;
 }
 
-/* body styles */
+/* font styles */
 .main {
   font-family: 'Cormorant Garamond', Georgia, Cambria, serif !important;
   font-size: 1.25rem !important;
@@ -31,7 +31,7 @@
   font-size: 0.7em !important;
 }
 
-/* markdown overrides */
+/* markdown text overrides */
 .markdown_body {
   font-family: 'Cormorant Garamond', Georgia, Cambria, serif !important;
   font-size: 1.25rem !important;
@@ -39,13 +39,24 @@
 
 .markdown_body h1, .markdown_body h2, .markdown_body h3, .markdown_body h4, .markdown_body h5, .markdown_body h6 {
   font-family: 'Montserrat', sans-serif !important;
-}
-
-.markdown-body h1, .markdown-body h2 {
   border: none !important;
+  margin-top: 0px;
 }
 
-/* lists */
+/* markdown code block and inline code overrides */
+.markdown_body pre, .markdown_body pre code {
+  font-size: 0.85rem !important;
+}
+
+.markdown_body pre {
+  margin: 24px 0px !important;
+}
+
+.markdown_body pre {
+  padding: 20px !important;
+}
+
+/* unordered list styles (shrinking the bullet to match the font) */
 .main ul {
   list-style: none;
 }

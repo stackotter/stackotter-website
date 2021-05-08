@@ -9,21 +9,10 @@ html, body {
 /* basic link style */
 a {
   text-decoration: none;
+  color: rgb(3, 102, 214) !important;
 }
 
-/* markdown overwrites that must be done globally */
-.markdown-body h1, h2, h3, h4, h5, h6 {
-  border: none !important;
-}
-
-.markdown-body pre, .markdown-body pre code {
-  font-size: 0.85rem !important;
-}
-
-.markdown-body pre {
-  margin: 24px 0px !important;
-}
-
-.markdown-body pre {
-  padding: 20px !important;
+/* markdown overrides that have to be done in globals */
+.task-list-item::before {
+  display: none !important;
 }

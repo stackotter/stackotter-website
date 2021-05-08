@@ -1,4 +1,4 @@
-# G'day
+## G'day
 
 G'day, I'm [@stackotter](https://twitter.com/stackotter); an Australian software developer, ethical hacker, and creator of [delta client](https://github.com/stackotter/delta-client) (an open source rewrite of compatible with Java edition). I also like doing a bit of design here and there (I made that pixel art logo), and I can solve a rubiks cube in 18 seconds on average.
 
