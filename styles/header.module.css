@@ -18,7 +18,8 @@
 
 /* logo */
 .logo {
-  width: 8%;
+  width: 8vw;
+  height: 8vw;
   image-rendering: pixelated;
   margin: auto;
   display: block;

@@ -7,11 +7,11 @@
 - [x] add robots.txt and sitemap.xml
 - [ ] add security.txt
 - [x] create metadata system for articles
-- [ ] separate out css files
+- [x] fix css styles from markdown to apply to anything
 - [ ] separate out layout into component
 - [x] choose fonts
 - [x] create about article
-- [ ] check markdown styles
+- [x] check markdown styles
 - [ ] create contact page?
 - [ ] responsive layout
   - [ ] tablet
