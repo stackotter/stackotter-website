@@ -9,7 +9,7 @@ const Header: FunctionComponent = () => {
         <img src="/image/otter.png" alt="stackotter logo" className={styles.logo}/>
       </a>
 
-      <h1 className={[styles.serif, styles.h1].join(" ")}>stackotter.dev</h1>
+      <h1 className={[styles.h1].join(" ")}>stackotter.dev</h1>
 
       <div>
         <Link href="/about" >

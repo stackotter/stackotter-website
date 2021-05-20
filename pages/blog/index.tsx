@@ -14,7 +14,7 @@ const BlogHome: FunctionComponent<BlogProps> = function({ articles }) {
   for (let id in articles) {
     let article = articles[id]
     let listItem = (
-      <li>
+      <li key={id}>
         <Link href={`/blog/${id}`}>{article.title}</Link> {/* link to article */}
         <span> — </span> {/* divider */}
         <em>{article.date}</em> {/* date written */}

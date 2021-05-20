@@ -19,3 +19,6 @@
 - [x] get stackotter.dev domain
 - [ ] make external links open in new tabs (and with the external link icon)
 - [x] fix heading styling
+- [ ] fix header styling
+- [ ] fix title spacing
+- [ ] write some articles
