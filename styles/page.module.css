@@ -3,14 +3,13 @@
 
 /* containers */
 .container {
-  padding: 0 0.5rem;
   text-align: center;
   width: 100vw;
   padding-top: 50px;
 }
 
 .main {
-  padding: 4.5rem 0;
+  padding: 4.35rem 0;
   text-align: left;
   margin: auto;
   width: 35vw;
@@ -66,4 +65,48 @@
   padding-right: 0.95rem;
   margin-left: -1.35rem;
   position: absolute;
+}
+
+/* media queries */
+
+@media (max-width: 1750px) {
+  .main {
+    width: 40vw !important;
+  }
+}
+
+@media (max-width: 1480px) {
+  .main {
+    width: 45vw !important;
+  }
+}
+
+@media (max-width: 1320px) {
+  .main {
+    width: 50vw !important;
+  }
+}
+
+@media (max-width: 1180px) {
+  .main {
+    width: 60vw !important;
+  }
+}
+
+@media (max-width: 980px) {
+  .main {
+    width: 70vw !important;
+  }
+}
+
+@media (max-width: 840px) {
+  .main {
+    width: 75vw !important;
+  }
+}
+
+@media (max-width: 700px) {
+  .main {
+    width: 90vw !important;
+  }
 }

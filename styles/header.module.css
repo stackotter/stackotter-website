@@ -26,5 +26,11 @@
   image-rendering: pixelated;
   margin: auto;
   display: block;
-  border-radius: calc(100%/28);
+  border-radius: calc(5%);
+}
+
+/* media queries */
+
+@media (max-width: 1680px) {
+  
 }
