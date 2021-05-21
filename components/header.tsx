@@ -11,7 +11,7 @@ const Header: FunctionComponent = () => {
 
       <h1 className={[styles.h1].join(" ")}>stackotter.dev</h1>
 
-      <div>
+      <div id={styles.nav}>
         <Link href="/about" >
           <a className={styles.link}>about</a>
         </Link>

@@ -5,17 +5,17 @@
 .container {
   text-align: center;
   width: 100vw;
-  padding-top: 50px;
 }
 
 .main {
-  padding: 4.32rem 0;
   text-align: left;
   margin: auto;
+  margin-top: 4rem;
+  margin-bottom: 5rem;
   width: 42rem;
 }
 
-/* font styles */
+/* text styles */
 .main {
   font-family: 'Cormorant Garamond', Georgia, Cambria, serif !important;
   font-size: 1.27rem !important;
@@ -71,6 +71,8 @@
 
 @media (max-width: 45rem) {
   .main {
-    width: 92% !important;
+    margin-top: 3rem;
+    margin-bottom: 2.5rem;
+    width: 90% !important;
   }
 }
