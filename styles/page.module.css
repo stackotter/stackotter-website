@@ -18,7 +18,7 @@
 /* text styles */
 .main {
   font-family: 'Work Sans', Georgia, Cambria, serif !important;
-  font-size: 1.1rem !important;
+  font-size: 1rem !important;
   text-align: justify;
 }
 
@@ -33,12 +33,32 @@
 /* markdown text overrides */
 .markdown_body {
   font-family: 'Work Sans', Georgia, Cambria, serif !important;
-  font-size: 1.1rem !important;
+  font-size: 1rem !important;
 }
 
 .markdown_body h1, .markdown_body h2, .markdown_body h3, .markdown_body h4, .markdown_body h5, .markdown_body h6 {
   font-family: 'Montserrat', sans-serif !important;
   border: none !important;
+  padding: 0rem !important;
+  margin-top: 1.1rem !important;
+  margin-bottom: 1.1rem !important;
+}
+
+.markdown_body h2 {
+  padding-bottom: 0.3rem !important;
+  margin-top: 3rem !important;
+  margin-bottom: 0.3rem !important;
+}
+
+.markdown_body h2:first-of-type {
+  padding-bottom: 0.3rem !important;
+  margin-top: 1.2rem !important;
+  margin-bottom: 0.3rem !important;
+}
+
+.markdown_body p {
+  margin-top: 0.5rem !important;
+  margin-bottom: 1.3rem !important;
 }
 
 /* markdown code block and inline code overrides */
@@ -61,7 +81,7 @@
 
 .main ul li:before {
   content: "•";
-  font-size: 1.1rem;
+  font-size: 1rem;
   padding-right: 0.95rem;
   margin-left: -1.35rem;
   position: absolute;
