@@ -22,7 +22,7 @@ function getDynamicPaths() {
 
 let paths = getDynamicPaths()
 const Sitemap = configureSitemap({
-  baseUrl: 'https://stackotter.vercel.app',
+  baseUrl: 'https://stackotter.dev',
   include: paths,
   exclude: ['/article/[id]'], // or exclude: ['/project/*']
   excludeIndex: true,

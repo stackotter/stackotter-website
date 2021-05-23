@@ -6,7 +6,7 @@ const Header: FunctionComponent = () => {
   return (
     <header className={styles.header}>
       <a href="/">
-        <img src="/image/otter.png" alt="stackotter logo" className={styles.logo}/>
+        <img src="/image/otter.png" className={styles.logo}/>
       </a>
 
       <h1 className={[styles.h1].join(" ")}>stackotter.dev</h1>
