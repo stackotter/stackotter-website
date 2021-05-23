@@ -1,6 +1,6 @@
 /* general */
 .header {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Work Sans', serif;
   margin-top: 5rem;
 }
 
@@ -16,7 +16,7 @@
 /* links */
 #nav a {
   color: blue;
-  font-size: 1.35em;
+  font-size: 1.1em;
   padding: 0em 0.5em;
 }
 
