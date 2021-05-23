@@ -17,7 +17,7 @@
 
 /* text styles */
 .main {
-  font-family: 'Work Sans', Georgia, Cambria, serif !important;
+  font-family: 'Work Sans', sans-serif !important;
   font-size: 1rem !important;
   text-align: justify;
 }
@@ -32,7 +32,7 @@
 
 /* markdown text overrides */
 .markdown_body {
-  font-family: 'Work Sans', Georgia, Cambria, serif !important;
+  font-family: 'Work Sans', sans-serif !important;
   font-size: 1rem !important;
 }
 
