@@ -13,12 +13,13 @@
 - [x] create contact page?
 - [x] add blog index
 - [x] fix markdown styles
-- [ ] responsive layout
-  - [ ] tablet
-  - [ ] phone
+- [x] responsive layout
+  - [x] tablet
+  - [x] phone
 - [x] get stackotter.dev domain
 - [ ] make external links open in new tabs (and with the external link icon)
 - [x] fix heading styling
-- [ ] fix header styling
+- [x] fix header styling
 - [ ] fix title spacing
-- [ ] write some articles
+- [x] write some articles
+- [ ] add system for categorising blog posts into different sections
