@@ -11,7 +11,7 @@
   text-align: left;
   margin: auto;
   margin-top: 4rem;
-  margin-bottom: 5rem;
+  margin-bottom: 7rem;
   width: 42rem;
 }
 
@@ -24,6 +24,7 @@
 
 .main h1, .main h2, .main h3, .main h4, .main h5, .main h6 {
   font-family: 'Montserrat', sans-serif !important;
+  text-align: left !important;
 }
 
 .markdown_body code, .markdown_body pre {
@@ -46,19 +47,22 @@
 
 .markdown_body h2 {
   padding-bottom: 0.3rem !important;
-  margin-top: 3rem !important;
+  margin-top: 1.5rem !important;
   margin-bottom: 0.3rem !important;
 }
 
 .markdown_body h2:first-of-type {
-  padding-bottom: 0.3rem !important;
-  margin-top: 1.2rem !important;
+  margin-top: 1.6rem !important;
   margin-bottom: 0.3rem !important;
 }
 
-.markdown_body p {
+.markdown_body p, .markdown_body pre, .markdown_body pre code {
   margin-top: 0.5rem !important;
-  margin-bottom: 1.3rem !important;
+  margin-bottom: 0.9rem !important;
+}
+
+.markdown_body blockquote {
+  margin-left: 2px !important;
 }
 
 /* markdown code block and inline code overrides */
@@ -66,9 +70,9 @@
   font-size: 0.85rem !important;
 }
 
-.markdown_body pre {
+/* .markdown_body pre {
   margin: 24px 0px !important;
-}
+} */
 
 .markdown_body pre {
   padding: 20px !important;

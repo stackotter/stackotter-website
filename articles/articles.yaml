@@ -1,3 +1,6 @@
 defaultAuthor: stackotter
 
-articles: ~
+articles:
+  norzh-ctf-2021-leet-computer-writeup:
+    title: "NorzhCTF 2021 Writeups: Leet Computer"
+    date: "24/05/2021"
