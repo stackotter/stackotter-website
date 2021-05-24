@@ -18,7 +18,7 @@ NorzhCTF was a hackquest style CTF so we had to complete another challenge first
 
 ## How we solved it
 
-For this CTF I was on the Digital Overdose CTF team and my one of my teammates had completed the previous challenge. I was looking around the machine for any obviously exploitable things but I couldn't find much at all. One of my teammates noticed that the user (e11i0t) already had sudo. They ran `sudo -l` and found that the user could only run one file with sudo called `mail_scan.py`. `sudo -l` is quite a useful command that I didn't know about before and I don't think I could have completed the challenge without my teammate introducing it to me. Below is the contents of `mail_scan.py`.
+For this CTF I was on the Digital Overdose CTF team and my one of my teammates had completed the previous challenge. I was looking around the machine for any obviously exploitable things but I couldn't find much at all. One of my teammates noticed that the user (e11i0t) already had sudo. They ran `sudo -l` and found that the user could only run one file with sudo called `mail_scan.py`. `sudo -l` is quite a useful command that I didn't know about before and I don't think I could have completed the challenge without my teammate introducing it to me (thanks [@revdev1337](https://twitter.com/revdev1337 "Twitter: @revdev1337")). Below is the contents of `mail_scan.py`.
 
 ```python
 #!/usr/bin/env python3
