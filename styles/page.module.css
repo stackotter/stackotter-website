@@ -62,9 +62,9 @@
 }
 
 .markdown_body pre {
-  padding: 20px !important;
+  padding: 16px !important;
   border: 2px solid #e6e8ea !important;
-  border-radius: 5px !important;
+  border-radius: 6px !important;
 }
 
 /* markdown code block and inline code overrides */
