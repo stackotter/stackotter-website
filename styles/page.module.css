@@ -27,10 +27,6 @@
   text-align: left !important;
 }
 
-.markdown_body code, .markdown_body pre {
-  font-size: 0.9em !important;
-}
-
 /* markdown text overrides */
 .markdown_body {
   font-family: 'Work Sans', sans-serif !important;
@@ -65,17 +61,22 @@
   margin-left: 2px !important;
 }
 
+.markdown_body pre {
+  padding: 20px !important;
+  border: 2px solid #e6e8ea !important;
+  border-radius: 5px !important;
+}
+
 /* markdown code block and inline code overrides */
 .markdown_body pre, .markdown_body pre code {
   font-size: 0.85rem !important;
 }
 
-/* .markdown_body pre {
-  margin: 24px 0px !important;
-} */
-
-.markdown_body pre {
-  padding: 20px !important;
+.markdown_body code {
+  font-size: 0.9em !important;
+  border: 2px solid #e6e8ea !important;
+  border-radius: 5px !important;
+  padding: 1px 4px !important;
 }
 
 /* unordered list styles (shrinking the bullet to match the font) */
