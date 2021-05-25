@@ -8,7 +8,7 @@ function getArticlesFileNames() {
   let files = fs.readdirSync(markdownDir)
   for (var i = 0; i < files.length; i++) {
     let file = files[i]
-    if (file.endsWith(".md")) {
+    if (file.endsWith(".md") && !file.startsWith("_")) {
       paths.push(file)
     }
   }
@@ -17,17 +17,17 @@ function getArticlesFileNames() {
 
 function getDynamicPaths() {
   const data = getArticlesFileNames()
-  return data.map((item) => `/article/${item.slice(0, -3)}`)
+  return data.map((item) => `/blog/${item.slice(0, -3)}`)
 }
 
 let paths = getDynamicPaths()
 const Sitemap = configureSitemap({
   baseUrl: 'https://stackotter.dev',
   include: paths,
-  exclude: ['/article/[id]'], // or exclude: ['/project/*']
+  exclude: ['/blog/[id]'], // or exclude: ['/project/*']
   excludeIndex: true,
   pagesConfig: {
-    '/article/*': {
+    '/blog/*': {
       priority: '1.0',
       changefreq: 'weekly',
     },
