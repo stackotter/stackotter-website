@@ -3,13 +3,21 @@ import { Article, getArticle, getArticleIds } from '../../lib/articles'
 import { FunctionComponent } from 'react'
 import { ParsedUrlQuery } from 'querystring'
 import MarkdownPage from '../../components/markdown-page'
+import Head from 'next/head'
 
 interface Params extends ParsedUrlQuery {
   id: string
 }
 
 const ArticlePage: FunctionComponent<Article> = (article) => {
-  return <MarkdownPage html={article.html}/>
+  return (
+    <div>
+      <Head>
+        <title>{article.metadata.title}</title>
+      </Head>
+      <MarkdownPage html={article.html}/>
+    </div>
+  )
 }
 
 export default ArticlePage
