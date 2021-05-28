@@ -12,6 +12,7 @@ const ContactPage: FunctionComponent<ContactProps> = (contact) => {
   return (
     <div>
       <Head>
+        <meta name="robots" content="noindex"/>
         <title>stackotter - contact</title>
       </Head>
       <MarkdownPage html={contact.html}/>

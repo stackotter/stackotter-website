@@ -28,10 +28,11 @@ const BlogHome: FunctionComponent<BlogProps> = function({ articles }) {
     <div>
       <Head>
         <title>stackotter - blog</title>
+        <meta name="description" content="I mostly write about my personal projects and sometimes I create writeups for ctf challenges. At the moment most of the articles are going to be about..." />
       </Head>
       <Page>
         <h1>Blog</h1>
-        <p>I mostly write about my personal projects and sometimes I'll create writeups for ctf challenges. At the moment most of the articles are going to be about my journey in creating <a href="https://github.com/stackotter/delta-client">delta client</a> as that is what I'm currently spending most of my time on.</p>
+        <p>I mostly write about my personal projects and sometimes I create writeups for ctf challenges. At the moment most of the articles are going to be about my journey in creating <a href="https://github.com/stackotter/delta-client">delta client</a> as that is what I'm currently spending most of my time on.</p>
         <p>I'll bring you along on my adventure's in open source software development, reverse engineering Minecraft Java Edition, optimising code (yeah it's nerdy), and many other things computers.</p>
         <h2>Articles</h2>
         { listItems.length == 0 ?
