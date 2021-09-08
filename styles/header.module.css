@@ -24,6 +24,7 @@
 .logo {
   width: 8rem;
   height: 8rem;
+  image-rendering: crisp-edges;
   image-rendering: pixelated;
   margin: auto;
   display: block;
