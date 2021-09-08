@@ -5,7 +5,7 @@ import { FunctionComponent } from 'react'
 const Header: FunctionComponent = () => {
   return (
     <header className={styles.header}>
-      <a href="/">
+      <a href="/" className={styles.logo}>
         <img src="/image/otter.png" className={styles.logo}/>
       </a>
 
