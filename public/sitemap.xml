@@ -6,21 +6,21 @@
     xmlns:xhtml="http://www.w3.org/1999/xhtml">
     <url>
         <loc>https://stackotter.dev/blog/</loc>
-        <lastmod>2021-09-08</lastmod>
+        <lastmod>2022-03-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
     </url>
     <url>
         <loc>https://stackotter.dev/contact/</loc>
-        <lastmod>2021-09-08</lastmod>
+        <lastmod>2022-03-31</lastmod>
     </url>
     <url>
         <loc>https://stackotter.dev/</loc>
-        <lastmod>2021-09-08</lastmod>
+        <lastmod>2022-03-31</lastmod>
     </url>
     <url>
         <loc>https://stackotter.dev/blog/norzh-ctf-2021-leet-computer-writeup/</loc>
-        <lastmod>2021-09-08</lastmod>
+        <lastmod>2022-03-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
     </url>
