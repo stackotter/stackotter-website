@@ -13,7 +13,6 @@ cd swift-bundler
 git checkout $BRANCH
 
 # Install swift-bundler
-echo "\nBuilding swift-bundler"
 ./install.sh
 
 # Clean up
