@@ -21,4 +21,5 @@ echo "\nBuilding swift-bundler"
 echo "\nCleaning up"
 cd ../..
 rm -rf $DIR
+
 echo "Done"
