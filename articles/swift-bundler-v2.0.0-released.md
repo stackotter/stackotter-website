@@ -19,8 +19,12 @@ For those interested, here's [a link to the release notes on GitHub](https://git
 Updating to Swift Bundler v2.0.0 is extremely simple. Just run the following command.
 
 ```sh
-sh <(curl -L https://stackotter.dev/swift-bundler/install.sh)
+mint install stackotter/swift-bundler
 ```
+
+Note: If you have previously installed Swift Bundler with the installation script method, remove `/opt/swift-bundler`.
+
+For more installation methods, see [the documentation](https://stackotter.github.io/swift-bundler/documentation/swiftbundler/installation).
 
 After updating to v2.0.0, the next step is migrating your existing projects.
 
