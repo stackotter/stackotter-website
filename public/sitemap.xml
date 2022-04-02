@@ -6,27 +6,27 @@
     xmlns:xhtml="http://www.w3.org/1999/xhtml">
     <url>
         <loc>https://stackotter.dev/blog/</loc>
-        <lastmod>2022-04-02</lastmod>
+        <lastmod>2022-04-03</lastmod>
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
     </url>
     <url>
         <loc>https://stackotter.dev/contact/</loc>
-        <lastmod>2022-04-02</lastmod>
+        <lastmod>2022-04-03</lastmod>
     </url>
     <url>
         <loc>https://stackotter.dev/</loc>
-        <lastmod>2022-04-02</lastmod>
+        <lastmod>2022-04-03</lastmod>
     </url>
     <url>
         <loc>https://stackotter.dev/blog/norzh-ctf-2021-leet-computer-writeup/</loc>
-        <lastmod>2022-04-02</lastmod>
+        <lastmod>2022-04-03</lastmod>
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
     </url>
     <url>
         <loc>https://stackotter.dev/blog/swift-bundler-v2.0.0-released/</loc>
-        <lastmod>2022-04-02</lastmod>
+        <lastmod>2022-04-03</lastmod>
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
     </url>
