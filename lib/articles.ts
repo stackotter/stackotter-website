@@ -18,16 +18,9 @@ export type ArticleMetadata = {
 
 // get array of all articles (articles starting with _ are ignored)
 export function getArticleIds(): Array<string> {
-  var ids: Array<string> = []
-  let files = fs.readdirSync(markdownDir)
-  for (var i = 0; i < files.length; i++) {
-    let file = files[i]
-    if (file.endsWith('.md') && !file.startsWith("_")) {
-      let id = file.slice(0, -3)
-      ids.push(id)
-    }
-  }
-  return ids
+  let config = getConfig()
+  let articles = config["articles"] as { [key: string]: ArticleMetadata }
+  return Object.keys(articles)
 }
 
 // get article with id `id`
