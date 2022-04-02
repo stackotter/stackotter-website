@@ -1,6 +1,10 @@
 defaultAuthor: stackotter
 
 articles:
+  swift-bundler-v2.0.0-released:
+    title: "Swift Bundler v2.0.0 released! 🎉"
+    date: "02/04/2022"
   norzh-ctf-2021-leet-computer-writeup:
     title: "NorzhCTF 2021 Writeups: Leet Computer"
     date: "24/05/2021"
+  

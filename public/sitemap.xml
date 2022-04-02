@@ -24,4 +24,10 @@
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
     </url>
+    <url>
+        <loc>https://stackotter.dev/blog/swift-bundler-v2.0.0-released/</loc>
+        <lastmod>2022-04-02</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>1.0</priority>
+    </url>
 </urlset>
