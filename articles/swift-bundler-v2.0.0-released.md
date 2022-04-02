@@ -4,6 +4,8 @@ After almost exactly a month of work (and ~130 commits), I have finished rewriti
 
 The reason that I decided to completely rewrite Swift Bundler instead of just incremently improving it was that the original version was created in only 3 days (because of time constraints), and therefore the architecture, error handling and code quality was terrible (most of the 3 days was spent figuring out how to create app bundles and how to get Xcode to play nice).
 
+For those interested, here's [a link to the release notes on GitHub](https://github.com/stackotter/swift-bundler/releases/tag/v2.0.0).
+
 ## Overview
 
 - [Updating](#user-content-updating)
