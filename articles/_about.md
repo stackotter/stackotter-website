@@ -6,4 +6,4 @@ G'day, I'm [@stackotter](https://github.com/stackotter); an Australian software 
 
 - [Delta Client](https://github.com/stackotter/delta-client) — an open-source Minecraft Java Edition client created in Swift for macOS with efficiency in mind.
 - [Swift Bundler](https://github.com/stackotter/swift-bundler) — a tool for creating macOS apps with Swift packages instead of Xcode projects.
-- [SwiftCrossUI](https://github.com/swift-cross-ui) — a declarative UI framework (similar to SwiftUI) for creating cross-platform desktop apps with Swift.
+- [SwiftCrossUI](https://github.com/stackotter/swift-cross-ui) — a declarative UI framework (similar to SwiftUI) for creating cross-platform desktop apps with Swift.
