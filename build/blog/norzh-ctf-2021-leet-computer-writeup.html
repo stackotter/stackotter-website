@@ -38,12 +38,12 @@
       <p>One of the attacker is still in the airport hall, and it seems that he is still connected to the airport wifi ! Get a root shell on its machine to continue your investigation. This challenge will give you access to another network.</p> 
       <p>- by Masterfox</p> 
      </blockquote> 
-     <p>This challenge was the second part of a challenge, and from the first challenge we already had a shell on the 'attacker's machine.</p> 
+     <p>This challenge was the second part of a challenge, and from the first challenge we already had a shell on the ‘attacker’s machine.</p> 
      <h2 id="tldr">Tl;dr</h2> 
      <pre><code class="language-sh">./mail_scan.py --ip '010.001.001.001' --mail $'"\nos.execute("cat /root/flag") -- '
 </code></pre> 
      <h2 id="how-we-solved-it">How we solved it</h2> 
-     <p>For this CTF I was on the Digital Overdose CTF team and my one of my teammates had completed the previous challenge. I was looking around the machine for any obviously exploitable things but I couldn't find much at all. One of my teammates noticed that the user (e11i0t) already had sudo. They ran <code>sudo -l</code> and found that the user could only run one file with sudo called <code>mail_scan.py</code>. <code>sudo -l</code> is quite a useful command that I didn't know about before and I don't think I could have completed the challenge without my teammate introducing it to me (thanks <a href="https://twitter.com/revdev1337" title="Twitter: @revdev1337">@revdev1337</a>). Below is the contents of <code>mail_scan.py</code>.</p> 
+     <p>For this CTF I was on the Digital Overdose CTF team and my one of my teammates had completed the previous challenge. I was looking around the machine for any obviously exploitable things but I couldn’t find much at all. One of my teammates noticed that the user (e11i0t) already had sudo. They ran <code>sudo -l</code> and found that the user could only run one file with sudo called <code>mail_scan.py</code>. <code>sudo -l</code> is quite a useful command that I didn’t know about before and I don’t think I could have completed the challenge without my teammate introducing it to me (thanks <a href="https://twitter.com/revdev1337" title="Twitter: @revdev1337">@revdev1337</a>). Below is the contents of <code>mail_scan.py</code>.</p> 
      <pre><code class="language-python">#!/usr/bin/env python3
 #coding: utf-8
 
@@ -182,11 +182,11 @@ with open(f.name, "w") as tmp_file:
 system("nmap --script={} '{}'".format(tmp_file.name, args.ip))
 </code></pre> 
      <p>I read through the code and figured that it was creating an nmap script, saving it to a temp file and running it 🚨 with user supplied input 🚨.</p> 
-     <p>The program took two parameters; ip, and mail. First I checked the ip regex (as the ip was inserted straight into a shell command) and I thought I might be able to get around the check by including a newline in the ip address, however this didn't work as the multiline option was not specified in the regex and therefore the <code>^</code> and <code>$</code> were the start and end of the string not the line. The payload I tried is below;</p> 
+     <p>The program took two parameters; ip, and mail. First I checked the ip regex (as the ip was inserted straight into a shell command) and I thought I might be able to get around the check by including a newline in the ip address, however this didn’t work as the multiline option was not specified in the regex and therefore the <code>^</code> and <code>$</code> were the start and end of the string not the line. The payload I tried is below;</p> 
      <pre><code class="language-sh"># the regex is a bit weird so the components of the ip all have to be three digits
 sudo ./mail_scan.py --ip $'010.001.001.001\n; echo hi' --mail 'blah'
 </code></pre> 
-     <p>Circumventing the regex didn't work however I could verify that inserting a newline into the argument had worked.</p> 
+     <p>Circumventing the regex didn’t work however I could verify that inserting a newline into the argument had worked.</p> 
      <p>Next I looked at how <code>args.mail</code> was being used and found that it was getting inserted straight into the nmap script with no sanitisation. I tried injecting a quotation mark into the mail parameter and it did indeed throw an error when running the nmap script.</p> 
      <p>Nmap scripts are written in lua so I just injected a call to <code>os.execute</code> to read the flag. This means that if nmap finds an open mail port we get the flag, all I had to do now was point it at a server with a mail port open.</p> 
      <pre><code class="language-sh">./mail_scan.py --ip '010.001.001.001' --mail $'"\nos.execute("cat /root/flag") -- '
