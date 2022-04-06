@@ -4,13 +4,14 @@
         <meta charset="UTF-8">
         <link rel="stylesheet" href="/css/page.css">
         <title>{title}</title>
+        <meta name="viewport" content="width=device-width">
     </head>
 
     <body>
         <div class="container">
             <header class="header">
                 <a href="/" class="logo">
-                    <img src="/image/otter.png" class="logo"/>
+                    <img src="/image/otter.png" alt="" class="logo"/>
                 </a>
         
                 <h1>stackotter.dev</h1>
@@ -23,7 +24,9 @@
             </header>
 
             <main class="main">
-                {content}
+                <div class="markdown-body">
+                    {content}
+                </div>
             </main>
         </div>
     </body>
