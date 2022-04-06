@@ -5,15 +5,15 @@ day: 24
 ---
 # NorzhCTF 2021 - Leet Computer
 
+NorzhCTF was a fun two day CTF which I competed in with the Digital Overdose team. This writeup is about how I solved the `Leet Computer` challenge.
+
 ## The Challenge
 
 > One of the attacker is still in the airport hall, and it seems that he is still connected to the airport wifi ! Get a root shell on its machine to continue your investigation. This challenge will give you access to another network.
 > 
 > \- by Masterfox
 
-## Context
-
-NorzhCTF was a hackquest style CTF so we had to complete another challenge first to unlock this. The previous challenge was to get a shell on the 'attacker's machine and this one was a privilege escalation challenge.
+This challenge was the second part of a challenge, and from the first challenge we already had a shell on the 'attacker's machine.
 
 ## Tl;dr
 
