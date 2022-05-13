@@ -1,7 +1,7 @@
 ---
 year: 2022
 month: 05 
-day: 11
+day: 13
 ---
 # Swift Bundler early access
 
