@@ -1,0 +1,26 @@
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
+
+int main(int argc, char **argv)
+{
+    		
+    
+    volatile int changed;
+    char buffer[64];
+    
+    changed = 0;
+    
+    printf("Give me input and overflow the registers\n");
+    
+    gets(buffer);
+
+    if(changed != 0)
+    {
+    	--!PRINT THE FLAG!-- 
+    }
+    else
+    {
+        printf("Try again?\n");
+    }
+}
