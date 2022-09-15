@@ -3,7 +3,7 @@
  <head> 
   <meta charset="UTF-8"> 
   <link rel="stylesheet" href="/css/page.css"> 
-  <title>PeCan CTF 2022 writeups - rev/pwn - stackotter</title> 
+  <title>PeCan CTF 2022 writeups (rev/pwn) - stackotter</title> 
   <meta name="viewport" content="width=device-width"> 
   <meta name="description" content="In this post I will be explaining my solutions for each of the 9 rev/pwn challenges from PeCan CTF 2022 (and an additional misc challenge which I solved in a rev/pwn way). If my solution to a challenge doesn’t make sense to you, feel free to reach out to me on Discord (@stackotter#3100) or Twitter (@stackotter) and ask me for a better explanation."> 
   <link rel="stylesheet" href="/css/page.css">
@@ -31,11 +31,25 @@
    </header> 
    <main class="main"> 
     <div class="markdown-body"> 
-     <h1 id="pecan-ctf-2022-writeups---revpwn">PeCan CTF 2022 writeups - rev/pwn</h1> 
+     <h1 id="pecan-ctf-2022-writeups-revpwn">PeCan CTF 2022 writeups (rev/pwn)</h1> 
      <p>In this post I will be explaining my solutions for each of the 9 rev/pwn challenges from PeCan CTF 2022 (and an additional misc challenge which I solved in a rev/pwn way). If my solution to a challenge doesn’t make sense to you, feel free to reach out to me on Discord (<code>@stackotter#3100</code>) or Twitter (<a href="https://twitter.com/stackotter"><code>@stackotter</code></a>) and ask me for a better explanation.</p> 
      <p>For each challenge I have included the number of points that it was worth as well as the number of teams that solved it during the event, because the number of points wasn’t a great indicator of difficulty in every case.</p> 
-     <p>I have also included download links to the associated challenge files so that you can give the challenges a go yourself before reading my solutions if you are so inclined!</p> 
      <p>Challenge files will be included for some of the challenges if and when the respective authors give their permission.</p> 
+     <h2 id="table-of-contents">Table of contents</h2> 
+     <p><p class="-table-of-contents">
+       <ul>
+        <li><a href="#encoded-rev-50-points-30-solves">encoded (rev, 50 points, 30 solves)</a></li>
+        <li><a href="#thr34d1ng-the-n33dl3-rev-50-points-23-solves">Thr34d1ng the n33dl3 (rev, 50 points, 23 solves)</a></li>
+        <li><a href="#among_us-rev-50-points-8-solves">among_us (rev, 50 points, 8 solves)</a></li>
+        <li><a href="#printing-machine-rev-100-points-36-solves">Printing machine (rev, 100 points, 36 solves)</a></li>
+        <li><a href="#0v3r_fl0w-rev-150-points-16-solves">0v3r_fl0w (rev, 150 points, 16 solves)</a></li>
+        <li><a href="#broken_elf-rev-150-points-3-solves">broken_elf (rev, 150 points, 3 solves)</a></li>
+        <li><a href="#c4lcul8t0r-rev-200-points-5-solves">C4lcul8t0r (rev, 200 points, 5 solves)</a></li>
+        <li><a href="#birthday-rev-300-points-5-solves">Birthday (rev, 300 points, 5 solves)</a></li>
+        <li><a href="#password_prompt-rev-360-points-3-solves">Password_Prompt (rev, 360 points, 3 solves)</a></li>
+        <li><a href="#the-sassbot-misc-400-points-6-solves">The Sassbot (misc, 400 points, 6 solves)</a></li>
+        <li><a href="#conclusion">Conclusion</a></li>
+       </ul></p></p> 
      <h2 id="encoded-rev-50-points-30-solves">encoded (rev, 50 points, 30 solves)</h2> 
      <p>My first instinct with reverse engineering challenges is always to take a quick look through all of the strings present in the binary, especially when the challenge is a beginner challenge and/or hints at some kind of encoding.</p> 
      <p>After running <code>strings ./encoded</code> I found a base64 encoded string (easy to identify if you’ve seen base64 before) and sure enough decoding it gave the flag: <code>pecan{B@sically_I_Sh0uld_H1de_B3tt3r}</code>. You’ve gotta appreciate the sneaky little pun in there, intended or not. Overall a pretty simple beginner rev challenge.</p> 

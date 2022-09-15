@@ -3,7 +3,7 @@ year: 2022
 month: 09 
 day: 15
 ---
-# PeCan CTF 2022 writeups - rev/pwn
+# PeCan CTF 2022 writeups (rev/pwn)
 
 In this post I will be explaining my solutions for each of the 9 rev/pwn challenges from PeCan CTF
 2022 (and an additional misc challenge which I solved in a rev/pwn way). If my solution to a
@@ -14,11 +14,12 @@ For each challenge I have included the number of points that it was worth as wel
 teams that solved it during the event, because the number of points wasn't a great indicator of
 difficulty in every case.
 
-I have also included download links to the associated challenge files so that you can give the
-challenges a go yourself before reading my solutions if you are so inclined!
-
 Challenge files will be included for some of the challenges if and when the respective authors give
 their permission.
+
+## Table of contents
+
+@TableOfContents{"stripEmojis":false,"depth":1}@
 
 ## encoded (rev, 50 points, 30 solves)
 
