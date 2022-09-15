@@ -17,9 +17,10 @@ difficulty in every case.
 I have also included download links to the associated challenge files so that you can give the
 challenges a go yourself before reading my solutions if you are so inclined!
 
-## encoded (rev, 50 points, 30 solves)
+Challenge files will be included for some of the challenges if and when the respective authors give
+their permission.
 
-*Downloads: [encoded](/downloads/pecan-ctf-2022/encoded/encoded)*
+## encoded (rev, 50 points, 30 solves)
 
 My first instinct with reverse engineering challenges is always to take a quick look through all of
 the strings present in the binary, especially when the challenge is a beginner challenge and/or
@@ -31,8 +32,6 @@ You've gotta appreciate the sneaky little pun in there, intended or not. Overall
 beginner rev challenge.
 
 ## Thr34d1ng the n33dl3 (rev, 50 points, 23 solves)
-
-*Downloads: [thym3](/downloads/pecan-ctf-2022/threading-the-needle/thym3)*
 
 You know it's getting serious once the challenge authors whip out leetspeak! (well not really, I
 just wanted to say that).
@@ -73,8 +72,6 @@ and the blocks are 9 characters as opposed to 8 which would be much more likely.
 
 ## among_us (rev, 50 points, 8 solves)
 
-*Downloads: [among_us](/downloads/pecan-ctf-2022/among-us/among_us)*
-
 Again the first step in my solution was using `strings`. Scrolling through the output of `strings`
 a massive block of base64 data immediately jumped out at me (not literally luckily) so I piped it
 through the `base64` command-line tool (but CyberChef also works if you're more comfortable with a
@@ -83,8 +80,6 @@ because the first byte is `0x7f` which is non-printable), so I saved it to a fil
 as an executable which printed out the flag: `pecan{Who_Got_Ejected?_N0t_mE}`.
 
 ## Printing machine (rev, 100 points, 36 solves)
-
-*Downloads: [printing-maching.py](/downloads/pecan-ctf-2022/printing-machine/printing-machine.py)*
 
 This challenge came in the form of a single Python file. To solve the challenge you just read
 through the Python to see where the flag might be generated. Because of the cryptic variable names
@@ -105,17 +100,11 @@ Figure 3: *the code that generates the flag*
 
 ## 0v3r_fl0w (rev, 150 points, 16 solves)
 
-*Downloads: [0v3rfl0w](/downloads/pecan-ctf-2022/overflow/0v3rfl0w),
-[0v3rfl0w.txt](/downloads/pecan-ctf-2022/overflow/0v3rfl0w.txt)*
-
 This challenge is just an extremely simple buffer overflow. Spam a bunch of characters and then hit
 enter and it'll print the flag before it crashes (how philanthropic). The flag was
 `pecan{kk_so_u_just_overflowed_the_buffer_:)_}`.
 
 ## broken_elf (rev, 150 points, 3 solves)
-
-*Downloads: [broken_elf](/downloads/pecan-ctf-2022/broken-elf/broken_elf),
-[working_elf](/downloads/pecan-ctf-2022/broken-elf/working_elf)*
 
 As you can see from the number of solves, this was quite an interesting challenge. We are given two
 ELF executables, one corrupted and one working. The working ELF file is purely to serve as a
@@ -154,8 +143,6 @@ executables.
 
 ## C4lcul8t0r (rev, 200 points, 5 solves)
 
-*Downloads: [C4lcul8t0r](/downloads/pecan-ctf-2022/calculator/C4lcul8t0r)*
-
 To solve this challenge my first instinct was to open the executable in Ghidra to see what it was up
 to. In the `calc` function (effectively the main function of the program) I found the code that was
 printing the flag. All it did was subtract `0x50` from each byte of the `flag` global and then print
@@ -183,8 +170,6 @@ too high, but I'm not complaining, free points! (and the number of solves says o
 
 ## Birthday (rev, 300 points, 5 solves)
 
-*Downloads: [Birthday.exe](/downloads/pecan-ctf-2022/birthday/Birthday.exe)*
-
 This challenge was actually quite interesting for me because I hadn't done any Windows pwn
 challenges before. My first step was attempting to open it in Ghidra which didn't really work, all
 of the C sharp bytecode was left undecoded. So next I Googled how to decompile C sharp executables
@@ -201,9 +186,6 @@ I don't have a Windows computer at hand and I can't be bothered booting up one o
 finding the flag as an exercise to the reader.
 
 ## Password_Prompt (rev, 360 points, 3 solves)
-
-*Downloads: [password_prompt.out](/downloads/pecan-ctf-2022/password-prompt/password_prompt.out),
-[bitwise_text.txt](/downloads/pecan-ctf-2022/password-prompt/bitwise_text.txt)*
 
 I'm surprised this challenge didn't get more solves as it was a relatively vanilla buffer overflow.
 The aim of the challenge (as described helpfully by the program itself) was to overwrite the
@@ -227,9 +209,6 @@ Figure 5: *exploit script for `Password_Prompt`*
 The flag was `pecan{Remember_to_protect_the_memory_allocation_in_your_work!}`.
 
 ## The Sassbot (misc, 400 points, 6 solves)
-
-*Downloads: [sassbotv1.0.5.1](/downloads/pecan-ctf-2022/the-sassbot/sassbotv1.0.5.1),
-[Key.txt](/downloads/pecan-ctf-2022/the-sassbot/Key.txt)*
 
 I'm incuding this challenge in my pwn/rev writeups because it was basically a pwn challenge (the way
 I solved it at least). According to the challenge author, the intended method didn't require any
