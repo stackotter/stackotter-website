@@ -5,7 +5,7 @@
   <link rel="stylesheet" href="/css/page.css"> 
   <title>PeCan CTF 2022 writeups (rev/pwn) - stackotter</title> 
   <meta name="viewport" content="width=device-width"> 
-  <meta name="description" content="In this post I will be explaining my solutions for each of the 9 rev/pwn challenges from PeCan CTF 2022 (plus an additional misc challenge which I solved in a rev/pwn way). If my solution to a challenge doesn’t make sense to you, feel free to reach out to me on Discord (@stackotter#3100) or Twitter (@stackotter) and ask me for a better explanation."> 
+  <meta name="description" content="In this post I will be explaining my solutions for each of the 9 rev/pwn challenges from PeCan CTF 2022. If my solution to a challenge doesn’t make sense to you, feel free to reach out to me on Discord (@stackotter#3100) or Twitter (@stackotter) and ask me for a better explanation."> 
   <link rel="stylesheet" href="/css/page.css">
   <link rel="stylesheet" href="/css/github-markdown-light.css">
   <link rel="stylesheet" href="/css/syntax-theme_atom-one-dark.min.css">
@@ -32,7 +32,7 @@
    <main class="main"> 
     <div class="markdown-body"> 
      <h1 id="pecan-ctf-2022-writeups-revpwn">PeCan CTF 2022 writeups (rev/pwn)</h1> 
-     <p>In this post I will be explaining my solutions for each of the 9 rev/pwn challenges from PeCan CTF 2022 (plus an additional misc challenge which I solved in a rev/pwn way). If my solution to a challenge doesn’t make sense to you, feel free to reach out to me on Discord (<code>@stackotter#3100</code>) or Twitter (<a href="https://twitter.com/stackotter"><code>@stackotter</code></a>) and ask me for a better explanation.</p> 
+     <p>In this post I will be explaining my solutions for each of the 9 rev/pwn challenges from PeCan CTF 2022. If my solution to a challenge doesn’t make sense to you, feel free to reach out to me on Discord (<code>@stackotter#3100</code>) or Twitter (<a href="https://twitter.com/stackotter"><code>@stackotter</code></a>) and ask me for a better explanation.</p> 
      <p>Challenge file download links will be provided once the respective authors give their permission.</p> 
      <h2 id="table-of-contents">Table of contents</h2> 
      <p><p class="-table-of-contents">
@@ -46,7 +46,6 @@
         <li><a href="#c4lcul8t0r-rev-200-points-5-solves">C4lcul8t0r (rev, 200 points, 5 solves)</a></li>
         <li><a href="#birthday-rev-300-points-5-solves">Birthday (rev, 300 points, 5 solves)</a></li>
         <li><a href="#password_prompt-rev-360-points-3-solves">Password_Prompt (rev, 360 points, 3 solves)</a></li>
-        <li><a href="#the-sassbot-misc-400-points-6-solves">The Sassbot (misc, 400 points, 6 solves)</a></li>
         <li><a href="#conclusion">Conclusion</a></li>
        </ul></p></p> 
      <h2 id="encoded-rev-50-points-30-solves">encoded (rev, 50 points, 30 solves)</h2> 
@@ -116,16 +115,6 @@ print(p.recvall())
 </code></pre> 
      <p>Figure 5: <em>exploit script for <code>Password_Prompt</code></em></p> 
      <p>The flag was <code>pecan{Remember_to_protect_the_memory_allocation_in_your_work!}</code>.</p> 
-     <h2 id="the-sassbot-misc-400-points-6-solves">The Sassbot (misc, 400 points, 6 solves)</h2> 
-     <p>I’m incuding this challenge in my pwn/rev writeups because it was basically a pwn challenge (the way I solved it at least). According to the challenge author, the intended method didn’t require any external tools, however reverse engineering and pwn are my natural habitat so I instantly opened the binary in Ghidra to check it out. I found that both the password (in <code>main</code>) and the flag (in <code>flagf</code>) were encoded within the executable in the same way as calculator (except with an offset of <code>0x55</code> instead of <code>0x50</code> this time). Woohoo, we can trivially reuse the script from calculator to solve the challenge :) (sorry challenge author).</p> 
-     <pre><code class="language-python">from pwn import *
-
-elf = ELF("./sassbotv1.0.5.1")
-encoded = elf.string(elf.symbols["flag"])
-print("".join([chr(byte - 0x55) for byte in encoded]))
-</code></pre> 
-     <p>Figure 6: <em>exploit script for <code>The Sassbot</code></em></p> 
-     <p>The flag was <code>pecan{G0od-guy$-d0nt-f1ni$h-l4st}</code>.</p> 
      <h2 id="conclusion">Conclusion</h2> 
      <p>Overall the rev/pwn challenges were quite easy compared to other CTFs and their points were weighted very high, but I guess that’s because the CTF was aimed at school age students and only a few of the top teams are expected to have any expertise in the areas of pwn and rev. The challenges that I enjoyed the most were broken elf (because it was a bit unconventional) and birthday (because it was a completely new area of rev/pwn for me).</p> 
     </div> 

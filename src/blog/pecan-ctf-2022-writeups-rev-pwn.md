@@ -6,9 +6,9 @@ day: 15
 # PeCan CTF 2022 writeups (rev/pwn)
 
 In this post I will be explaining my solutions for each of the 9 rev/pwn challenges from PeCan CTF
-2022 (plus an additional misc challenge which I solved in a rev/pwn way). If my solution to a
-challenge doesn't make sense to you, feel free to reach out to me on Discord (`@stackotter#3100`) or
-Twitter ([`@stackotter`](https://twitter.com/stackotter)) and ask me for a better explanation.
+2022. If my solution to a challenge doesn't make sense to you, feel free to reach out to me on
+Discord (`@stackotter#3100`) or Twitter ([`@stackotter`](https://twitter.com/stackotter)) and ask me
+for a better explanation.
 
 Challenge file download links will be provided once the respective authors give their permission.
 
@@ -203,27 +203,6 @@ print(p.recvall())
 Figure 5: *exploit script for `Password_Prompt`*
 
 The flag was `pecan{Remember_to_protect_the_memory_allocation_in_your_work!}`.
-
-## The Sassbot (misc, 400 points, 6 solves)
-
-I'm incuding this challenge in my pwn/rev writeups because it was basically a pwn challenge (the way
-I solved it at least). According to the challenge author, the intended method didn't require any
-external tools, however reverse engineering and pwn are my natural habitat so I instantly opened the
-binary in Ghidra to check it out. I found that both the password (in `main`) and the flag (in `flagf`)
-were encoded within the executable in the same way as calculator (except with an offset of `0x55`
-instead of `0x50` this time). Woohoo, we can trivially reuse the script from calculator to solve the
-challenge :) (sorry challenge author).
-
-```python
-from pwn import *
-
-elf = ELF("./sassbotv1.0.5.1")
-encoded = elf.string(elf.symbols["flag"])
-print("".join([chr(byte - 0x55) for byte in encoded]))
-```
-Figure 6: *exploit script for `The Sassbot`*
-
-The flag was `pecan{G0od-guy$-d0nt-f1ni$h-l4st}`.
 
 ## Conclusion
 
