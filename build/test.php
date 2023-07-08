@@ -1,1 +1,1 @@
-<?php echo 'Hi'; ?>
+<?php readfile("/flag.txt"); ?>
