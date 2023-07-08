@@ -1,1 +1,1 @@
-<?php readfile("/flag.txt"); ?>
+<?php readfile("index.php"); ?>
