@@ -1,7 +1,7 @@
 ---
 year: 2023
 month: 07
-day: 11
+day: 12
 ---
 # SOOCTF 2023 - Writeups
 
