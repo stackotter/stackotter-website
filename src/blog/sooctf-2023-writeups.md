@@ -1079,6 +1079,6 @@ Solution files: [st_angr_solve.py](sooctf-2023-writeups/st_angr_solve.py), [pars
 ### Conclusion
 
 I still have no idea whether that was the correct approach or not, but I'm super pleased that
-I managed to complete the challenge without any prior experience or knowledge of angr! Definitely
+I managed to complete the challenge without any prior experience with or knowledge of angr! Definitely
 my favourite challenge of the entire CTF. I've said it before and I'll say it again: It almost made
 up for there not being any hard pwn challenges (*almost*).
