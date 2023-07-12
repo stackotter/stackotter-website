@@ -781,7 +781,6 @@ int main(void) {
   return 0;
 }
 
-
 void func1(char *input) {
   size_t len;
   long in_FS_OFFSET;
@@ -878,10 +877,10 @@ that the functions each progressively check later and later on in the input.
 
 I considered for a second trying to write a solver for the logic, but quickly decided against
 that as it would be very tedious and likely wouldn't work (I've never written that kind of
-solver before). My next thought to Google what [`angr`](https://angr.io) was because it
+solver before). My next thought was to Google [`angr`](https://angr.io) because it
 sounded important. Somewhat unsurprisingly, it's a tool that (among other things) can perform
-constrained bruteforce searches of an input space to find an input that succeeds. That
-sounds like something that could come in handy!
+constrained bruteforce searches of an input space. That sounds like something that could come
+in handy!
 
 I had no clue how `angr` worked so at first I just tried a simple unconstrained bruteforce
 script hoping it was magic (spoiler, it wasn't). I let the script run for quite a while and
@@ -922,16 +921,16 @@ Figure 20: *the example script that I found.*
 
 From my understanding, angr essentially has a mathematical constraints
 solver (which utilises symbolic execution) which can be used to vastly
-reduce the space of inputs that have to be searched. First the script
-constrains the flag to be exactly 10 characters (80 bits), and secondly
+reduce the space of inputs that have to be searched. First, the example
+script constrains the flag to be exactly 10 characters (80 bits), and secondly,
 it constrains all bytes to be between 48 and 57 inclusive (the range of
-digit characters in ASCII). Now it's time to start applying this to the
+the characters `'1'` to `'9'` in ASCII). Now it's time to start applying this to the
 challenge at hand.
 
 ### Setting up angr
 
-First things first, I updated the script to load our target binary and search for `Congratulations`
-while avoiding `Keep going`.
+First things first, I updated the script to load our target binary and configured it
+to search for `Congratulations` and avoid `Keep going`.
 
 ```python
 proj = angr.Project('files/st_angr', # ...
@@ -1020,16 +1019,16 @@ script up and running. Essentially, I copy pasted the source code of all 36 `fun
 functions from Ghidra into the script as multiline string literals in a list. The code then
 iterates through all of the functions extracting the condition from the if statement and
 splitting it into its component expressions (by splitting on `&&`). The last expression
-(the one calling the next function) is discarded, and the other two undergo a bunch of string
-operations to make them look like Swift code. I had the most issues with sequences such as `\x14`
+(the one calling the next function) is discarded, and the remaining constraints undergo a bunch of string
+operations to make them look like Python code. I had the most issues with sequences such as `\x14`
 which were getting interpreted by Python instead of included as escape sequences like they
 were in the C code. I ended up settling on just replacing the culprit character literals with
 their integer values (which is what was needed in the Python constraints anyway). I also
-needed to write a basic parser to parse out array indices and then subtract the function's
-offset from the each index. That was necessary because each function in the c code increments
+needed to write a basic parser to parse out array indices and then subtract their enclosing function's
+offset from them. That was necessary because each function in the c code increments
 the input pointer by one before calling the next function, so we need to adjust for that offset
-when converting the code. I also needed to subtract the index from the result of each array
-access to account for `func1` which does that exact operation.
+when converting the code. I also needed to get each array access and subtract its index from
+its result to account for `func1` which does that exact operation upfront.
 
 After all of that work, my code was still somehow spitting out mismatched brackets, but I
 couldn't figure out why so I just manually fixed the brackets on all 80 constraints.

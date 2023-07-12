@@ -46,13 +46,13 @@
      <p>If you’re looking for the coolest writeup of the post, I recommend <a href="#st.-angr-rev---2-solves">St. Angr</a>!</p> 
      <p><p class="-table-of-contents">
        <ul>
-        <li><a href="#recipe-finder-web---7-solves">Recipe finder (web - solves)</a></li>
-        <li><a href="#sequel-to-recipe-finder-web---7-solves">Sequel to Recipe Finder (web - solves)</a></li>
-        <li><a href="#style-points-web---5-solves">Style points (web - solves)</a></li>
-        <li><a href="#queensland-university-of-0x80491b6-pwn---6-solves">Queensland University of xb (pwn - solves)</a></li>
-        <li><a href="#member-management-software-v0.1-pwn---4-solves">Member Management Software v. (pwn - solves)</a></li>
-        <li><a href="#group-project-pwn---2-solves">Group Project (pwn - solves)</a></li>
-        <li><a href="#st.-angr-rev---2-solves">St. Angr (rev - solves)</a></li>
+        <li><a href="#recipe-finder-web---7-solves">Recipe finder (web - 7 solves)</a></li>
+        <li><a href="#sequel-to-recipe-finder-web---7-solves">Sequel to Recipe Finder (web - 7 solves)</a></li>
+        <li><a href="#style-points-web---5-solves">Style points (web - 5 solves)</a></li>
+        <li><a href="#queensland-university-of-0x80491b6-pwn---6-solves">Queensland University of 0x80491b6 (pwn - 6 solves)</a></li>
+        <li><a href="#member-management-software-v0.1-pwn---4-solves">Member Management Software v0.1 (pwn - 4 solves)</a></li>
+        <li><a href="#group-project-pwn---2-solves">Group Project (pwn - 2 solves)</a></li>
+        <li><a href="#st.-angr-rev---2-solves">St. Angr (rev - 2 solves)</a></li>
        </ul></p></p> 
      <hr> 
      <h2 id="recipe-finder-web---7-solves">Recipe finder (web - 7 solves)</h2> 
@@ -518,7 +518,6 @@ p.interactive()
   return 0;
 }
 
-
 void func1(char *input) {
   size_t len;
   long in_FS_OFFSET;
@@ -597,7 +596,7 @@ int func2(char *input) {
      </ol> 
      <p>The next 35 <code>funcN</code>s follow a similar form to <code>func2</code>. They perform around 2 checks of their own and then parse the input to the next function. Importantly, <code>func2</code> and onwards all increment the input pointer by one before passing it to the next function. This means that the functions each progressively check later and later on in the input.</p> 
      <h3 id="discovering-angr">Discovering angr</h3> 
-     <p>I considered for a second trying to write a solver for the logic, but quickly decided against that as it would be very tedious and likely wouldn’t work (I’ve never written that kind of solver before). My next thought to Google what <a href="https://angr.io"><code>angr</code></a> was because it sounded important. Somewhat unsurprisingly, it’s a tool that (among other things) can perform constrained bruteforce searches of an input space to find an input that succeeds. That sounds like something that could come in handy!</p> 
+     <p>I considered for a second trying to write a solver for the logic, but quickly decided against that as it would be very tedious and likely wouldn’t work (I’ve never written that kind of solver before). My next thought was to Google <a href="https://angr.io"><code>angr</code></a> because it sounded important. Somewhat unsurprisingly, it’s a tool that (among other things) can perform constrained bruteforce searches of an input space. That sounds like something that could come in handy!</p> 
      <p>I had no clue how <code>angr</code> worked so at first I just tried a simple unconstrained bruteforce script hoping it was magic (spoiler, it wasn’t). I let the script run for quite a while and it didn’t seem to find anything (and also didn’t give any output post launch, which wasn’t very promising, although it turns out that that’s just what angr does). I eventually found an <a href="https://github.com/reversinghub/crackme-angr-elf/blob/master/src/angr_solver.py">example script</a> that set some constraints on the search space, so I took that and started trying to grasp what it was doing.</p> 
      <pre><code class="language-python">import angr
 import claripy
@@ -626,9 +625,9 @@ sm.explore(find = FIND_ADDR, avoid = AVOID_ADDR)
 print("[*] Flag found: " + sm.found[0].posix.dumps(0).decode("utf-8"))
 </code></pre> 
      <p>Figure 20: <em>the example script that I found.</em></p> 
-     <p>From my understanding, angr essentially has a mathematical constraints solver (which utilises symbolic execution) which can be used to vastly reduce the space of inputs that have to be searched. First the script constrains the flag to be exactly 10 characters (80 bits), and secondly it constrains all bytes to be between 48 and 57 inclusive (the range of digit characters in ASCII). Now it’s time to start applying this to the challenge at hand.</p> 
+     <p>From my understanding, angr essentially has a mathematical constraints solver (which utilises symbolic execution) which can be used to vastly reduce the space of inputs that have to be searched. First, the example script constrains the flag to be exactly 10 characters (80 bits), and secondly, it constrains all bytes to be between 48 and 57 inclusive (the range of the characters <code>'1'</code> to <code>'9'</code> in ASCII). Now it’s time to start applying this to the challenge at hand.</p> 
      <h3 id="setting-up-angr">Setting up angr</h3> 
-     <p>First things first, I updated the script to load our target binary and search for <code>Congratulations</code> while avoiding <code>Keep going</code>.</p> 
+     <p>First things first, I updated the script to load our target binary and configured it to search for <code>Congratulations</code> and avoid <code>Keep going</code>.</p> 
      <pre><code class="language-python">proj = angr.Project('files/st_angr', # ...
 # ...
 sm.explore(
@@ -694,7 +693,7 @@ for func in funcs:
         print(f"state.solver.add({cond})")
 </code></pre> 
      <p>Figure 22: <em>the constraint conversion script</em></p> 
-     <p>After about another 30-40 minutes I had gotten a somewhat-functioning constraint conversion script up and running. Essentially, I copy pasted the source code of all 36 <code>funcN</code> (<code>N &gt; 1</code>) functions from Ghidra into the script as multiline string literals in a list. The code then iterates through all of the functions extracting the condition from the if statement and splitting it into its component expressions (by splitting on <code>&amp;&amp;</code>). The last expression (the one calling the next function) is discarded, and the other two undergo a bunch of string operations to make them look like Swift code. I had the most issues with sequences such as <code>\x14</code> which were getting interpreted by Python instead of included as escape sequences like they were in the C code. I ended up settling on just replacing the culprit character literals with their integer values (which is what was needed in the Python constraints anyway). I also needed to write a basic parser to parse out array indices and then subtract the function’s offset from the each index. That was necessary because each function in the c code increments the input pointer by one before calling the next function, so we need to adjust for that offset when converting the code. I also needed to subtract the index from the result of each array access to account for <code>func1</code> which does that exact operation.</p> 
+     <p>After about another 30-40 minutes I had gotten a somewhat-functioning constraint conversion script up and running. Essentially, I copy pasted the source code of all 36 <code>funcN</code> (<code>N &gt; 1</code>) functions from Ghidra into the script as multiline string literals in a list. The code then iterates through all of the functions extracting the condition from the if statement and splitting it into its component expressions (by splitting on <code>&amp;&amp;</code>). The last expression (the one calling the next function) is discarded, and the remaining constraints undergo a bunch of string operations to make them look like Python code. I had the most issues with sequences such as <code>\x14</code> which were getting interpreted by Python instead of included as escape sequences like they were in the C code. I ended up settling on just replacing the culprit character literals with their integer values (which is what was needed in the Python constraints anyway). I also needed to write a basic parser to parse out array indices and then subtract their enclosing function’s offset from them. That was necessary because each function in the c code increments the input pointer by one before calling the next function, so we need to adjust for that offset when converting the code. I also needed to get each array access and subtract its index from its result to account for <code>func1</code> which does that exact operation upfront.</p> 
      <p>After all of that work, my code was still somehow spitting out mismatched brackets, but I couldn’t figure out why so I just manually fixed the brackets on all 80 constraints.</p> 
      <p>It was time for the moment of truth. I ran the program, and… <code>unsat</code>? It turns out that the solver is smart enough to notice when constraints aren’t possible to satisfy (and <code>unsat</code> is short for unsatisfiable/unsatisfied). Looks like we’ve done something wrong.</p> 
      <p>Luckily, I already had a feeling this might happen, because I was unsure about my code for emulating <code>(char)x</code> in Python (where <code>x</code> is a signed integer). The easiest solution was to just comment out all of the constraints that I was unsure about, so that’s what I did. This time the script didn’t exit immediately so I continued attempting other challenges while I waited for it to finish its search. Keep in mind that I’m running the script in an x86_64 Linux VM under QEMU on my ARM Mac, so angr was probably running a bit slower than it usually would.</p> 
