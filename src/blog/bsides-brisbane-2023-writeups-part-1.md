@@ -1,7 +1,7 @@
 ---
 year: 2023
 month: 07
-day: 17
+day: 18
 ---
 # BSides Brisbane 2023 - Writeups (Part 1: crypto, rev, IoT)
 
