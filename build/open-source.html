@@ -5,55 +5,51 @@
   <link rel="stylesheet" href="/css/page.css"> 
   <title>Open-source - stackotter</title> 
   <meta name="viewport" content="width=device-width"> 
-  <meta name="description" content="Delta Client is a complete rewrite of the ‘Minecraft: Java Edition’ client. It is fully compatible with ‘Minecraft: Java Edition’ servers and is written in Swift. Due to a lot of optimisations and better design decisions, it is multiple times faster and more efficient than any other Minecraft client. The website contains more specific metrics."> 
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-7ZNG4PJZEX"></script>
-  <script>
-        window.dataLayer = window.dataLayer || [];
-        const gtag = () => dataLayer.push(arguments);
+  <meta name="description" content="Delta Client is a complete rewrite of the ‘Minecraft: Java Edition’ client. It is fully compatible with ‘Minecraft: Java Edition’ servers and is written in Swift. Due to a lot of optimisations and better design decisions, it is multiple times faster and more efficient than any other Minecraft client. The website contains more specific metrics.;
         gtag('js', new Date());
 
         gtag('config', 'G-7ZNG4PJZEX');
     </script>
+
+    <body>
+        <div class=" container"> 
   <link rel="stylesheet" href="/css/page.css">
   <link rel="stylesheet" href="/css/github-markdown-light.css">
- </head> 
- <!-- Google tag (gtag.js) - Google Analytics -->   
- <body> 
-  <div class="container"> 
-   <header class="header"> 
-    <a href="/" class="logo"> <img src="/image/otter.png" alt="A pixel art otter logo" class="logo"> </a> 
-    <h1 id="stackotter.dev">stackotter.dev</h1> 
-    <div id="nav"> 
-     <a class="link" href="/">about</a> 
-     <a class="link" href="/blog">blog</a> 
-     <a class="link" href="/contact">contact</a> 
-    </div> 
-   </header> 
-   <main class="main"> 
-    <div class="markdown-body"> 
-     <h1 id="open-source">Open-source</h1> 
-     <h2 id="my-projects">My projects</h2> 
-     <h3 id="delta-client">Delta Client</h3> 
-     <p><a href="https://deltaclient.app">Delta Client</a> is a complete rewrite of the ‘Minecraft: Java Edition’ client. It is fully compatible with ‘Minecraft: Java Edition’ servers and is written in Swift. Due to a lot of optimisations and better design decisions, it is multiple times faster and more efficient than any other Minecraft client. The website contains more specific metrics.</p> 
-     <h3 id="swift-bundler">Swift Bundler</h3> 
-     <p><a href="https://github.com/stackotter/swift-bundler">Swift Bundler</a> is a modern tool for creating cross-platform Swift apps using Swift packages instead of Xcodeproj’s. It currently only supports macOS. iOS support in an experimental state. Windows and Linux support will be added in the future.</p> 
-     <h3 id="swiftcrossui">SwiftCrossUI</h3> 
-     <p><a href="https://github.com/stackotter/swift-cross-ui">SwiftCrossUI</a> is a declarative cross-platform UI framework inspired by Apple’s SwiftUI. Why not just use SwiftUI? Because it is built on top of Gtk and supports many more platforms than SwiftUI (which only supports Apple platforms). It is still in a very early stage of development.</p> 
-     <h3 id="swiftprotobufgen">SwiftProtobufGen</h3> 
-     <p><a href="https://github.com/stackotter/swift-protobuf-gen">SwiftProtobufGen</a> is a tool for generating Protobuf message definitions from Swift structs. It can also generate the code required to convert to and from Protobuf messages. It is not yet in a usable state, but if there is enough interest I will continue working on it at some point.</p> 
-     <h3 id="swiftcssparser">SwiftCSSParser</h3> 
-     <p><a href="https://github.com/stackotter/swift-css-parser">SwiftCSSParser</a> is a Swift package which provides a type-safe API for parsing, modifying and serializing CSS. It is built on top of the <a href="https://github.com/Sigil-Ebook/cssparser">c++ cssparser library</a>. I used it to create a page-content aware css minifier for my static static generator – <a href="https://github.com/stackotter/Scute">Scute</a> – and it seems to be performing well.</p> 
-     <h3 id="swiftmixin">SwiftMixin</h3> 
-     <p><a href="https://github.com/stackotter/swift-mixin">SwiftMixin</a> is a highly experimental Swift package for replacing functions and methods dynamically at runtime. It only supports x86_64 and will probably break with every new Swift release. I plan on eventually writing an article about what I learnt from creating the package.</p> 
-     <h2 id="contributions-to-community-projects">Contributions to community projects</h2> 
-     <h3 id="flyingfox">FlyingFox</h3> 
-     <p>In 2022 I found two security vulnerabilities in <a href="https://github.com/swhitty/FlyingFox">FlyingFox</a> – a Swift HTTP implementation which takes advantage of Swift concurrency. <a href="https://github.com/swhitty/FlyingFox/issues/24">The first vulnerability</a> was a path traversal vulnerability giving access to all of a server’s files. And <a href="https://github.com/swhitty/FlyingFox/issues/26">the second vulnerability</a> was a pointer arithmetic error in the socket implementation which could leak unintended memory to a user under certain conditions. Both of them have now been fixed.</p> 
-     <h3 id="parsley">Parsley</h3> 
-     <p>In 2022 I brought <a href="https://github.com/loopwerk/Parsley">Parsley</a> (a Swift wrapper of the cmark-gfm markdown parser) up-to-date with the latest version of cmark-gfm to mitigate the multiple vulnerabilities that it was exposed to. Most importantly, <a href="https://github.com/github/cmark-gfm/security/advisories/GHSA-mc3g-88wq-6f4x">the arbitrary code execution vulnerability in table parsing</a>. I also added support for custom markdown syntax extensions so that I could use it in my Swift-based static site generator – <a href="https://github.com/stackotter/Scute">Scute</a>.</p> 
-     <h3 id="tomlkit">TOMLKit</h3> 
-     <p>TOML is my favourite configuration file format and I think that <a href="https://github.com/Lebje/TOMLKit">LebJe’s TOMLKit</a> is a great step towards increasing adoption of TOML among Swift programmers. In 2022 I fixed a fatal parsing error that could occur when an array was provided in a place that TOMLKit expected a table.</p> 
-    </div> 
-   </main> 
-  </div>   
+ </head>
+ <body>
+  <header class="header"> 
+   <a href="/" class="logo"> <img src="/image/otter.png" alt="A pixel art otter logo" class="logo"> </a> 
+   <h1 id="stackotter.dev">stackotter.dev</h1> 
+   <div id="nav"> 
+    <a class="link" href="/">about</a> 
+    <a class="link" href="/blog">blog</a> 
+    <a class="link" href="/contact">contact</a> 
+   </div> 
+  </header> 
+  <main class="main"> 
+   <div class="markdown-body"> 
+    <h1 id="open-source">Open-source</h1> 
+    <h2 id="my-projects">My projects</h2> 
+    <h3 id="delta-client">Delta Client</h3> 
+    <p><a href="https://deltaclient.app">Delta Client</a> is a complete rewrite of the ‘Minecraft: Java Edition’ client. It is fully compatible with ‘Minecraft: Java Edition’ servers and is written in Swift. Due to a lot of optimisations and better design decisions, it is multiple times faster and more efficient than any other Minecraft client. The website contains more specific metrics.</p> 
+    <h3 id="swift-bundler">Swift Bundler</h3> 
+    <p><a href="https://github.com/stackotter/swift-bundler">Swift Bundler</a> is a modern tool for creating cross-platform Swift apps using Swift packages instead of Xcodeproj’s. It currently only supports macOS. iOS support in an experimental state. Windows and Linux support will be added in the future.</p> 
+    <h3 id="swiftcrossui">SwiftCrossUI</h3> 
+    <p><a href="https://github.com/stackotter/swift-cross-ui">SwiftCrossUI</a> is a declarative cross-platform UI framework inspired by Apple’s SwiftUI. Why not just use SwiftUI? Because it is built on top of Gtk and supports many more platforms than SwiftUI (which only supports Apple platforms). It is still in a very early stage of development.</p> 
+    <h3 id="swiftprotobufgen">SwiftProtobufGen</h3> 
+    <p><a href="https://github.com/stackotter/swift-protobuf-gen">SwiftProtobufGen</a> is a tool for generating Protobuf message definitions from Swift structs. It can also generate the code required to convert to and from Protobuf messages. It is not yet in a usable state, but if there is enough interest I will continue working on it at some point.</p> 
+    <h3 id="swiftcssparser">SwiftCSSParser</h3> 
+    <p><a href="https://github.com/stackotter/swift-css-parser">SwiftCSSParser</a> is a Swift package which provides a type-safe API for parsing, modifying and serializing CSS. It is built on top of the <a href="https://github.com/Sigil-Ebook/cssparser">c++ cssparser library</a>. I used it to create a page-content aware css minifier for my static static generator – <a href="https://github.com/stackotter/Scute">Scute</a> – and it seems to be performing well.</p> 
+    <h3 id="swiftmixin">SwiftMixin</h3> 
+    <p><a href="https://github.com/stackotter/swift-mixin">SwiftMixin</a> is a highly experimental Swift package for replacing functions and methods dynamically at runtime. It only supports x86_64 and will probably break with every new Swift release. I plan on eventually writing an article about what I learnt from creating the package.</p> 
+    <h2 id="contributions-to-community-projects">Contributions to community projects</h2> 
+    <h3 id="flyingfox">FlyingFox</h3> 
+    <p>In 2022 I found two security vulnerabilities in <a href="https://github.com/swhitty/FlyingFox">FlyingFox</a> – a Swift HTTP implementation which takes advantage of Swift concurrency. <a href="https://github.com/swhitty/FlyingFox/issues/24">The first vulnerability</a> was a path traversal vulnerability giving access to all of a server’s files. And <a href="https://github.com/swhitty/FlyingFox/issues/26">the second vulnerability</a> was a pointer arithmetic error in the socket implementation which could leak unintended memory to a user under certain conditions. Both of them have now been fixed.</p> 
+    <h3 id="parsley">Parsley</h3> 
+    <p>In 2022 I brought <a href="https://github.com/loopwerk/Parsley">Parsley</a> (a Swift wrapper of the cmark-gfm markdown parser) up-to-date with the latest version of cmark-gfm to mitigate the multiple vulnerabilities that it was exposed to. Most importantly, <a href="https://github.com/github/cmark-gfm/security/advisories/GHSA-mc3g-88wq-6f4x">the arbitrary code execution vulnerability in table parsing</a>. I also added support for custom markdown syntax extensions so that I could use it in my Swift-based static site generator – <a href="https://github.com/stackotter/Scute">Scute</a>.</p> 
+    <h3 id="tomlkit">TOMLKit</h3> 
+    <p>TOML is my favourite configuration file format and I think that <a href="https://github.com/Lebje/TOMLKit">LebJe’s TOMLKit</a> is a great step towards increasing adoption of TOML among Swift programmers. In 2022 I fixed a fatal parsing error that could occur when an array was provided in a place that TOMLKit expected a table.</p> 
+   </div> 
+  </main>    
  </body>
 </html>

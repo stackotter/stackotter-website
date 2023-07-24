@@ -5,15 +5,14 @@
   <link rel="stylesheet" href="/css/page.css"> 
   <title>BSides Brisbane 2023 - Writeups (Part 1: crypto, rev, IoT) - stackotter</title> 
   <meta name="viewport" content="width=device-width"> 
-  <meta name="description" content="The BSides Brisbane CTF was an exciting mix of traditional jeopardy challenges, and hardware/enterprise hacking. Huge props to the team who made this top quality CTF happen!"> 
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-7ZNG4PJZEX"></script>
-  <script>
-        window.dataLayer = window.dataLayer || [];
-        const gtag = () => dataLayer.push(arguments);
+  <meta name="description" content="The BSides Brisbane CTF was an exciting mix of traditional jeopardy challenges, and hardware/enterprise hacking. Huge props to the team who made this top quality CTF happen!;
         gtag('js', new Date());
 
         gtag('config', 'G-7ZNG4PJZEX');
     </script>
+
+    <body>
+        <div class=" container"> 
   <link rel="stylesheet" href="/css/page.css">
   <link rel="stylesheet" href="/css/github-markdown-light.css">
   <link rel="stylesheet" href="/css/syntax-theme_atom-one-dark.min.css">
@@ -25,59 +24,57 @@
     background-color: #282c34 !important;
 }</style>
   <script defer src="/js/highlight.min.js"></script>
- </head> 
- <!-- Google tag (gtag.js) - Google Analytics -->   
- <body> 
-  <div class="container"> 
-   <header class="header"> 
-    <a href="/" class="logo"> <img src="/image/otter.png" alt="A pixel art otter logo" class="logo"> </a> 
-    <h1 id="stackotter.dev">stackotter.dev</h1> 
-    <div id="nav"> 
-     <a class="link" href="/">about</a> 
-     <a class="link" href="/blog">blog</a> 
-     <a class="link" href="/contact">contact</a> 
-    </div> 
-   </header> 
-   <main class="main"> 
-    <div class="markdown-body"> 
-     <h1 id="bsides-brisbane-2023---writeups-part-1:-crypto-rev-iot">BSides Brisbane 2023 - Writeups (Part 1: crypto, rev, IoT)</h1> 
-     <p>The BSides Brisbane CTF was an exciting mix of traditional jeopardy challenges, and hardware/enterprise hacking. Huge props to the team who made this top quality CTF happen!</p> 
-     <p>Unfortunately I didn’t have enough time to properly try out all of the IoT challenges and enterprise hacking challenges available, but at least I got to solve one of the IoT challenges, one of the perks of an in-person CTF :)</p> 
-     <h2 id="overview">Overview</h2> 
-     <p>I could just make the write-ups about my solutions, but I like to also include the process I followed because that’s often a lot more valuable than just a solve script. I also hope that it shows you that some challenges just take a lot of persistence!</p> 
-     <p><p class="-table-of-contents">
-       <ul>
-        <li><a href="#hardly-encryption-crypto---100-points">Hard(ly) encryption (crypto - 100 points)</a></li>
-        <li><a href="#neo-crypto---300-points">Neo (crypto - 300 points)</a></li>
-        <li><a href="#crackme-rev---150-points">crackme (rev - 150 points)</a></li>
-        <li><a href="#cafeteria-rev---300-points">Cafeteria (rev - 300 points)</a></li>
-        <li><a href="#rogue-transmitter-iot-village---400">Rogue Transmitter (IoT Village - 400)</a></li>
-       </ul></p></p> 
-     <hr> 
-     <h2 id="hardly-encryption-crypto---100-points">Hard(ly) encryption (crypto - 100 points)</h2> 
-     <blockquote> 
-      <p>While walking around the office during a red team engagement, you notice the following printed out on a piece of paper left on a keyboard: \x3c\x5d\x2e\x29\x4b\x69\x7f\x63\x77\x58\x3c\x63\x5e\x5e\x44\x1c\x39\x43\x36\x3e\x44\x5e\x11\x4c</p> 
-      <p>You also note the following on a postit note taped to the monitor of the same desk: Z1ON0101</p> 
-      <p>Can you work out what this means?”</p> 
-      <p>Author: bman</p> 
-     </blockquote> 
-     <p>At first I thought it could be something similar to the <a href="https://en.wikipedia.org/wiki/Vigen%C3%A8re_cipher">Vigenere cipher</a> because that’s simple and takes a key. Nothing else came to mind, so I started messing around in Python trying to implement the Vigenere cipher but with bytes instead of the alphabet. After a few minutes I hadn’t found anything promising so I put the ciphertext into <a href="https://gchq.github.io/CyberChef/">CyberChef</a> hoping that maybe the <code>Magic</code> recipe would magically tell me something useful (it didn’t 😅).</p> 
-     <p>As I was looking through the script again I remembered that XOR existed (which I should’ve remembered much earlier due to the challenge description and the random looking bytes in the encrypted message). I quickly modified the script to perform XOR ‘decryption’ and sure enough, the flag popped right out.</p> 
-     <p>To save time at the end I could’ve used CyberChef’s <code>Unescape string</code> recipe (to interpret the hex character codes) followed by the <code>XOR</code> recipe, which is good to know for next time.</p> 
-     <p>Flag: <code>flag{XOR-is-not-crypto!}</code></p> 
-     <hr> 
-     <h2 id="neo-crypto---300-points">Neo (crypto - 300 points)</h2> 
-     <blockquote> 
-      <p>Help! I’ve forgotten the password to this old encryption service that’s running on a server I no longer have access to. All I have is the source code and a copy of the encrypted password from when I used it last year :( Can you help me find what I changed the password to?</p> 
-      <p>Author: deluqs</p> 
-     </blockquote> 
-     <p>We’re provided with a Python program, and an encrypted password (along with its corresponding IV). The provided program has two commands; <code>Encrypt a message</code>, and <code>Login</code>. The encryption used is <code>AES</code> in <code>CBC</code> mode with a 16 byte block size and <code>pkcs7</code> padding (this becomes important later).</p> 
-     <p>Luckily I had been reading about CBC padding oracle attacks the day before the CTF so that’s the first thing that came to mind. And spoiler, it turned out to be a padding oracle challenge :)</p> 
-     <h3 id="padding-oracle-attacks">Padding oracle attacks</h3> 
-     <p>A padding oracle attack is possible when CBC mode encryption is used and there is a way for an attacker to verify whether a given ciphertext has valid padding when decrypted or not. Usually this comes in the form of an API endpoint that has different error messages that distinguish between invalid decrypted contents, and invalid decrypted padding. In our case, it’s a Python program running over TCP which we can interact with over netcat (as is usual for CTF challenges).</p> 
-     <p>I’ll do my best to briefly explain padding oracle attacks as I go, but I recommend reading <a href="https://research.nccgroup.com/2021/02/17/cryptopals-exploiting-cbc-padding-oracles/">this writeup for a cryptopals challenge</a> for the best explanation of padding oracle attacks I’ve found so far! I ended up taking and modifying their exploit script when I couldn’t get mine to work (I really wanted to write it myself but I also wanted to be fast cause of the CTF).</p> 
-     <h3 id="what-were-working-with">What we’re working with</h3> 
-     <pre><code class="language-python">KEY = # redacted
+ </head>
+ <body>
+  <header class="header"> 
+   <a href="/" class="logo"> <img src="/image/otter.png" alt="A pixel art otter logo" class="logo"> </a> 
+   <h1 id="stackotter.dev">stackotter.dev</h1> 
+   <div id="nav"> 
+    <a class="link" href="/">about</a> 
+    <a class="link" href="/blog">blog</a> 
+    <a class="link" href="/contact">contact</a> 
+   </div> 
+  </header> 
+  <main class="main"> 
+   <div class="markdown-body"> 
+    <h1 id="bsides-brisbane-2023---writeups-part-1:-crypto-rev-iot">BSides Brisbane 2023 - Writeups (Part 1: crypto, rev, IoT)</h1> 
+    <p>The BSides Brisbane CTF was an exciting mix of traditional jeopardy challenges, and hardware/enterprise hacking. Huge props to the team who made this top quality CTF happen!</p> 
+    <p>Unfortunately I didn’t have enough time to properly try out all of the IoT challenges and enterprise hacking challenges available, but at least I got to solve one of the IoT challenges, one of the perks of an in-person CTF :)</p> 
+    <h2 id="overview">Overview</h2> 
+    <p>I could just make the write-ups about my solutions, but I like to also include the process I followed because that’s often a lot more valuable than just a solve script. I also hope that it shows you that some challenges just take a lot of persistence!</p> 
+    <p><p class="-table-of-contents">
+      <ul>
+       <li><a href="#hardly-encryption-crypto---100-points">Hard(ly) encryption (crypto - 100 points)</a></li>
+       <li><a href="#neo-crypto---300-points">Neo (crypto - 300 points)</a></li>
+       <li><a href="#crackme-rev---150-points">crackme (rev - 150 points)</a></li>
+       <li><a href="#cafeteria-rev---300-points">Cafeteria (rev - 300 points)</a></li>
+       <li><a href="#rogue-transmitter-iot-village---400">Rogue Transmitter (IoT Village - 400)</a></li>
+      </ul></p></p> 
+    <hr> 
+    <h2 id="hardly-encryption-crypto---100-points">Hard(ly) encryption (crypto - 100 points)</h2> 
+    <blockquote> 
+     <p>While walking around the office during a red team engagement, you notice the following printed out on a piece of paper left on a keyboard: \x3c\x5d\x2e\x29\x4b\x69\x7f\x63\x77\x58\x3c\x63\x5e\x5e\x44\x1c\x39\x43\x36\x3e\x44\x5e\x11\x4c</p> 
+     <p>You also note the following on a postit note taped to the monitor of the same desk: Z1ON0101</p> 
+     <p>Can you work out what this means?”</p> 
+     <p>Author: bman</p> 
+    </blockquote> 
+    <p>At first I thought it could be something similar to the <a href="https://en.wikipedia.org/wiki/Vigen%C3%A8re_cipher">Vigenere cipher</a> because that’s simple and takes a key. Nothing else came to mind, so I started messing around in Python trying to implement the Vigenere cipher but with bytes instead of the alphabet. After a few minutes I hadn’t found anything promising so I put the ciphertext into <a href="https://gchq.github.io/CyberChef/">CyberChef</a> hoping that maybe the <code>Magic</code> recipe would magically tell me something useful (it didn’t 😅).</p> 
+    <p>As I was looking through the script again I remembered that XOR existed (which I should’ve remembered much earlier due to the challenge description and the random looking bytes in the encrypted message). I quickly modified the script to perform XOR ‘decryption’ and sure enough, the flag popped right out.</p> 
+    <p>To save time at the end I could’ve used CyberChef’s <code>Unescape string</code> recipe (to interpret the hex character codes) followed by the <code>XOR</code> recipe, which is good to know for next time.</p> 
+    <p>Flag: <code>flag{XOR-is-not-crypto!}</code></p> 
+    <hr> 
+    <h2 id="neo-crypto---300-points">Neo (crypto - 300 points)</h2> 
+    <blockquote> 
+     <p>Help! I’ve forgotten the password to this old encryption service that’s running on a server I no longer have access to. All I have is the source code and a copy of the encrypted password from when I used it last year :( Can you help me find what I changed the password to?</p> 
+     <p>Author: deluqs</p> 
+    </blockquote> 
+    <p>We’re provided with a Python program, and an encrypted password (along with its corresponding IV). The provided program has two commands; <code>Encrypt a message</code>, and <code>Login</code>. The encryption used is <code>AES</code> in <code>CBC</code> mode with a 16 byte block size and <code>pkcs7</code> padding (this becomes important later).</p> 
+    <p>Luckily I had been reading about CBC padding oracle attacks the day before the CTF so that’s the first thing that came to mind. And spoiler, it turned out to be a padding oracle challenge :)</p> 
+    <h3 id="padding-oracle-attacks">Padding oracle attacks</h3> 
+    <p>A padding oracle attack is possible when CBC mode encryption is used and there is a way for an attacker to verify whether a given ciphertext has valid padding when decrypted or not. Usually this comes in the form of an API endpoint that has different error messages that distinguish between invalid decrypted contents, and invalid decrypted padding. In our case, it’s a Python program running over TCP which we can interact with over netcat (as is usual for CTF challenges).</p> 
+    <p>I’ll do my best to briefly explain padding oracle attacks as I go, but I recommend reading <a href="https://research.nccgroup.com/2021/02/17/cryptopals-exploiting-cbc-padding-oracles/">this writeup for a cryptopals challenge</a> for the best explanation of padding oracle attacks I’ve found so far! I ended up taking and modifying their exploit script when I couldn’t get mine to work (I really wanted to write it myself but I also wanted to be fast cause of the CTF).</p> 
+    <h3 id="what-were-working-with">What we’re working with</h3> 
+    <pre><code class="language-python">KEY = # redacted
 password = # redacted
 
 def encrypt(message, IV):
@@ -125,13 +122,13 @@ while True:
   else:
     print("Invalid choice!")
 </code></pre> 
-     <p>Figure 1: <em>important parts of the provided script source code (simplified for brevity).</em></p> 
-     <p>I’ve simplified the script by removing some unrelated input validation and such, but for the purposes of our exploit the functionality is the same.</p> 
-     <p>The most important thing to notice is that invalid padding will cause <code>Error: malformed message</code>, and an incorrect password (with valid padding) will cause <code>Access denied.</code>. This is essential for a padding oracle attack.</p> 
-     <p>The program expects IVs, ciphertexts, and plaintexts to be inputted as base64.</p> 
-     <h3 id="writing-the-exploit">Writing the exploit</h3> 
-     <p>First we need to set up a way for the solver to interact with the service to check whether a given ciphertext’s padding is correct when decrypted (Figure 2). This can be done by using pwntools to interact with the program, and then checking which error message we get. This primitive is called the <code>oracle</code>, and it’s all the information that the solver needs to fully decrypt the ciphertext 🤯.</p> 
-     <pre><code class="language-python">from base64 import b64decode, b64encode
+    <p>Figure 1: <em>important parts of the provided script source code (simplified for brevity).</em></p> 
+    <p>I’ve simplified the script by removing some unrelated input validation and such, but for the purposes of our exploit the functionality is the same.</p> 
+    <p>The most important thing to notice is that invalid padding will cause <code>Error: malformed message</code>, and an incorrect password (with valid padding) will cause <code>Access denied.</code>. This is essential for a padding oracle attack.</p> 
+    <p>The program expects IVs, ciphertexts, and plaintexts to be inputted as base64.</p> 
+    <h3 id="writing-the-exploit">Writing the exploit</h3> 
+    <p>First we need to set up a way for the solver to interact with the service to check whether a given ciphertext’s padding is correct when decrypted (Figure 2). This can be done by using pwntools to interact with the program, and then checking which error message we get. This primitive is called the <code>oracle</code>, and it’s all the information that the solver needs to fully decrypt the ciphertext 🤯.</p> 
+    <pre><code class="language-python">from base64 import b64decode, b64encode
 from pwn import *
 
 SUCCESS = 0
@@ -165,10 +162,10 @@ def login(iv: bytes, password: bytes):
 def oracle(iv, password):
     return login(iv, password) != MALFORMED
 </code></pre> 
-     <p>Figure 2: <em>harnessing the oracle 🔮.</em></p> 
-     <p>Next (and this is the part I took from <a href="https://research.nccgroup.com/2021/02/17/cryptopals-exploiting-cbc-padding-oracles/">the handy article</a>) we can crack the plaintext byte by byte. To understand this part we need to take a look at the PKCS#7 padding scheme. Say we have the plaintext <code>abc</code> and we need to pad it to 4 bytes. The only valid way to do this with PKCS#7 is to add a byte of value 1 to the end of the message to get <code>abc\x01</code>. And if we needed to pad it to 5 bytes, we would have to add 2 bytes of value 2 to the end of the message to get <code>abc\x02\x02</code>. You always add n bytes of value n to the end of the message to make it the desired length. In the context of this challenge, the message will get padded so that its length is a multiple of 16 (the block size). If the server decrypts the message and the padding doesn’t follow that scheme, it’ll return the <code>Error: malformed message</code> error message. Importantly, messages always need to be padded up to the <em>next</em> multiple of the block size, so if a message is already 16 bytes, it would need to be padded out to 32 bytes to avoid ambiguity.</p> 
-     <p>The padding scheme on its own isn’t particularly useful to us, but when combined with CBC encryption and a padding oracle, it is. To encrypt the plaintext that we’re given the ciphertext for, the server first padded the message to 16 bytes with PKCS#7 padding, and then it encrypted it with a CBC mode cipher. In the single block case which we’re working with, CBC essentially just XORs the plaintext block with the IV block and then encrypts the result with AES encryption. To decrypt the message, CBC will decrypt the ciphertext with AES encryption, XOR the result with the IV, and then check the padding. The idea of the attack is that we can figure out what the output of the AES step is by influencing the XOR step through the IV and observing whether the padding is correct or not. First we go through all possible final bytes for the IV and see which ones result in valid padding. This will yield one or two valid values. One of them will be the original value of that byte of course (we already know that it’s valid), and if the message wasn’t already padded with <code>0x01</code> the other value will be the value that XORs to produce <code>0x01</code>. We want to know which of these values produces a final byte of <code>0x01</code> which we can find out by modifying the second last byte of the IV (see the script). Once we know which value produces a final plaintext byte of <code>0x01</code>, we can XOR it with <code>0x01</code> to find what the last byte of the output from the AES stage was! We can now calculate what value for the final byte will result in <code>0x02</code>, and then try all possible values for the second last byte of the plaintext to find which one will produce a value of <code>0x02</code> (resulting in the valid padding <code>\x02\x02</code>). We can continue this process until we know every byte of the output of the AES step! XORing this with the IV (as CBC does) we can finally recover the original plaintext. If I lost you in there somewhere, go check out <a href="https://research.nccgroup.com/2021/02/17/cryptopals-exploiting-cbc-padding-oracles/">the article I’ve referenced too many times</a>, they explain it in much more detail!</p> 
-     <pre><code class="language-python"># ...
+    <p>Figure 2: <em>harnessing the oracle 🔮.</em></p> 
+    <p>Next (and this is the part I took from <a href="https://research.nccgroup.com/2021/02/17/cryptopals-exploiting-cbc-padding-oracles/">the handy article</a>) we can crack the plaintext byte by byte. To understand this part we need to take a look at the PKCS#7 padding scheme. Say we have the plaintext <code>abc</code> and we need to pad it to 4 bytes. The only valid way to do this with PKCS#7 is to add a byte of value 1 to the end of the message to get <code>abc\x01</code>. And if we needed to pad it to 5 bytes, we would have to add 2 bytes of value 2 to the end of the message to get <code>abc\x02\x02</code>. You always add n bytes of value n to the end of the message to make it the desired length. In the context of this challenge, the message will get padded so that its length is a multiple of 16 (the block size). If the server decrypts the message and the padding doesn’t follow that scheme, it’ll return the <code>Error: malformed message</code> error message. Importantly, messages always need to be padded up to the <em>next</em> multiple of the block size, so if a message is already 16 bytes, it would need to be padded out to 32 bytes to avoid ambiguity.</p> 
+    <p>The padding scheme on its own isn’t particularly useful to us, but when combined with CBC encryption and a padding oracle, it is. To encrypt the plaintext that we’re given the ciphertext for, the server first padded the message to 16 bytes with PKCS#7 padding, and then it encrypted it with a CBC mode cipher. In the single block case which we’re working with, CBC essentially just XORs the plaintext block with the IV block and then encrypts the result with AES encryption. To decrypt the message, CBC will decrypt the ciphertext with AES encryption, XOR the result with the IV, and then check the padding. The idea of the attack is that we can figure out what the output of the AES step is by influencing the XOR step through the IV and observing whether the padding is correct or not. First we go through all possible final bytes for the IV and see which ones result in valid padding. This will yield one or two valid values. One of them will be the original value of that byte of course (we already know that it’s valid), and if the message wasn’t already padded with <code>0x01</code> the other value will be the value that XORs to produce <code>0x01</code>. We want to know which of these values produces a final byte of <code>0x01</code> which we can find out by modifying the second last byte of the IV (see the script). Once we know which value produces a final plaintext byte of <code>0x01</code>, we can XOR it with <code>0x01</code> to find what the last byte of the output from the AES stage was! We can now calculate what value for the final byte will result in <code>0x02</code>, and then try all possible values for the second last byte of the plaintext to find which one will produce a value of <code>0x02</code> (resulting in the valid padding <code>\x02\x02</code>). We can continue this process until we know every byte of the output of the AES step! XORing this with the IV (as CBC does) we can finally recover the original plaintext. If I lost you in there somewhere, go check out <a href="https://research.nccgroup.com/2021/02/17/cryptopals-exploiting-cbc-padding-oracles/">the article I’ve referenced too many times</a>, they explain it in much more detail!</p> 
+    <pre><code class="language-python"># ...
 
 # Source: https://research.nccgroup.com/2021/02/17/cryptopals-exploiting-cbc-padding-oracles/
 def single_block_attack(block, oracle):
@@ -223,25 +220,25 @@ def full_attack(iv, ct, oracle):
 
 print(full_attack(iv, ciphertext, oracle))
 </code></pre> 
-     <p>Figure 3: <em>using our oracle to crack the plaintext byte by byte.</em></p> 
-     <p>This script can successfully crack the ciphertext given a minute or two (most of the time is spent communicating with the oracle). The plaintext turns out to be <code>Mr@nd3r5oN2022\x02\x02</code>. Given that the challenge wants us to figure out what the creator changed their password to, <code>Mr@nd3r5oN2023</code> would be a very good guess. An excellent guess in fact 😅. Logging in presents us with the flag.</p> 
-     <p>Flag: <code>flag{yOu-n3ed-T0-sE3-th3-0rAc13}</code></p> 
-     <p>Solution: <a href="bsides-brisbane-2023-writeups-part-1/solve_neo.py">solve_neo.py</a></p> 
-     <h3 id="conclusion">Conclusion</h3> 
-     <p>Overall a very well made challenge! I enjoyed the final touch of having to ‘guess’ the new password, it added a bit more personality to the challenge. I’ve only recently started getting into crypto (the good kind), and this only made me want to learn more!</p> 
-     <hr> 
-     <h2 id="crackme-rev---150-points">crackme (rev - 150 points)</h2> 
-     <blockquote> 
-      <p>I wrote the following program to calculate the flag. It takes a bit, please be patient.</p> 
-      <p>Author: deluqs</p> 
-     </blockquote> 
-     <p>A good place to start with these kinds of challenges is to simply run the program to see what it does. This gives us more context and can speed up the reverse engineering process (although for a challenge like this that doesn’t really matter).</p> 
-     <pre><code class="language-console">$ ./crackme 
+    <p>Figure 3: <em>using our oracle to crack the plaintext byte by byte.</em></p> 
+    <p>This script can successfully crack the ciphertext given a minute or two (most of the time is spent communicating with the oracle). The plaintext turns out to be <code>Mr@nd3r5oN2022\x02\x02</code>. Given that the challenge wants us to figure out what the creator changed their password to, <code>Mr@nd3r5oN2023</code> would be a very good guess. An excellent guess in fact 😅. Logging in presents us with the flag.</p> 
+    <p>Flag: <code>flag{yOu-n3ed-T0-sE3-th3-0rAc13}</code></p> 
+    <p>Solution: <a href="bsides-brisbane-2023-writeups-part-1/solve_neo.py">solve_neo.py</a></p> 
+    <h3 id="conclusion">Conclusion</h3> 
+    <p>Overall a very well made challenge! I enjoyed the final touch of having to ‘guess’ the new password, it added a bit more personality to the challenge. I’ve only recently started getting into crypto (the good kind), and this only made me want to learn more!</p> 
+    <hr> 
+    <h2 id="crackme-rev---150-points">crackme (rev - 150 points)</h2> 
+    <blockquote> 
+     <p>I wrote the following program to calculate the flag. It takes a bit, please be patient.</p> 
+     <p>Author: deluqs</p> 
+    </blockquote> 
+    <p>A good place to start with these kinds of challenges is to simply run the program to see what it does. This gives us more context and can speed up the reverse engineering process (although for a challenge like this that doesn’t really matter).</p> 
+    <pre><code class="language-console">$ ./crackme 
 Please wait for the flag to be calculated :)
 </code></pre> 
-     <p>Figure 4: <em>running the crackme.</em></p> 
-     <p>Nothing to really see there, so let’s take a look at the decompilation using Ghidra.</p> 
-     <pre><code class="language-c">void main(undefined8 param_1,int param_2) {
+    <p>Figure 4: <em>running the crackme.</em></p> 
+    <p>Nothing to really see there, so let’s take a look at the decompilation using Ghidra.</p> 
+    <pre><code class="language-c">void main(undefined8 param_1,int param_2) {
   char extraout_AL;
   int local_10;
   int local_c;
@@ -263,31 +260,31 @@ void encrypt(char *__block,int __edflag) {
   return;
 }
 </code></pre> 
-     <p>Figure 5: <em>the crackme decompiled using Ghidra.</em></p> 
-     <p>The first thing to notice is the <code>sleep(300)</code> line which runs every single iteration of the double-nested loop. Waiting 5 minutes every iteration is bound to slow things down a tad 😅. The other thing to notice is that although Ghidra seems to reckon that the <code>encrypt</code> function is empty, it’s actually not (which I can tell from looking at the assembly view). It seems to be multiplying its first argument by <code>0xffffffa7</code>. However, I digress, we’re here to speed up the program, not fully reverse engineer it.</p> 
-     <p>To remove the sleep we’ll need to patch the binary, which isn’t as tedious as it sounds if you have a solid plan. There are two main ways we can go about patching out the sleep; we can either replace all related instructions with <code>nop</code>s (which do nothing), or we can change the duration from <code>300</code> to <code>0</code>. I usually find the second approach easier because <code>300</code> (<code>0x12c</code>) will be easier to spot in a hex editor than some op codes. It also doesn’t involve googling what the op code is for <code>nop</code> which is nice.</p> 
-     <p>First we need to locate the value that we’re going to patch. To do so, click on the <code>sleep(300)</code> line in Ghidra and the assembly view will highlight the related instructions.</p> 
-     <pre><code>  ...
+    <p>Figure 5: <em>the crackme decompiled using Ghidra.</em></p> 
+    <p>The first thing to notice is the <code>sleep(300)</code> line which runs every single iteration of the double-nested loop. Waiting 5 minutes every iteration is bound to slow things down a tad 😅. The other thing to notice is that although Ghidra seems to reckon that the <code>encrypt</code> function is empty, it’s actually not (which I can tell from looking at the assembly view). It seems to be multiplying its first argument by <code>0xffffffa7</code>. However, I digress, we’re here to speed up the program, not fully reverse engineer it.</p> 
+    <p>To remove the sleep we’ll need to patch the binary, which isn’t as tedious as it sounds if you have a solid plan. There are two main ways we can go about patching out the sleep; we can either replace all related instructions with <code>nop</code>s (which do nothing), or we can change the duration from <code>300</code> to <code>0</code>. I usually find the second approach easier because <code>300</code> (<code>0x12c</code>) will be easier to spot in a hex editor than some op codes. It also doesn’t involve googling what the op code is for <code>nop</code> which is nice.</p> 
+    <p>First we need to locate the value that we’re going to patch. To do so, click on the <code>sleep(300)</code> line in Ghidra and the assembly view will highlight the related instructions.</p> 
+    <pre><code>  ...
 001011c5 bf 2c 01        MOV        EDI,0x12c
          00 00
 001011ca e8 81 fe        CALL       &lt;EXTERNAL&gt;::sleep
          ff ff
   ...
 </code></pre> 
-     <p>Figure 6: <em>disassembly of the instructions related to <code>sleep(300)</code>.</em></p> 
-     <p>First, <code>0x12c</code> gets moved into the <code>edi</code> register (which is where the first argument to a function is usually placed), and then <code>sleep</code> gets called. Note that <code>0x012c</code> is stored in the machine code with its bytes reversed because of <a href="https://en.wikipedia.org/wiki/Endianness">endiannes</a>, but that doesn’t matter for us because all we need to do is replace both bytes with <code>0x00</code>!</p> 
-     <p>Now time to hop into a hex editor; I use <code>Octets</code> on macOS, but any old hex editor will do. You could even use this <a href="https://hexed.it">online hex editor</a> (which I’ve never used, but it looks like it’s good).</p> 
-     <p><img src="bsides-brisbane-2023-writeups-part-1/hex-editor.jpg" alt="My very ordinary hex editor"> Figure 7: <em>the bytes we need to change (displayed in a hex editor).</em></p> 
-     <p>All we need to do now is backspace these two bytes and replace them with <code>00 00</code>. After saving the file we can now run the program and get the flag basically instantly!</p> 
-     <p>Flag: <code>flag{aint-nobody-g0t-time-for-d@t}</code></p> 
-     <hr> 
-     <h2 id="cafeteria-rev---300-points">Cafeteria (rev - 300 points)</h2> 
-     <blockquote> 
-      <p>The cleaners packed away the chairs and tables and I forgot how they were layed out. Can you help me figure out a layout that fits the our constraints?</p> 
-      <p>Author: deluqs</p> 
-     </blockquote> 
-     <p>This is a classic rev challenge where we have to figure out valid inputs to get the flag. After connecting to the service with netcat we’re asked where the chairs and tables should be put. Putting in <code>a</code> for both at least tells us that the program expects <code>0</code>s and <code>1</code>s to denote where the chairs (and tables) should be placed.</p> 
-     <pre><code class="language-console">&gt; nc cafeteria.rev.ctf.bsidesbne.com 1337
+    <p>Figure 6: <em>disassembly of the instructions related to <code>sleep(300)</code>.</em></p> 
+    <p>First, <code>0x12c</code> gets moved into the <code>edi</code> register (which is where the first argument to a function is usually placed), and then <code>sleep</code> gets called. Note that <code>0x012c</code> is stored in the machine code with its bytes reversed because of <a href="https://en.wikipedia.org/wiki/Endianness">endiannes</a>, but that doesn’t matter for us because all we need to do is replace both bytes with <code>0x00</code>!</p> 
+    <p>Now time to hop into a hex editor; I use <code>Octets</code> on macOS, but any old hex editor will do. You could even use this <a href="https://hexed.it">online hex editor</a> (which I’ve never used, but it looks like it’s good).</p> 
+    <p><img src="bsides-brisbane-2023-writeups-part-1/hex-editor.jpg" alt="My very ordinary hex editor"> Figure 7: <em>the bytes we need to change (displayed in a hex editor).</em></p> 
+    <p>All we need to do now is backspace these two bytes and replace them with <code>00 00</code>. After saving the file we can now run the program and get the flag basically instantly!</p> 
+    <p>Flag: <code>flag{aint-nobody-g0t-time-for-d@t}</code></p> 
+    <hr> 
+    <h2 id="cafeteria-rev---300-points">Cafeteria (rev - 300 points)</h2> 
+    <blockquote> 
+     <p>The cleaners packed away the chairs and tables and I forgot how they were layed out. Can you help me figure out a layout that fits the our constraints?</p> 
+     <p>Author: deluqs</p> 
+    </blockquote> 
+    <p>This is a classic rev challenge where we have to figure out valid inputs to get the flag. After connecting to the service with netcat we’re asked where the chairs and tables should be put. Putting in <code>a</code> for both at least tells us that the program expects <code>0</code>s and <code>1</code>s to denote where the chairs (and tables) should be placed.</p> 
+    <pre><code class="language-console">&gt; nc cafeteria.rev.ctf.bsidesbne.com 1337
 Help me cram as many people into this cafeteria as possible!
 Where should I put the chairs?
 a
@@ -295,19 +292,19 @@ Where should I put the corresponding tables?
 a
 Please 0's and 1's to denote where chairs are
 </code></pre> 
-     <p>Figure 8: <em>giving the program some dummy input.</em></p> 
-     <p>Next lets take a look at the program in Ghidra. Interestingly, when I opened a fresh copy of the program in Ghidra to make the write-up, Ghidra decompiled it differently 😅 (and better). The overall structure of the program can be deduced by reading the strings passed to <code>puts</code> at different points in the code.</p> 
-     <ol> 
-      <li>Use <code>gets</code> to read two streams of <code>0</code>s and <code>1</code>s from the user corresponding to the layouts of chairs and tables respectively (into buffers that Ghidra reckons are 140 bytes and 128 bytes respectively, in reality they’re both 126 bytes as evidenced by the following loop).</li> 
-      <li>Iterate through the two strings to convert them from an ascii binary string to an array of integers (consisting of only <code>0</code>s and <code>1</code>s of course). Do so for 126 bytes of each.</li> 
-      <li>Check whether any chairs or tables are on top of the bins. The bins are hardcoded to be at offsets <code>0x1d0</code> and <code>0x1d4</code>, which correspond to indices <code>0x1d0 / 4 = 116</code> and <code>0x1d4 / 4 = 117</code> respectively (the array elements are 4 bytes each).</li> 
-      <li>Check whether any chairs and tables are in the same spot.</li> 
-      <li>Check that every chair is next a table.</li> 
-      <li>Check that there are at least 20 chairs (more than <code>0x13</code>).</li> 
-      <li>Print the flag if all checks pass.</li> 
-     </ol> 
-     <p>With that information in mind I basically just went with my first instinct: 20 alternating chairs and tables (20 of each).</p> 
-     <pre><code class="language-python">from pwn import *
+    <p>Figure 8: <em>giving the program some dummy input.</em></p> 
+    <p>Next lets take a look at the program in Ghidra. Interestingly, when I opened a fresh copy of the program in Ghidra to make the write-up, Ghidra decompiled it differently 😅 (and better). The overall structure of the program can be deduced by reading the strings passed to <code>puts</code> at different points in the code.</p> 
+    <ol> 
+     <li>Use <code>gets</code> to read two streams of <code>0</code>s and <code>1</code>s from the user corresponding to the layouts of chairs and tables respectively (into buffers that Ghidra reckons are 140 bytes and 128 bytes respectively, in reality they’re both 126 bytes as evidenced by the following loop).</li> 
+     <li>Iterate through the two strings to convert them from an ascii binary string to an array of integers (consisting of only <code>0</code>s and <code>1</code>s of course). Do so for 126 bytes of each.</li> 
+     <li>Check whether any chairs or tables are on top of the bins. The bins are hardcoded to be at offsets <code>0x1d0</code> and <code>0x1d4</code>, which correspond to indices <code>0x1d0 / 4 = 116</code> and <code>0x1d4 / 4 = 117</code> respectively (the array elements are 4 bytes each).</li> 
+     <li>Check whether any chairs and tables are in the same spot.</li> 
+     <li>Check that every chair is next a table.</li> 
+     <li>Check that there are at least 20 chairs (more than <code>0x13</code>).</li> 
+     <li>Print the flag if all checks pass.</li> 
+    </ol> 
+    <p>With that information in mind I basically just went with my first instinct: 20 alternating chairs and tables (20 of each).</p> 
+    <pre><code class="language-python">from pwn import *
 
 # alternating chairs and tables
 chairs = b"10" * 20
@@ -322,9 +319,9 @@ p.sendline(chairs)
 p.sendline(tables)
 p.interactive()
 </code></pre> 
-     <p>Figure 9: <em>my solution script.</em></p> 
-     <p>And there we go, we get the flag printed after the ASCII art visualisation of our layout</p> 
-     <pre><code class="language-console">&gt; nc cafeteria.rev.ctf.bsidesbne.com 1337
+    <p>Figure 9: <em>my solution script.</em></p> 
+    <p>And there we go, we get the flag printed after the ASCII art visualisation of our layout</p> 
+    <pre><code class="language-console">&gt; nc cafeteria.rev.ctf.bsidesbne.com 1337
 Help me cram as many people into this cafeteria as possible!
 Where should I put the chairs?
 101010101010101010101010101010101010101000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
@@ -342,36 +339,35 @@ Your cafeteria layout. '#' is a table, '.' is a chair, '@' is a rubbish bin:
  ------------------
 flag{op3rat1ons_r3se4rch_i$_co0l}
 </code></pre> 
-     <p>Figure 10: <em>successfully solving the cafeteria challenge.</em></p> 
-     <p>Flag: <code>flag{op3rat1ons_r3se4rch_i$_co0l}</code></p> 
-     <h3 id="conclusion">Conclusion</h3> 
-     <p>Overall a nice challenge, but I’m surprised it only got 4 solves! I think rev/pwn tend to scare people away sadly.</p> 
-     <hr> 
-     <h2 id="rogue-transmitter-iot-village---400">Rogue Transmitter (IoT Village - 400)</h2> 
-     <p>In-person the challenge was simply an antenna sitting on top of a platform in a pelican case (which wasn’t to be fiddled with). The challenge description (which has since left my mind) was something like this:</p> 
-     <blockquote> 
-      <p>One of our office radios has been make weird transmissions every few minutes and we believe that it might be being used to exfiltrate data. See if you can tap the transmission and decode the message.</p> 
-     </blockquote> 
-     <p>Luckily I had a software defined radio with me which I could use along with GQRX (a GUI for software defined radios) to solve the challenge. Arguably GQRX isn’t the best app out there, but it’s the one I had used in the past so it’s what I went with. I’ve heard that <a href="https://github.com/jopohl/urh">Universal Radio Hacker</a> is a much better tool for the job. If you’re looking to get a software defined radio, I can definitely recommend the <a href="https://www.rtl-sdr.com">RTL-SDR</a> (although it seems to be quite a bit more expensive than I remember).</p> 
-     <p>The first order of business was to figure out what frequency the message was being transmitted on, so I started from the lowest frequency supported by my software defined radio and started slowly increasing the frequency and stopping whenever I saw anything mildly interesting. Eventually I came across a frequency which had a very weird looking signal. I was lucky that the message was being transmitted as I scrolled past because otherwise I might’ve had to scroll through quite a few times 😅. Talking to the challenge creator afterwards, I found out that generally there’s only a small number of frequency ranges that you actually have to check because the rest aren’t legal to transmit in.</p> 
-     <p><img src="bsides-brisbane-2023-writeups-part-1/suspicious-signal.jpg" alt="A photo of the spectrogram of the suspicious signal"> Figure 11: <em>i didn’t take a screenshot, so a screenshot of a video of the screen will have to do.</em></p> 
-     <p>Given that the frequency was so wide, slow, and digital, I was pretty certain that I had found the right frequency (any real transmissions would be a lot faster). The frequency was around 87.6kHz.</p> 
-     <p>After waiting for around 8 minutes for the current transmission to finish and the next one to start, I decided to just video my screen as the transmission happened (because I hadn’t figured out how to record properly in GQRX fast enough).</p> 
-     <p>I noticed that all of the blips in the transmission were the same length but there were 3 unique sizes of gaps between the blips. My first thought that the transmission could be using morse code (with the smallest gap representing a dot and so on). Typing out the resulting morse code into a translator yielded garbage. Next I started researching simple signal encoding methods and found nothing other than morse code and other very similar encoding methods.</p> 
-     <p>Later in the day the challenge creator (Josh) told us that the word <code>tap</code> in the challenge description was meant to be a hint (very subtle to be fair), which pretty quickly led me to discover tap encoding, a way of encoding messages with fixed length ‘taps’, perfect!</p> 
-     <pre><code>.. .  ... .  . .  .. ..  .. ...  . .  . ...  . ...  . .  ... .  ...
+    <p>Figure 10: <em>successfully solving the cafeteria challenge.</em></p> 
+    <p>Flag: <code>flag{op3rat1ons_r3se4rch_i$_co0l}</code></p> 
+    <h3 id="conclusion">Conclusion</h3> 
+    <p>Overall a nice challenge, but I’m surprised it only got 4 solves! I think rev/pwn tend to scare people away sadly.</p> 
+    <hr> 
+    <h2 id="rogue-transmitter-iot-village---400">Rogue Transmitter (IoT Village - 400)</h2> 
+    <p>In-person the challenge was simply an antenna sitting on top of a platform in a pelican case (which wasn’t to be fiddled with). The challenge description (which has since left my mind) was something like this:</p> 
+    <blockquote> 
+     <p>One of our office radios has been make weird transmissions every few minutes and we believe that it might be being used to exfiltrate data. See if you can tap the transmission and decode the message.</p> 
+    </blockquote> 
+    <p>Luckily I had a software defined radio with me which I could use along with GQRX (a GUI for software defined radios) to solve the challenge. Arguably GQRX isn’t the best app out there, but it’s the one I had used in the past so it’s what I went with. I’ve heard that <a href="https://github.com/jopohl/urh">Universal Radio Hacker</a> is a much better tool for the job. If you’re looking to get a software defined radio, I can definitely recommend the <a href="https://www.rtl-sdr.com">RTL-SDR</a> (although it seems to be quite a bit more expensive than I remember).</p> 
+    <p>The first order of business was to figure out what frequency the message was being transmitted on, so I started from the lowest frequency supported by my software defined radio and started slowly increasing the frequency and stopping whenever I saw anything mildly interesting. Eventually I came across a frequency which had a very weird looking signal. I was lucky that the message was being transmitted as I scrolled past because otherwise I might’ve had to scroll through quite a few times 😅. Talking to the challenge creator afterwards, I found out that generally there’s only a small number of frequency ranges that you actually have to check because the rest aren’t legal to transmit in.</p> 
+    <p><img src="bsides-brisbane-2023-writeups-part-1/suspicious-signal.jpg" alt="A photo of the spectrogram of the suspicious signal"> Figure 11: <em>i didn’t take a screenshot, so a screenshot of a video of the screen will have to do.</em></p> 
+    <p>Given that the frequency was so wide, slow, and digital, I was pretty certain that I had found the right frequency (any real transmissions would be a lot faster). The frequency was around 87.6kHz.</p> 
+    <p>After waiting for around 8 minutes for the current transmission to finish and the next one to start, I decided to just video my screen as the transmission happened (because I hadn’t figured out how to record properly in GQRX fast enough).</p> 
+    <p>I noticed that all of the blips in the transmission were the same length but there were 3 unique sizes of gaps between the blips. My first thought that the transmission could be using morse code (with the smallest gap representing a dot and so on). Typing out the resulting morse code into a translator yielded garbage. Next I started researching simple signal encoding methods and found nothing other than morse code and other very similar encoding methods.</p> 
+    <p>Later in the day the challenge creator (Josh) told us that the word <code>tap</code> in the challenge description was meant to be a hint (very subtle to be fair), which pretty quickly led me to discover tap encoding, a way of encoding messages with fixed length ‘taps’, perfect!</p> 
+    <pre><code>.. .  ... .  . .  .. ..  .. ...  . .  . ...  . ...  . .  ... .  ...
  .  .... ....  .. ...  . .....  .... ....  .. ...  .. ....  ... ...
   .. ..  .... ...
 
 -&gt; flaghaccallthethings
 </code></pre> 
-     <p>Figure 12: <em>translating tap code.</em></p> 
-     <p>And there we go!</p> 
-     <p>Flag: <code>flag{haccallthethings}</code></p> 
-     <h3 id="conclusion">Conclusion</h3> 
-     <p>Woohoo! Probably one of the coolest challenges that I got the chance to try, purely because I’ve never done anything like it before :)</p> 
-    </div> 
-   </main> 
-  </div>   
+    <p>Figure 12: <em>translating tap code.</em></p> 
+    <p>And there we go!</p> 
+    <p>Flag: <code>flag{haccallthethings}</code></p> 
+    <h3 id="conclusion">Conclusion</h3> 
+    <p>Woohoo! Probably one of the coolest challenges that I got the chance to try, purely because I’ve never done anything like it before :)</p> 
+   </div> 
+  </main>    
  </body>
 </html>

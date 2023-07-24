@@ -5,15 +5,14 @@
   <link rel="stylesheet" href="/css/page.css"> 
   <title>NorzhCTF 2021 - Leet Computer - stackotter</title> 
   <meta name="viewport" content="width=device-width"> 
-  <meta name="description" content="NorzhCTF was a fun two day CTF which I competed in with the Digital Overdose team. This writeup is about how I solved the Leet Computer challenge."> 
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-7ZNG4PJZEX"></script>
-  <script>
-        window.dataLayer = window.dataLayer || [];
-        const gtag = () => dataLayer.push(arguments);
+  <meta name="description" content="NorzhCTF was a fun two day CTF which I competed in with the Digital Overdose team. This writeup is about how I solved the Leet Computer challenge.;
         gtag('js', new Date());
 
         gtag('config', 'G-7ZNG4PJZEX');
     </script>
+
+    <body>
+        <div class=" container"> 
   <link rel="stylesheet" href="/css/page.css">
   <link rel="stylesheet" href="/css/github-markdown-light.css">
   <link rel="stylesheet" href="/css/syntax-theme_atom-one-dark.min.css">
@@ -25,35 +24,33 @@
     background-color: #282c34 !important;
 }</style>
   <script defer src="/js/highlight.min.js"></script>
- </head> 
- <!-- Google tag (gtag.js) - Google Analytics -->   
- <body> 
-  <div class="container"> 
-   <header class="header"> 
-    <a href="/" class="logo"> <img src="/image/otter.png" alt="A pixel art otter logo" class="logo"> </a> 
-    <h1 id="stackotter.dev">stackotter.dev</h1> 
-    <div id="nav"> 
-     <a class="link" href="/">about</a> 
-     <a class="link" href="/blog">blog</a> 
-     <a class="link" href="/contact">contact</a> 
-    </div> 
-   </header> 
-   <main class="main"> 
-    <div class="markdown-body"> 
-     <h1 id="norzhctf-2021---leet-computer">NorzhCTF 2021 - Leet Computer</h1> 
-     <p>NorzhCTF was a fun two day CTF which I competed in with the Digital Overdose team. This writeup is about how I solved the <code>Leet Computer</code> challenge.</p> 
-     <h2 id="the-challenge">The Challenge</h2> 
-     <blockquote> 
-      <p>One of the attacker is still in the airport hall, and it seems that he is still connected to the airport wifi ! Get a root shell on its machine to continue your investigation. This challenge will give you access to another network.</p> 
-      <p>- by Masterfox</p> 
-     </blockquote> 
-     <p>This challenge was the second part of a challenge, and from the first challenge we already had a shell on the ‘attacker’s machine.</p> 
-     <h2 id="tldr">Tl;dr</h2> 
-     <pre><code class="language-sh">./mail_scan.py --ip '010.001.001.001' --mail $'"\nos.execute("cat /root/flag") -- '
+ </head>
+ <body>
+  <header class="header"> 
+   <a href="/" class="logo"> <img src="/image/otter.png" alt="A pixel art otter logo" class="logo"> </a> 
+   <h1 id="stackotter.dev">stackotter.dev</h1> 
+   <div id="nav"> 
+    <a class="link" href="/">about</a> 
+    <a class="link" href="/blog">blog</a> 
+    <a class="link" href="/contact">contact</a> 
+   </div> 
+  </header> 
+  <main class="main"> 
+   <div class="markdown-body"> 
+    <h1 id="norzhctf-2021---leet-computer">NorzhCTF 2021 - Leet Computer</h1> 
+    <p>NorzhCTF was a fun two day CTF which I competed in with the Digital Overdose team. This writeup is about how I solved the <code>Leet Computer</code> challenge.</p> 
+    <h2 id="the-challenge">The Challenge</h2> 
+    <blockquote> 
+     <p>One of the attacker is still in the airport hall, and it seems that he is still connected to the airport wifi ! Get a root shell on its machine to continue your investigation. This challenge will give you access to another network.</p> 
+     <p>- by Masterfox</p> 
+    </blockquote> 
+    <p>This challenge was the second part of a challenge, and from the first challenge we already had a shell on the ‘attacker’s machine.</p> 
+    <h2 id="tldr">Tl;dr</h2> 
+    <pre><code class="language-sh">./mail_scan.py --ip '010.001.001.001' --mail $'"\nos.execute("cat /root/flag") -- '
 </code></pre> 
-     <h2 id="how-we-solved-it">How we solved it</h2> 
-     <p>For this CTF I was on the Digital Overdose CTF team and my one of my teammates had completed the previous challenge. I was looking around the machine for any obviously exploitable things but I couldn’t find much at all. One of my teammates noticed that the user (e11i0t) already had sudo. They ran <code>sudo -l</code> and found that the user could only run one file with sudo called <code>mail_scan.py</code>. <code>sudo -l</code> is quite a useful command that I didn’t know about before and I don’t think I could have completed the challenge without my teammate introducing it to me (thanks <a href="https://twitter.com/revdev1337" title="Twitter: @revdev1337">@revdev1337</a>). Below is the contents of <code>mail_scan.py</code>.</p> 
-     <pre><code class="language-python">#!/usr/bin/env python3
+    <h2 id="how-we-solved-it">How we solved it</h2> 
+    <p>For this CTF I was on the Digital Overdose CTF team and my one of my teammates had completed the previous challenge. I was looking around the machine for any obviously exploitable things but I couldn’t find much at all. One of my teammates noticed that the user (e11i0t) already had sudo. They ran <code>sudo -l</code> and found that the user could only run one file with sudo called <code>mail_scan.py</code>. <code>sudo -l</code> is quite a useful command that I didn’t know about before and I don’t think I could have completed the challenge without my teammate introducing it to me (thanks <a href="https://twitter.com/revdev1337" title="Twitter: @revdev1337">@revdev1337</a>). Below is the contents of <code>mail_scan.py</code>.</p> 
+    <pre><code class="language-python">#!/usr/bin/env python3
 #coding: utf-8
 
 import argparse
@@ -190,28 +187,27 @@ with open(f.name, "w") as tmp_file:
     tmp_file.write(TEMPLATE_NSE.format(mail_address=args.mail))
 system("nmap --script={} '{}'".format(tmp_file.name, args.ip))
 </code></pre> 
-     <p>I read through the code and figured that it was creating an nmap script, saving it to a temp file and running it 🚨 with user supplied input 🚨.</p> 
-     <p>The program took two parameters; ip, and mail. First I checked the ip regex (as the ip was inserted straight into a shell command) and I thought I might be able to get around the check by including a newline in the ip address, however this didn’t work as the multiline option was not specified in the regex and therefore the <code>^</code> and <code>$</code> were the start and end of the string not the line. The payload I tried is below;</p> 
-     <pre><code class="language-sh"># the regex is a bit weird so the components of the ip all have to be three digits
+    <p>I read through the code and figured that it was creating an nmap script, saving it to a temp file and running it 🚨 with user supplied input 🚨.</p> 
+    <p>The program took two parameters; ip, and mail. First I checked the ip regex (as the ip was inserted straight into a shell command) and I thought I might be able to get around the check by including a newline in the ip address, however this didn’t work as the multiline option was not specified in the regex and therefore the <code>^</code> and <code>$</code> were the start and end of the string not the line. The payload I tried is below;</p> 
+    <pre><code class="language-sh"># the regex is a bit weird so the components of the ip all have to be three digits
 sudo ./mail_scan.py --ip $'010.001.001.001\n; echo hi' --mail 'blah'
 </code></pre> 
-     <p>Circumventing the regex didn’t work however I could verify that inserting a newline into the argument had worked.</p> 
-     <p>Next I looked at how <code>args.mail</code> was being used and found that it was getting inserted straight into the nmap script with no sanitisation. I tried injecting a quotation mark into the mail parameter and it did indeed throw an error when running the nmap script.</p> 
-     <p>Nmap scripts are written in lua so I just injected a call to <code>os.execute</code> to read the flag. This means that if nmap finds an open mail port we get the flag, all I had to do now was point it at a server with a mail port open.</p> 
-     <pre><code class="language-sh">./mail_scan.py --ip '010.001.001.001' --mail $'"\nos.execute("cat /root/flag") -- '
+    <p>Circumventing the regex didn’t work however I could verify that inserting a newline into the argument had worked.</p> 
+    <p>Next I looked at how <code>args.mail</code> was being used and found that it was getting inserted straight into the nmap script with no sanitisation. I tried injecting a quotation mark into the mail parameter and it did indeed throw an error when running the nmap script.</p> 
+    <p>Nmap scripts are written in lua so I just injected a call to <code>os.execute</code> to read the flag. This means that if nmap finds an open mail port we get the flag, all I had to do now was point it at a server with a mail port open.</p> 
+    <pre><code class="language-sh">./mail_scan.py --ip '010.001.001.001' --mail $'"\nos.execute("cat /root/flag") -- '
 </code></pre> 
-     <p>And there you go, we have the flag; <code>NORZH{e11i0t_1s_s0_1337!!}</code></p> 
-     <h2 id="what-i-learnt">What I learnt</h2> 
-     <ol> 
-      <li><code>sudo -l</code> is really useful for finding what commands a user can run as root</li> 
-      <li>it is trivial to add newlines to command line arguments</li> 
-      <li>DONT EVER USE UNSANITISED USER INPUT</li> 
-     </ol> 
-     <h2 id="conclusion">Conclusion</h2> 
-     <p>This challenge was a nice confidence boost after working away at 3 other challenges and not being able to solve any of them.</p> 
-     <p>Overall NorzhCTF was a very unique competition and I found the hackquest style quite interesting, however I still prefer jeopardy style CTFs for now because they are more beginner friendly.</p> 
-    </div> 
-   </main> 
-  </div>   
+    <p>And there you go, we have the flag; <code>NORZH{e11i0t_1s_s0_1337!!}</code></p> 
+    <h2 id="what-i-learnt">What I learnt</h2> 
+    <ol> 
+     <li><code>sudo -l</code> is really useful for finding what commands a user can run as root</li> 
+     <li>it is trivial to add newlines to command line arguments</li> 
+     <li>DONT EVER USE UNSANITISED USER INPUT</li> 
+    </ol> 
+    <h2 id="conclusion">Conclusion</h2> 
+    <p>This challenge was a nice confidence boost after working away at 3 other challenges and not being able to solve any of them.</p> 
+    <p>Overall NorzhCTF was a very unique competition and I found the hackquest style quite interesting, however I still prefer jeopardy style CTFs for now because they are more beginner friendly.</p> 
+   </div> 
+  </main>    
  </body>
 </html>
