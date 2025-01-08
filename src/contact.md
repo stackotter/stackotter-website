@@ -2,5 +2,7 @@
 
 I'm always open for a chat, so please feel free to contact me via any of the following methods:
 
-email: [stackotter@stackotter.dev](mailto:stackotter@stackotter.dev)
-twitter: [@stackotter](https://twitter.com/stackotter)
+- email: [stackotter@stackotter.dev](mailto:stackotter@stackotter.dev)
+- bluesky: [@stackotter.dev](https://bsky.app/profile/stackotter.dev)
+- github: [@stackotter](https://github.com/stackotter)
+- twitter: [@stackotter](https://twitter.com/stackotter)

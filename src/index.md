@@ -6,5 +6,6 @@ To learn more about my open-source projects and contributions, check out [my pag
 
 ## Current projects
 
+- [SwiftCrossUI](https://github.com/stackotter/swift-cross-ui) — a cross-platform declarative UI framework inspired by SwiftUI and native on all supported platforms.
+- [Swift Bundler](https://github.com/stackotter/swift-bundler) — a tool for creating cross-platform Swift apps.
 - [Delta Client](https://deltaclient.app) — an open-source 'Minecraft: Java Edition' client created in Swift for macOS with efficiency in mind.
-- [Swift Bundler](https://github.com/stackotter/swift-bundler) — a tool for creating macOS apps with Swift packages instead of Xcode projects.

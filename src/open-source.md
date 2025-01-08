@@ -2,17 +2,23 @@
 
 ## My projects
 
-### Delta Client
+### SwiftCrossUI
 
-[Delta Client](https://deltaclient.app) is a complete rewrite of the 'Minecraft: Java Edition' client. It is fully compatible with 'Minecraft: Java Edition' servers and is written in Swift. Due to a lot of optimisations and better design decisions, it is multiple times faster and more efficient than any other Minecraft client. The website contains more specific metrics.
+[SwiftCrossUI](https://github.com/stackotter/swift-cross-ui) is a declarative cross-platform UI framework inspired by Apple's SwiftUI. Why not just use SwiftUI? Because it is built on top of Gtk and supports many more platforms than SwiftUI (which only supports Apple platforms). It is still in a very early stage of development.
 
 ### Swift Bundler
 
 [Swift Bundler](https://github.com/stackotter/swift-bundler) is a modern tool for creating cross-platform Swift apps using Swift packages instead of Xcodeproj’s. It currently only supports macOS. iOS support in an experimental state. Windows and Linux support will be added in the future.
 
-### SwiftCrossUI
+### Delta Client
 
-[SwiftCrossUI](https://github.com/stackotter/swift-cross-ui) is a declarative cross-platform UI framework inspired by Apple's SwiftUI. Why not just use SwiftUI? Because it is built on top of Gtk and supports many more platforms than SwiftUI (which only supports Apple platforms). It is still in a very early stage of development.
+[Delta Client](https://deltaclient.app) is a complete rewrite of the 'Minecraft: Java Edition' client. It is fully compatible with 'Minecraft: Java Edition' servers and is written in Swift. Due to a lot of optimisations and better design decisions, it is multiple times faster and more efficient than any other Minecraft client. The website contains more specific metrics.
+
+### SwiftMacroToolkit
+
+Did you know that `-0xF_ep-0_2` is a valid floating point literal in Swift? Well you probably didn't (it's equal to -63.5), and as a macro author you shouldn't even have to care! Among many things, [SwiftMacroToolkit](https://github.com/stackotter/swift-macro-toolkit) shields you from edge cases so that users can use your macros in whatever weird (but correct) manners they may desire.
+
+[SwiftMacroToolkit](https://github.com/stackotter/swift-macro-toolkit)'s aim is to take the complexity out of writing correct and robust Swift macros by providing a more semantic view of Swift code.
 
 ### SwiftProtobufGen
 
