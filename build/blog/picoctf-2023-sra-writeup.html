@@ -2,18 +2,23 @@
 <html lang="en">
  <head> 
   <meta charset="UTF-8"> 
+  <meta name="fediverse:creator" content="@stackotter@mastodon.social"> 
+  <meta name="viewport" content="width=device-width"> 
+  <meta name="description" content="I just recently learnt about the SRA public key cryptosystem… or wait, was it supposed to be RSA? Hmmm, I should probably check…"> 
   <link rel="stylesheet" href="/css/page.css"> 
   <link rel="me" href="https://mastodon.social/@stackotter"> 
+  <!-- Google tag (gtag.js) - Google Analytics --> 
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-7ZNG4PJZEX"></script> 
+  <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() {
+              dataLayer.push(arguments)
+            };
+            gtag('js', new Date());
+
+            gtag('config', 'G-7ZNG4PJZEX');
+        </script> 
   <title>PicoCTF 2023 - SRA - stackotter</title> 
-  <meta name="viewport" content="width=device-width"> 
-  <meta name="description" content="I just recently learnt about the SRA public key cryptosystem… or wait, was it supposed to be RSA? Hmmm, I should probably check…;
-        gtag('js', new Date());
-
-        gtag('config', 'G-7ZNG4PJZEX');
-    </script>
-
-    <body>
-        <div class=" container"> 
   <link rel="stylesheet" href="/css/page.css">
   <link rel="stylesheet" href="/css/github-markdown-light.css">
   <link rel="stylesheet" href="/css/syntax-theme_atom-one-dark.min.css">
@@ -25,42 +30,43 @@
     background-color: #282c34 !important;
 }</style>
   <script defer src="/js/highlight.min.js"></script>
- </head>
- <body>
-  <header class="header"> 
-   <a href="/" class="logo"> <img src="/image/otter.png" alt="A pixel art otter logo" class="logo"> </a> 
-   <h1 id="stackotter.dev">stackotter.dev</h1> 
-   <div id="nav"> 
-    <a class="link" href="/">about</a> 
-    <a class="link" href="/blog">blog</a> 
-    <a class="link" href="/contact">contact</a> 
-   </div> 
-  </header> 
-  <main class="main"> 
-   <div class="markdown-body"> 
-    <h1 id="picoctf-2023---sra">PicoCTF 2023 - SRA</h1> 
-    <blockquote> 
-     <p>I just recently learnt about the SRA public key cryptosystem… or wait, was it supposed to be RSA? Hmmm, I should probably check…</p> 
-     <p>400 points - cryptography</p> 
-    </blockquote> 
-    <p>This challenge was one of the ones that I found the most satisfying to solve during PicoCTF 2023. I haven’t done many cryptography challenges before, so please excuse any inefficiencies in my solution 😅.</p> 
-    <h2 id="overview">Overview</h2> 
-    <p><p class="-table-of-contents">
-      <ul>
-       <li><a href="#what-is-rsa">What is RSA?</a></li>
-       <li><a href="#the-code">The code</a></li>
-       <li><a href="#what-do-we-need">What do we need?</a></li>
-       <li><a href="#maths-time">Maths time!</a></li>
-       <li><a href="#the-approach">The approach</a></li>
-       <li><a href="#does-it-work">Does it work?</a></li>
-       <li><a href="#possible-optimisations-for-fun-no-profit">Possible optimisations (for fun, no profit)</a></li>
-       <li><a href="#conclusion">Conclusion</a></li>
-      </ul></p></p> 
-    <h2 id="what-is-rsa">What is RSA?</h2> 
-    <p>RSA is a relatively simple asymmetric encryption/decryption algorithm (the encryption key and decryption key are different).</p> 
-    <p>The <a href="https://en.wikipedia.org/wiki/RSA_(cryptosystem)">wikipedia page for RSA</a> has a great explanation of the maths behind RSA.</p> 
-    <p>Applied to the context of this challenge, here’s what we know:</p> 
-    <pre><code class="language-txt">p is a 128-bit prime (would usually be much larger)
+ </head> 
+ <body> 
+  <div class="container"> 
+   <header class="header"> 
+    <a href="/" class="logo"> <img src="/image/otter.png" alt="A pixel art otter logo" class="logo"> </a> 
+    <h1 id="stackotter.dev">stackotter.dev</h1> 
+    <div id="nav"> 
+     <a class="link" href="/">about</a> 
+     <a class="link" href="/blog">blog</a> 
+     <a class="link" href="/contact">contact</a> 
+    </div> 
+   </header> 
+   <main class="main"> 
+    <div class="markdown-body"> 
+     <h1 id="picoctf-2023---sra">PicoCTF 2023 - SRA</h1> 
+     <blockquote> 
+      <p>I just recently learnt about the SRA public key cryptosystem… or wait, was it supposed to be RSA? Hmmm, I should probably check…</p> 
+      <p>400 points - cryptography</p> 
+     </blockquote> 
+     <p>This challenge was one of the ones that I found the most satisfying to solve during PicoCTF 2023. I haven’t done many cryptography challenges before, so please excuse any inefficiencies in my solution 😅.</p> 
+     <h2 id="overview">Overview</h2> 
+     <p><p class="-table-of-contents">
+       <ul>
+        <li><a href="#what-is-rsa">What is RSA?</a></li>
+        <li><a href="#the-code">The code</a></li>
+        <li><a href="#what-do-we-need">What do we need?</a></li>
+        <li><a href="#maths-time">Maths time!</a></li>
+        <li><a href="#the-approach">The approach</a></li>
+        <li><a href="#does-it-work">Does it work?</a></li>
+        <li><a href="#possible-optimisations-for-fun-no-profit">Possible optimisations (for fun, no profit)</a></li>
+        <li><a href="#conclusion">Conclusion</a></li>
+       </ul></p></p> 
+     <h2 id="what-is-rsa">What is RSA?</h2> 
+     <p>RSA is a relatively simple asymmetric encryption/decryption algorithm (the encryption key and decryption key are different).</p> 
+     <p>The <a href="https://en.wikipedia.org/wiki/RSA_(cryptosystem)">wikipedia page for RSA</a> has a great explanation of the maths behind RSA.</p> 
+     <p>Applied to the context of this challenge, here’s what we know:</p> 
+     <pre><code class="language-txt">p is a 128-bit prime (would usually be much larger)
 q is a 128-bit prime (would also usually be much larger)
 
 n = pq
@@ -71,10 +77,10 @@ d ≡ e^(-1) (mod φ(n))
 ciphertext ≡ plaintext^e (mod n)
 plaintext ≡ ciphertext^d (mod n)
 </code></pre> 
-    <p>Figure 1: <em>SRA overview</em></p> 
-    <h2 id="the-code">The code</h2> 
-    <p>The challenge essentially implements the algorithm outlined above to encrypt a randomly generated sequence of 16 ascii letters and digits. It then prints out <code>d</code> (<code>anger</code>) and <code>ciphertext</code> (<code>envy</code>) and gets us to enter the plaintext. If we get the plaintext correct, we get the flag.</p> 
-    <pre><code class="language-python">from Crypto.Util.number import getPrime, inverse, bytes_to_long
+     <p>Figure 1: <em>SRA overview</em></p> 
+     <h2 id="the-code">The code</h2> 
+     <p>The challenge essentially implements the algorithm outlined above to encrypt a randomly generated sequence of 16 ascii letters and digits. It then prints out <code>d</code> (<code>anger</code>) and <code>ciphertext</code> (<code>envy</code>) and gets us to enter the plaintext. If we get the plaintext correct, we get the flag.</p> 
+     <pre><code class="language-python">from Crypto.Util.number import getPrime, inverse, bytes_to_long
 from string import ascii_letters, digits
 from random import choice
 
@@ -100,15 +106,15 @@ if vainglory == pride:
 else:
     print("Hubris!")
 </code></pre> 
-    <p>Figure 2: <em>chal.py</em></p> 
-    <p>The most important question to answer is what we need to decrypt the ciphertext.</p> 
-    <h2 id="what-do-we-need">What do we need?</h2> 
-    <p>Recall the last equation from Figure 1; We’ve got <code>ciphertext</code> and <code>d</code>, all we need is <code>n</code>. Can’t be too hard, right?</p> 
-    <pre><code class="language-txt">plaintext ≡ ciphertext^d (mod n)
+     <p>Figure 2: <em>chal.py</em></p> 
+     <p>The most important question to answer is what we need to decrypt the ciphertext.</p> 
+     <h2 id="what-do-we-need">What do we need?</h2> 
+     <p>Recall the last equation from Figure 1; We’ve got <code>ciphertext</code> and <code>d</code>, all we need is <code>n</code>. Can’t be too hard, right?</p> 
+     <pre><code class="language-txt">plaintext ≡ ciphertext^d (mod n)
 </code></pre> 
-    <p>Figure 3: <em>RSA decrypt</em></p> 
-    <h2 id="maths-time">Maths time!</h2> 
-    <pre><code class="language-txt"># Some useful information
+     <p>Figure 3: <em>RSA decrypt</em></p> 
+     <h2 id="maths-time">Maths time!</h2> 
+     <pre><code class="language-txt"># Some useful information
 n = pq
 e = 65537 (would usually be chosen based on some constraints)
 φ(n) = (p - 1) * (q - 1)
@@ -124,11 +130,11 @@ ed - 1 = φ(n) * k, where k is an integer
 
 ed - 1 = (p - 1) * (q - 1) * k
 </code></pre> 
-    <p>Figure 4: <em>the maths</em></p> 
-    <p>With the final rearranged equation in mind, there’s a pretty naïve solution that we can try. It could be too slow, but it’s always best to try it first and optimise later.</p> 
-    <h2 id="the-approach">The approach</h2> 
-    <p>The basis of this approach is that <code>p - 1</code> and <code>q - 1</code> will be divisors of <code>ed - 1</code>. Therefore, in theory, we can just list all divisors of <code>ed - 1</code> and then find all of the divisors are 1 less than a 128-bit prime. We can then take all of those possible values of <code>p - 1</code> and <code>q - 1</code>, add one to them, and go through all combinations of possible values for <code>p</code> and <code>q</code>. For each combination we can attempt to decrypt the ciphertext, and if the output is a string of ascii letters and digits, we’ve probably found the correct value. If we get lucky, there weren’t be too many divisors.</p> 
-    <pre><code class="language-python">from Crypto.Util.number import isPrime, long_to_bytes
+     <p>Figure 4: <em>the maths</em></p> 
+     <p>With the final rearranged equation in mind, there’s a pretty naïve solution that we can try. It could be too slow, but it’s always best to try it first and optimise later.</p> 
+     <h2 id="the-approach">The approach</h2> 
+     <p>The basis of this approach is that <code>p - 1</code> and <code>q - 1</code> will be divisors of <code>ed - 1</code>. Therefore, in theory, we can just list all divisors of <code>ed - 1</code> and then find all of the divisors are 1 less than a 128-bit prime. We can then take all of those possible values of <code>p - 1</code> and <code>q - 1</code>, add one to them, and go through all combinations of possible values for <code>p</code> and <code>q</code>. For each combination we can attempt to decrypt the ciphertext, and if the output is a string of ascii letters and digits, we’ve probably found the correct value. If we get lucky, there weren’t be too many divisors.</p> 
+     <pre><code class="language-python">from Crypto.Util.number import isPrime, long_to_bytes
 from string import ascii_letters, digits
 from itertools import combinations
 from sympy import divisors
@@ -154,20 +160,21 @@ for p, q in combinations(correct_size_primes, 2):
 
 print(valid_plaintexts)
 </code></pre> 
-    <p>Figure 5: <em>exploit.py</em></p> 
-    <h2 id="does-it-work">Does it work?</h2> 
-    <p>The short answer; most of the time?</p> 
-    <pre><code class="language-txt">anger = 24398438998096796505136585754485122083423993128182088895588693010516281150000
+     <p>Figure 5: <em>exploit.py</em></p> 
+     <h2 id="does-it-work">Does it work?</h2> 
+     <p>The short answer; most of the time?</p> 
+     <pre><code class="language-txt">anger = 24398438998096796505136585754485122083423993128182088895588693010516281150000
 envy = 79858385363514967732413083778555381826816038680345822674623719303400035174513
 ["HGWW0Lhmhzatb2Ul"]
 </code></pre> 
-    <p>Figure 6: <em>it works! (in 1 minute and 16 seconds)</em></p> 
-    <p>In practice, this approach is a bit hit and miss because the line <code>ds = divisors(envy * sloth - 1)</code> can take an awfully long amount of time if you get unlucky and <code>ed - 1</code> ends up having an incredibly large amount of possible divisors. It works around 30-50% of the time in my experience which is certainly good enough for a CTF challenge solution 😅.</p> 
-    <h2 id="possible-optimisations-for-fun-no-profit">Possible optimisations (for fun, no profit)</h2> 
-    <p>During the CTF I just moved on after solving the challenge, as you do, but afterwards I read <a href="https://crypto.stackexchange.com/questions/105734/crack-rsa-with-e-and-d">a clever ‘writeup’</a> (answer on StackExchange) in which the hacker instead found the prime factors of <code>ed - 1</code> (much faster than finding all possible divisors). They then took the log (base 2) of each factor and used that to figure out which factors multiply together to make 128-bit numbers (if a prime is 128-bit, subtracting 1 still gives you a 128-bit number because 2^127, the smallest 128-bit number, isn’t prime). The rest of the approach is the same, but in theory it should run much faster. I haven’t personally tried out this approach, but if you do I’d be interested to hear how much of an improvement it gives.</p> 
-    <h2 id="conclusion">Conclusion</h2> 
-    <p>I’ve always wanted to get into cryptography challenges more (as a binary exploitation guy). And in my opinion, this challenge was a great introduction to RSA challenges, and didn’t require a prohibitive amount of maths (although take that with a grain of salt coming from a guy doing a bachelor of maths).</p> 
-   </div> 
-  </main>    
+     <p>Figure 6: <em>it works! (in 1 minute and 16 seconds)</em></p> 
+     <p>In practice, this approach is a bit hit and miss because the line <code>ds = divisors(envy * sloth - 1)</code> can take an awfully long amount of time if you get unlucky and <code>ed - 1</code> ends up having an incredibly large amount of possible divisors. It works around 30-50% of the time in my experience which is certainly good enough for a CTF challenge solution 😅.</p> 
+     <h2 id="possible-optimisations-for-fun-no-profit">Possible optimisations (for fun, no profit)</h2> 
+     <p>During the CTF I just moved on after solving the challenge, as you do, but afterwards I read <a href="https://crypto.stackexchange.com/questions/105734/crack-rsa-with-e-and-d">a clever ‘writeup’</a> (answer on StackExchange) in which the hacker instead found the prime factors of <code>ed - 1</code> (much faster than finding all possible divisors). They then took the log (base 2) of each factor and used that to figure out which factors multiply together to make 128-bit numbers (if a prime is 128-bit, subtracting 1 still gives you a 128-bit number because 2^127, the smallest 128-bit number, isn’t prime). The rest of the approach is the same, but in theory it should run much faster. I haven’t personally tried out this approach, but if you do I’d be interested to hear how much of an improvement it gives.</p> 
+     <h2 id="conclusion">Conclusion</h2> 
+     <p>I’ve always wanted to get into cryptography challenges more (as a binary exploitation guy). And in my opinion, this challenge was a great introduction to RSA challenges, and didn’t require a prohibitive amount of maths (although take that with a grain of salt coming from a guy doing a bachelor of maths).</p> 
+    </div> 
+   </main> 
+  </div>   
  </body>
 </html>
