@@ -4,11 +4,11 @@
 
 ### SwiftCrossUI
 
-[SwiftCrossUI](https://github.com/stackotter/swift-cross-ui) is a declarative cross-platform UI framework inspired by Apple's SwiftUI. Why not just use SwiftUI? Because it is built on top of Gtk and supports many more platforms than SwiftUI (which only supports Apple platforms). It is still in a very early stage of development.
+[SwiftCrossUI](https://github.com/stackotter/swift-cross-ui) is a declarative cross-platform UI framework inspired by Apple's SwiftUI. It support macOS, iOS, tvOS, Windows, and Linux, with Android support on the way. Under-the-hood it uses each platform's native UI framework to provide a native user experience.
 
 ### Swift Bundler
 
-[Swift Bundler](https://github.com/stackotter/swift-bundler) is a modern tool for creating cross-platform Swift apps using Swift packages instead of Xcodeproj’s. It currently only supports macOS. iOS support in an experimental state. Windows and Linux support will be added in the future.
+[Swift Bundler](https://github.com/stackotter/swift-bundler) is a modern tool for creating cross-platform Swift apps using Swift packages instead of Xcodeproj’s. It supports macOS, iOS, tvOS, Windows, and Linux. It makes cross-platform app development and distribution a breeze. Swift Bundler apps can be packaged to `.app` for Apple platforms, `.msi` for Windows, and `.rpm` for Linux.
 
 ### Delta Client
 
