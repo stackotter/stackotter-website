@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      :root {
+        --card-padding: 1.8rem;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+      h1, h2, h3, h4 {
+        margin: 0;
+        padding: 0;
+      }
+
+      section {
+        margin-bottom: 1rem;
+      }
+
+      a {
+        color: inherit;
+        text-decoration-thickness: 1px;
+      }
+
+      #container {
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      #card {
+        margin: auto;
+        aspect-ratio: 1.615;
+        background: #18171E;
+        border-radius: 1rem;
+        width: 65ch;
+        color: white;
+        font-family: sans-serif;
+        padding: var(--card-padding);
+        box-sizing: border-box;
+        box-shadow: #000a 0 0.25rem 0.75rem;
+        transform: scale(1.5);
+        position: relative;
+      }
+
+      #hero {
+        margin-bottom: 1.5rem;
+      }
+
+      #name {
+        margin-top: 0.1rem;
+        font-size: 2.3rem;
+        margin-left: -1px;
+        margin-bottom: 0.3rem;
+      }
+
+      .mono {
+        font-family: "JetBrains Mono", monospace;
+      }
+
+      .reg {
+        font-weight: normal;
+      }
+
+      .sub {
+        font-size: 1.05rem;
+        margin-bottom: 0.3rem;
+      }
+
+      .offwhite {
+        color: #fffaea;
+      }
+
+      .hl1 {
+        color: #DFB771;
+      }
+
+      .hl2 {
+        color: #93CCCB;
+      }
+
+      .hl3 {
+        color: #8269A9;
+      }
+
+      .hl4 {
+        color: #87B059;
+      }
+
+      .hl5 {
+        color: #C56788;
+      }
+
+      .icon {
+        width: 3rem;
+        height: 3rem;
+      }
+
+      .bottom {
+        margin: 0;
+        position: absolute;
+        bottom: var(--card-padding);
+      }
+
+      .right {
+        margin: 0;
+        position: absolute;
+        right: var(--card-padding);
+      }
+
+      .row {
+        display: flex;
+        flex-direction: row;
+        gap: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <div id="card">
+        <section id="hero" class="offwhite">
+          <h1 id="name">Rohan van Klinken</h1>
+          <div class="mono reg sub">Founder of <a href="https://moreswift.dev">moreSwift</a></div>
+        </section>
+        <section>
+          <div class="mono reg sub">
+            <span class="hl1">pastimes</span> := [<span class="hl2"><a href="/open-source">openSourceMaintainer</a></span>, <span class="hl2"><a href="https://stackotter.dev/blog">ctfPlayer</a></span>]
+          </div>
+          <div class="mono reg sub">
+            <span class="hl1">education</span> := <span class="hl2">UQ</span>::<span class="hl2">bachelorOfMathematics</span>
+          </div>
+          <div class="mono reg sub">
+            <span class="hl1">langs</span> := [<span class="hl2">Swift</span>, <span class="hl2">Rust</span>, <span class="hl2">C</span>]
+          </div>
+        </section>
+        <section>
+          <div class="mono reg sub">
+            <span class="hl1">email</span> := <span class="hl4">"<a href="mailto:stackotter@stackotter.dev">stackotter@stackotter.dev</a>"</span>
+          </div>
+          <div class="mono reg sub">
+            <span class="hl1">discord</span> := <span class="hl4">"stackotter"</span>
+          </div>
+        </section>
+        <section class="row bottom right">
+          <a href="https://www.linkedin.com/in/rohan-van-klinken-b27680149/"><img class="icon" src="/image/linkedin-logo.webp"></a>
+          <a href="https://mastodon.social/@stackotter"><img class="icon" src="/image/mastodon-logo.webp"></a>
+          <a href="https://bsky.app/profile/stackotter.dev"><img class="icon" src="/image/bluesky-logo.png"></a>
+          <a href="https://x.com/stackotter"><img class="icon" src="/image/x-logo.png"></a>
+        </section>
+      </div>
+    </div>
+  </body>
+</html>

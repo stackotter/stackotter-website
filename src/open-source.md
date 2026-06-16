@@ -2,13 +2,21 @@
 
 ## My projects
 
+### moreSwift
+
+[moreSwift](https://moreswift.dev) is the parent organisation that hosts [SwiftCrossUI](https://swiftcrossui.dev) and [Swift Bundler](https://swiftbundler.dev). I created moreSwift once SwiftCrossUI and Swift Bundler grew beyond solo projects. SwiftCrossUI has 3 frequent contributors other than myself, and Swift Bundler has been gaining interest as well.
+
 ### SwiftCrossUI
 
-[SwiftCrossUI](https://github.com/stackotter/swift-cross-ui) is a declarative cross-platform UI framework inspired by Apple's SwiftUI. It support macOS, iOS, tvOS, Windows, and Linux, with Android support on the way. Under-the-hood it uses each platform's native UI framework to provide a native user experience.
+[SwiftCrossUI](https://swiftcrossui.dev) is a declarative cross-platform UI framework inspired by Apple's SwiftUI. It support macOS, iOS, tvOS, Windows, Linux, and Android. Under-the-hood it uses each platform's native UI framework to provide a native user experience.
+
+SwiftCrossUI is used in production by [Video Village](https://videovillage.com/) to ship their VFX plugin manager to Linux.
 
 ### Swift Bundler
 
-[Swift Bundler](https://github.com/stackotter/swift-bundler) is a modern tool for creating cross-platform Swift apps using Swift packages instead of Xcodeproj’s. It supports macOS, iOS, tvOS, Windows, and Linux. It makes cross-platform app development and distribution a breeze. Swift Bundler apps can be packaged to `.app` for Apple platforms, `.msi` for Windows, and `.rpm` for Linux.
+[Swift Bundler](https://swiftbundler.dev) is a modern tool for creating cross-platform Swift apps using Swift packages instead of Xcodeproj’s. It supports macOS, iOS, tvOS, Windows, Linux, and Android. It makes cross-platform app development and distribution a breeze. Swift Bundler apps can be packaged to `.app` for Apple platforms, `.msi` for Windows, and `.rpm` for Linux.
+
+Swift Bundler is used in production by [Video Village](https://videovillage.com/) to ship their VFX plugin manager to Linux.
 
 ### Delta Client
 
