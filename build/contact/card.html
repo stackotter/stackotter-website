@@ -27,7 +27,7 @@
 
       #container {
         width: 100vw;
-        height: 100vh;
+        height: 100dvh;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -49,7 +49,7 @@
       }
 
       #hero {
-        margin-bottom: 1.5rem;
+        margin-bottom: 1rem;
       }
 
       #name {
@@ -104,7 +104,7 @@
       .bottom {
         margin: 0;
         position: absolute;
-        bottom: var(--card-padding);
+        bottom: calc(var(--card-padding) - 0.35rem);
       }
 
       .right {
@@ -136,6 +136,9 @@
           </div>
           <div class="mono reg sub">
             <span class="hl1">langs</span> := [<span class="hl2">Swift</span>, <span class="hl2">Rust</span>, <span class="hl2">C</span>]
+          </div>
+          <div class="mono reg sub">
+            <span class="hl1">boasts</span> := [<span class="hl5">3</span> <span class="hl3">*</span> <span class="hl4">"<a href="https://oceaniacc.com/">Team Oceania</a>"</span>, <span class="hl5">2</span> <span class="hl3">*</span> <span class="hl4">"OCE Captain"</span>]
           </div>
         </section>
         <section>
