@@ -6,8 +6,9 @@ html {
   --article-hpadding: 3rem;
   --article-bg: #fff;
   --site-bg: #21b14c;
+  --mobile-site-bg: #99d9ea;
   --main-width: calc(
-    min(80ch, 95vw - 2 * var(--article-hpadding)) + 2 * var(--article-hpadding) +
+    min(80ch, 92vw - 2 * var(--article-hpadding)) + 2 * var(--article-hpadding) +
       6px
   );
   --article-vmargin: 1rem;
@@ -76,15 +77,18 @@ a {
 /* text */
 body {
   width: 100%;
-  background: var(--site-bg);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
+  /* the mobile queries override this to change the color outside of the bounds
+     of the website to match the color of the water */
+  background: var(--site-bg);
 }
 
 /* containers */
 .container {
+  background: var(--site-bg);
   text-align: center;
   position: relative;
 }
@@ -273,56 +277,45 @@ body {
 
 /* media queries */
 
-@media (max-width: 45rem) {
-  .main {
-    margin-top: 3rem;
-    margin-bottom: 2.5rem;
+@media (max-width: 68rem) {
+  .left-stream {
+    transform: translateX(20vw);
+  }
+
+  .right-stream {
+    transform: translateX(-20vw);
+  }
+
+  body {
+    background: var(--mobile-site-bg);
   }
 }
 
-/* Header */
-
-.header {
-  font-family: var(--body-font), sans-serif;
-  text-align: center;
-  margin-top: 5rem;
-}
-
-.header h1 {
-  font-family: var(--accent-font), sans-serif;
-  font-weight: 100;
-  font-size: 2.2em;
-  margin: 0px;
-  padding-top: 1.5rem;
-  padding-bottom: 1rem;
-}
-
-/* links */
-.header #nav a {
-  color: blue;
-  font-size: 1.1em;
-  padding: 0em 0.5em;
-}
-
-/* logo */
-.header .logo {
-  width: 8rem;
-  height: 8rem;
-  image-rendering: crisp-edges;
-  image-rendering: pixelated;
-  margin: auto;
-  display: block;
-  border-radius: calc(5%);
-}
-
-/* Header media queries */
-
 @media (max-width: 45rem) {
-  .header {
-    margin-top: 3rem;
+  html {
+    --article-hpadding: 1rem;
+    --article-vpadding: 1rem;
+    --article-vmargin: 1rem;
   }
 
-  .header h1 {
-    font-size: 2.1rem;
+  .left-stream {
+    transform: none;
+    left: -50vw;
+    width: 200vw;
+    height: auto;
+    margin: 0;
+  }
+
+  .stream-image {
+    width: 100%;
+    transform: scaleY(-1);
+  }
+
+  .right-stream {
+    display: none;
+  }
+
+  .container {
+    background: var(--mobile-site-bg);
   }
 }
