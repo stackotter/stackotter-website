@@ -5,6 +5,7 @@
         <meta name="fediverse:creator" content="@stackotter@mastodon.social">
         <meta name="viewport" content="width=device-width">
         <meta name="description" content="{description}">
+        <link rel="stylesheet" href="/font/Krunhthep.css">
         <link rel="stylesheet" href="/css/page.css">
         <link rel="me" href="https://mastodon.social/@stackotter">
 
@@ -53,9 +54,19 @@
             </div>
 
             <main class="main">
-                <div class="markdown-body">
-                    {content}
-                </div>
+                <nav>
+                    <a href="/" id="close" title="Home"><div id="close-indicator"></div></a>
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/blog">Blog</a></li>
+                        <li><a href="/contact">Contact</a></li>
+                    </ul>
+                </nav>
+                <section class="article">
+                    <div class="markdown-body">
+                        {content}
+                    </div>
+                </section>
             </main>
         </div>
     </body>
