@@ -374,6 +374,7 @@ do. You could even use this [online hex editor](https://hexed.it) (which I've ne
 but it looks like it's good).
 
 ![My very ordinary hex editor](bsides-brisbane-2023-writeups-part-1/hex-editor.jpg)
+
 Figure 7: *the bytes we need to change (displayed in a hex editor).*
 
 All we need to do now is backspace these two bytes and replace them with `00 00`. After
@@ -503,6 +504,7 @@ there's only a small number of frequency ranges that you actually have to check 
 rest aren't legal to transmit in.
 
 ![A photo of the spectrogram of the suspicious signal](bsides-brisbane-2023-writeups-part-1/suspicious-signal.jpg)
+
 Figure 11: *i didn't take a screenshot, so a screenshot of a video of the screen will have to do.*
 
 Given that the frequency was so wide, slow, and digital, I was pretty certain that I had found the
