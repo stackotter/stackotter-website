@@ -17,7 +17,7 @@ Lo-and-behold, Joseph--of [Skateboarding Dog](https://sk8.dog) fame--was the thi
 
 As with APender's Ark Challenge page, I'm using this page to track my progress through all of [Joseph's CTF challenges](https://github.com/josephsurin/my-ctf-challenges).
 
-If you're doing a similar sort of challenge, you might find my [generate-challenge-index.py](https://github.com/stackotter/stackotter-website/blob/main/scripts/generate-challenge-index.py) script useful. I created it to scrape all of the challenges from Joseph's challenge repository and reorganise them by difficulty. You can likely update it 
+If you're doing a similar sort of challenge, you might find my [generate-challenge-index.py](https://github.com/stackotter/stackotter-website/blob/main/scripts/generate-challenge-index.py) script useful. I created it to scrape all of the challenges from Joseph's challenge repository and reorganise them by difficulty. You can likely update it to fit your needs.
 
 ## Difficulty: 👶
 
