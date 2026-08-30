@@ -5,6 +5,7 @@
   <meta name="fediverse:creator" content="@stackotter@mastodon.social"> 
   <meta name="viewport" content="width=device-width"> 
   <meta name="description" content="Page not found. Go home?"> 
+  <link rel="stylesheet" href="/font/Krunhthep.css"> 
   <link rel="stylesheet" href="/css/page.css"> 
   <link rel="me" href="https://mastodon.social/@stackotter"> 
   <!-- Google tag (gtag.js) - Google Analytics --> 
@@ -51,9 +52,20 @@
     </div> 
    </div> 
    <main class="main"> 
-    <div class="markdown-body"> 
-     <p align="center">Page not found. Go <a href="/">home</a>?</p> 
-    </div> 
+    <nav> 
+     <a href="/" id="close" title="Home">
+      <div id="close-indicator"></div></a> 
+     <ul> 
+      <li><a href="/">Home</a></li> 
+      <li><a href="/blog">Blog</a></li> 
+      <li><a href="/contact">Contact</a></li> 
+     </ul> 
+    </nav> 
+    <section class="article"> 
+     <div class="markdown-body"> 
+      <p align="center">Page not found. Go <a href="/">home</a>?</p> 
+     </div> 
+    </section> 
    </main> 
   </div>   
  </body>
