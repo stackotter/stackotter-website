@@ -5,7 +5,8 @@
   <meta name="fediverse:creator" content="@stackotter@mastodon.social"> 
   <meta name="viewport" content="width=device-width"> 
   <meta name="description" content="The BSides Brisbane CTF was an exciting mix of traditional jeopardy challenges, and hardware/enterprise hacking. Huge props to the team who made this top quality CTF happen!"> 
-  <link rel="stylesheet" href="/font/Krunhthep.css"> 
+  <link rel="stylesheet" href="/font/Krungthep.css"> 
+  <link rel="stylesheet" href="/css/markdown.css"> 
   <link rel="stylesheet" href="/css/page.css"> 
   <link rel="me" href="https://mastodon.social/@stackotter"> 
   <!-- Google tag (gtag.js) - Google Analytics --> 
@@ -21,7 +22,6 @@
         </script> 
   <title>BSides Brisbane 2023 - Writeups (Part 1: crypto, rev, IoT) - stackotter</title> 
   <link rel="stylesheet" href="/css/page.css">
-  <link rel="stylesheet" href="/css/github-markdown-light.css">
   <link rel="stylesheet" href="/css/syntax-theme_atom-one-dark.min.css">
   <style>pre code.hljs {
     padding: 0 !important;
@@ -309,7 +309,8 @@ void encrypt(char *__block,int __edflag) {
       <p>Figure 6: <em>disassembly of the instructions related to <code>sleep(300)</code>.</em></p> 
       <p>First, <code>0x12c</code> gets moved into the <code>edi</code> register (which is where the first argument to a function is usually placed), and then <code>sleep</code> gets called. Note that <code>0x012c</code> is stored in the machine code with its bytes reversed because of <a href="https://en.wikipedia.org/wiki/Endianness">endiannes</a>, but that doesn’t matter for us because all we need to do is replace both bytes with <code>0x00</code>!</p> 
       <p>Now time to hop into a hex editor; I use <code>Octets</code> on macOS, but any old hex editor will do. You could even use this <a href="https://hexed.it">online hex editor</a> (which I’ve never used, but it looks like it’s good).</p> 
-      <p><img src="bsides-brisbane-2023-writeups-part-1/hex-editor.jpg" alt="My very ordinary hex editor"> Figure 7: <em>the bytes we need to change (displayed in a hex editor).</em></p> 
+      <p><img src="bsides-brisbane-2023-writeups-part-1/hex-editor.jpg" alt="My very ordinary hex editor"></p> 
+      <p>Figure 7: <em>the bytes we need to change (displayed in a hex editor).</em></p> 
       <p>All we need to do now is backspace these two bytes and replace them with <code>00 00</code>. After saving the file we can now run the program and get the flag basically instantly!</p> 
       <p>Flag: <code>flag{aint-nobody-g0t-time-for-d@t}</code></p> 
       <hr> 
@@ -386,7 +387,8 @@ flag{op3rat1ons_r3se4rch_i$_co0l}
       </blockquote> 
       <p>Luckily I had a software defined radio with me which I could use along with GQRX (a GUI for software defined radios) to solve the challenge. Arguably GQRX isn’t the best app out there, but it’s the one I had used in the past so it’s what I went with. I’ve heard that <a href="https://github.com/jopohl/urh">Universal Radio Hacker</a> is a much better tool for the job. If you’re looking to get a software defined radio, I can definitely recommend the <a href="https://www.rtl-sdr.com">RTL-SDR</a> (although it seems to be quite a bit more expensive than I remember).</p> 
       <p>The first order of business was to figure out what frequency the message was being transmitted on, so I started from the lowest frequency supported by my software defined radio and started slowly increasing the frequency and stopping whenever I saw anything mildly interesting. Eventually I came across a frequency which had a very weird looking signal. I was lucky that the message was being transmitted as I scrolled past because otherwise I might’ve had to scroll through quite a few times 😅. Talking to the challenge creator afterwards, I found out that generally there’s only a small number of frequency ranges that you actually have to check because the rest aren’t legal to transmit in.</p> 
-      <p><img src="bsides-brisbane-2023-writeups-part-1/suspicious-signal.jpg" alt="A photo of the spectrogram of the suspicious signal"> Figure 11: <em>i didn’t take a screenshot, so a screenshot of a video of the screen will have to do.</em></p> 
+      <p><img src="bsides-brisbane-2023-writeups-part-1/suspicious-signal.jpg" alt="A photo of the spectrogram of the suspicious signal"></p> 
+      <p>Figure 11: <em>i didn’t take a screenshot, so a screenshot of a video of the screen will have to do.</em></p> 
       <p>Given that the frequency was so wide, slow, and digital, I was pretty certain that I had found the right frequency (any real transmissions would be a lot faster). The frequency was around 87.6kHz.</p> 
       <p>After waiting for around 8 minutes for the current transmission to finish and the next one to start, I decided to just video my screen as the transmission happened (because I hadn’t figured out how to record properly in GQRX fast enough).</p> 
       <p>I noticed that all of the blips in the transmission were the same length but there were 3 unique sizes of gaps between the blips. My first thought that the transmission could be using morse code (with the smallest gap representing a dot and so on). Typing out the resulting morse code into a translator yielded garbage. Next I started researching simple signal encoding methods and found nothing other than morse code and other very similar encoding methods.</p> 
