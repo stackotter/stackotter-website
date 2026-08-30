@@ -27,7 +27,7 @@ chals = []
 tables = extract_tables(content)
 table = pd.concat(tables, ignore_index=True)
 table["Solved?"] = "No"
-table["Writeup"] = pd.Series(["Not written"] * len(table))
+table["Writeup"] = "Not written"
 del table["Solves"]
 
 items = []
@@ -39,5 +39,9 @@ for difficulty in difficulties:
     items.append(group.to_markdown(index=False))
 
 out = "\n\n".join(items)
+
+# tw: jank url rebasing
+out = out.replace("](", "](https://github.com/josephsurin/my-ctf-challenges/tree/main/")
+
 with open("out.md", "w") as f:
     content = f.write(out)

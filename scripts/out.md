@@ -1,24 +1,3 @@
----
-year: 2026
-month: 08
-day: 30
----
-# The Joseph Challenge
-
-APender's [Ark Challenge page](https://apendergh.github.io/writeups/the-ark-challenge/) tracks his progress through all challenges published by [Ark](https://github.com/arkark) (an incredible clientside web challenge author, and web author in general).
-
-The Ark Challenge inspired me to go searching for a collection of challenges that would allow me to do something similar for binary exploitation and other areas of cybersecurity that I want to improve at, such as cryptography.
-
-After a lot of fruitless Google searching, I decided to see if anyone else had repositories of the same name as Ark's [my-ctf-challenges](https://github.com/arkark/my-ctf-challenges) repository. I did a quick Google dork and sifted through the results.
-
-Lo-and-behold, Joseph--of [Skateboarding Dog](https://sk8.dog) fame--was the third result, and the rest is history.
-
----
-
-As with APender's Ark Challenge page, I'm using this page to track my progress through all of [Joseph's CTF challenges](https://github.com/josephsurin/my-ctf-challenges).
-
-If you're doing a similar sort of challenge, you might find my [generate-challenge-index.py](https://github.com/stackotter/stackotter-website/blob/main/scripts/generate-challenge-index.py) script useful. I created it to scrape all of the challenges from Joseph's challenge repository and reorganise them by difficulty. You can likely update it 
-
 ## Difficulty: 👶
 
 | Name                                                             | Category   | Solved?   | Writeup     |
