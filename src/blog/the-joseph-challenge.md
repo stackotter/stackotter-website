@@ -34,8 +34,8 @@ If you're doing a similar sort of challenge, you might find my [generate-challen
 | [complementary](https://github.com/josephsurin/my-ctf-challenges/tree/main/downunderctf-2023/complementary)                 | beginner   | Yes        | Not written |
 | [randomly chosen](https://github.com/josephsurin/my-ctf-challenges/tree/main/downunderctf-2023/randomly-chosen)             | beginner   | Yes        | Not written |
 | [flag art](https://github.com/josephsurin/my-ctf-challenges/tree/main/downunderctf-2023/flag-art)                           | beginner   | Yes        | Not written |
-| [one byte](https://github.com/josephsurin/my-ctf-challenges/tree/main/downunderctf-2023/one-byte)                           | beginner   | No        | Not written |
-| [confusing](https://github.com/josephsurin/my-ctf-challenges/tree/main/downunderctf-2023/confusing)                         | beginner   | No        | Not written |
+| [one byte](https://github.com/josephsurin/my-ctf-challenges/tree/main/downunderctf-2023/one-byte)                           | beginner   | Yes        | Not written |
+| [confusing](https://github.com/josephsurin/my-ctf-challenges/tree/main/downunderctf-2023/confusing)                         | beginner   | Yes        | Not written |
 | [number mashing](https://github.com/josephsurin/my-ctf-challenges/tree/main/downunderctf-2024/number-mashing)               | beginner   | No        | Not written |
 | [vector overflow](https://github.com/josephsurin/my-ctf-challenges/tree/main/downunderctf-2024/vector-overflow)             | beginner   | No        | Not written |
 | [yawa](https://github.com/josephsurin/my-ctf-challenges/tree/main/downunderctf-2024/yawa)                                   | beginner   | No        | Not written |

