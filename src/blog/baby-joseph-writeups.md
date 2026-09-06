@@ -1,7 +1,7 @@
 ---
 year: 2026
-month: 08
-day: 30
+month: 09
+day: 06
 ---
 # Baby joseph writeups
 
