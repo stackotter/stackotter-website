@@ -1,2 +1,3 @@
 config_version = 1
 name = "stackotter"
+additional_hljs_languages = ["x86asm"]

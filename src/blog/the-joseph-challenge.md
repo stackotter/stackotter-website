@@ -23,22 +23,22 @@ If you're doing a similar sort of challenge, you might find my [generate-challen
 
 | Name                                                             | Category   | Solved?   | Writeup     |
 |:-----------------------------------------------------------------|:-----------|:----------|:------------|
-| [rot-i](https://github.com/josephsurin/my-ctf-challenges/tree/main/downunderctf-2020/rot-i)                                 | crypto     | Yes        | Not written |
-| [no strings](https://github.com/josephsurin/my-ctf-challenges/tree/main/downunderctf-2021/no-strings)                       | reversing  | Yes        | Not written |
-| [Substitution Cipher I](https://github.com/josephsurin/my-ctf-challenges/tree/main/downunderctf-2021/substitution-cipher-i) | crypto     | Yes        | Not written |
-| [babyp(y)wn](https://github.com/josephsurin/my-ctf-challenges/tree/main/downunderctf-2022/babypywn)                         | pwn        | Yes        | Not written |
-| [source provided](https://github.com/josephsurin/my-ctf-challenges/tree/main/downunderctf-2022/source-provided)             | rev        | Yes        | Not written |
-| [baby arx](https://github.com/josephsurin/my-ctf-challenges/tree/main/downunderctf-2022/baby-arx)                           | crypto     | Yes        | Not written |
-| [static file server](https://github.com/josephsurin/my-ctf-challenges/tree/main/downunderctf-2023/static-file-server)       | beginner   | Yes        | Not written |
-| [downunderflow](https://github.com/josephsurin/my-ctf-challenges/tree/main/downunderctf-2023/downunderflow)                 | beginner   | Yes        | Not written |
-| [complementary](https://github.com/josephsurin/my-ctf-challenges/tree/main/downunderctf-2023/complementary)                 | beginner   | Yes        | Not written |
-| [randomly chosen](https://github.com/josephsurin/my-ctf-challenges/tree/main/downunderctf-2023/randomly-chosen)             | beginner   | Yes        | Not written |
-| [flag art](https://github.com/josephsurin/my-ctf-challenges/tree/main/downunderctf-2023/flag-art)                           | beginner   | Yes        | Not written |
-| [one byte](https://github.com/josephsurin/my-ctf-challenges/tree/main/downunderctf-2023/one-byte)                           | beginner   | Yes        | Not written |
-| [confusing](https://github.com/josephsurin/my-ctf-challenges/tree/main/downunderctf-2023/confusing)                         | beginner   | Yes        | Not written |
-| [number mashing](https://github.com/josephsurin/my-ctf-challenges/tree/main/downunderctf-2024/number-mashing)               | beginner   | No        | Not written |
-| [vector overflow](https://github.com/josephsurin/my-ctf-challenges/tree/main/downunderctf-2024/vector-overflow)             | beginner   | No        | Not written |
-| [yawa](https://github.com/josephsurin/my-ctf-challenges/tree/main/downunderctf-2024/yawa)                                   | beginner   | No        | Not written |
+| [rot-i](https://github.com/josephsurin/my-ctf-challenges/tree/main/downunderctf-2020/rot-i)                                 | crypto     | Yes        | [Written](/blog/baby-joseph-writeups#rot-i) |
+| [no strings](https://github.com/josephsurin/my-ctf-challenges/tree/main/downunderctf-2021/no-strings)                       | reversing  | Yes        | [Written](/blog/baby-joseph-writeups#no-strings) |
+| [Substitution Cipher I](https://github.com/josephsurin/my-ctf-challenges/tree/main/downunderctf-2021/substitution-cipher-i) | crypto     | Yes        | [Written](/blog/baby-joseph-writeups#substitution-cipher-i) |
+| [babyp(y)wn](https://github.com/josephsurin/my-ctf-challenges/tree/main/downunderctf-2022/babypywn)                         | pwn        | Yes        | [Written](/blog/baby-joseph-writeups#babypywn) |
+| [source provided](https://github.com/josephsurin/my-ctf-challenges/tree/main/downunderctf-2022/source-provided)             | rev        | Yes        | [Written](/blog/baby-joseph-writeups#source-provided) |
+| [baby arx](https://github.com/josephsurin/my-ctf-challenges/tree/main/downunderctf-2022/baby-arx)                           | crypto     | Yes        | [Written](/blog/baby-joseph-writeups#baby-arx) |
+| [static file server](https://github.com/josephsurin/my-ctf-challenges/tree/main/downunderctf-2023/static-file-server)       | beginner   | Yes        | [Written](/blog/baby-joseph-writeups#static-file-server) |
+| [downunderflow](https://github.com/josephsurin/my-ctf-challenges/tree/main/downunderctf-2023/downunderflow)                 | beginner   | Yes        | [Written](/blog/baby-joseph-writeups#downunderflow) |
+| [complementary](https://github.com/josephsurin/my-ctf-challenges/tree/main/downunderctf-2023/complementary)                 | beginner   | Yes        | [Written](/blog/baby-joseph-writeups#complementary) |
+| [randomly chosen](https://github.com/josephsurin/my-ctf-challenges/tree/main/downunderctf-2023/randomly-chosen)             | beginner   | Yes        | [Written](/blog/baby-joseph-writeups#randomly-chosen) |
+| [flag art](https://github.com/josephsurin/my-ctf-challenges/tree/main/downunderctf-2023/flag-art)                           | beginner   | Yes        | [Written](/blog/baby-joseph-writeups#flag-art) |
+| [one byte](https://github.com/josephsurin/my-ctf-challenges/tree/main/downunderctf-2023/one-byte)                           | beginner   | Yes        | [Written](/blog/baby-joseph-writeups#one-byte) |
+| [confusing](https://github.com/josephsurin/my-ctf-challenges/tree/main/downunderctf-2023/confusing)                         | beginner   | Yes        | [Written](/blog/baby-joseph-writeups#confusing) |
+| [number mashing](https://github.com/josephsurin/my-ctf-challenges/tree/main/downunderctf-2024/number-mashing)               | beginner   | Yes        | [Written](/blog/baby-joseph-writeups#number-mashing) |
+| [vector overflow](https://github.com/josephsurin/my-ctf-challenges/tree/main/downunderctf-2024/vector-overflow)             | beginner   | Yes        | [Written](/blog/baby-joseph-writeups#vector-overflow) |
+| [yawa](https://github.com/josephsurin/my-ctf-challenges/tree/main/downunderctf-2024/yawa)                                   | beginner   | Yes        | [Written](/blog/baby-joseph-writeups#yawa) |
 
 ## Difficulty: ⭐️
 

