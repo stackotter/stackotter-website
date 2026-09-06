@@ -13,17 +13,19 @@ This post contains my writeups for all of Joseph's baby-difficulty challenges. S
 
 ## rot-i
 
+We're given an encrypted/encoded message;
+
 > Ypw'zj zwufpp hwu txadjkcq dtbtyu kqkwxrbvu! Mbz cjzg kv IAJBO{ndldie_al_aqk_jjrnsxee}. Xzi utj gnn olkd qgq ftk ykaqe uei mbz ocrt qi ynlu, etrm mff'n wij bf wlny mjcj :).
 
 First word is probably `You're`. Second sentence is probably `The flag is DUCTF{...}`.
 
 I guessed that it's vaguely related to Vigenere cipher (i.e. shifts that vary by position in the ciphertext) rather than a substitution, just because there seemed to be quite a few awkward double letters in places that seemed unlikely for double letters.
 
-I pasted the second sentence into Cyber Chef in Vigenere decode mode and typed `theflagisductf` as the key. That outputted `tuvxyzacdfghij`. There's clearly some sort of pattern going on here, but it's not completely clear what the logic behind it would be.
+I pasted the second sentence into Cyber Chef in Vigenere decode mode and typed `theflagisductf` as the key. That outputted `tuvxyzacdfghij`, meaning that if it is a Vigenere cipher of some sort and my plaintext guess is correct then the key for this part of the ciphertext would be `tuvxyzacdfghij`. There's clearly some sort of pattern going on here, because the candidate key has runs of consecutive letters from the alphabet, but it's not completely clear what the logic behind it would be.
 
-I pasted the original ciphertext into the same Cyber Chef setup and typed `youre` as the key. That outputted `abcif`. It doesn't appear to be a substring of the key fragment I obtained from the second sentence, but it does seem similar (in that it has runs). I then concatenated the two keys together and began typing the alphabet in between the two to pad things out and get them to line up. At some point during that process `crypto` jumped out as the first word of the flag. Progress!
+I pasted the original ciphertext into the same Cyber Chef setup and typed `youre` as the key. That outputted `abcif`. That doesn't appear to be a substring of the key fragment I obtained from the second sentence, but it does seem to share similarities (in that it has runs). I then concatenated the two keys together and began typing the alphabet in between the two to pad things out and get them to line up. At some point during that process `crypto` jumped out as the first word of the flag. Progress!
 
-At this point, while writing my live writeup, I realised what the challenge name means... I reckon that it's a caesar cipher where the index is `i`, and it has been implemented in such a way that it uses the index of the character in the plaintext (which includes punctuation) while leaving non-alphabetic characters untouched. That would explain the alphabetic runs in my key fragments, and would also explain the skipped letters.
+At this point, while writing my live writeup, I realised what the challenge name means... I reckon that it's a Vigenere cipher where the index (`i`) of each character is its shift, and it has been implemented in such a way that it uses the index of the character in the plaintext (which includes punctuation) while leaving non-alphabetic characters untouched. That would explain the alphabetic runs in my key fragments, and would also explain the missing letters between those alphabetic runs (the gaps correspond with untouched punctuation).
 
 ```py
 import string
@@ -44,7 +46,7 @@ for i, x in enumerate(xs):
 print(out)
 ```
 
-```
+```txt
 You've solved the beginner crypto challenge! The flag is DUCTF{crypto_is_fun_kjqlptzy}. Now get out some pen and paper for the rest of them, they won't all be this easy :).
 ```
 
@@ -52,13 +54,13 @@ It turns out that my original intuition for the first word was incorrect! It was
 
 That really shouldn't have taken me 35 minutes...
 
-The thing that messed me up was that punctuation was being included in the indexing even though it's excluded from the encryption. Having indexed rotations crossed my mind because of all of the runs that I was getting in my key fragments, but I discarded that idea because they weren't perfect runs of characters. I even noticed that it was breaking on the punctuation specifically but I ignored that idea in the moment as a coincidence. Rookie mistakes.
+The thing that messed me up was that punctuation was being included in the indexing even though it's excluded from the encryption. Having indexed rotations crossed my mind because of all of the runs that I was getting in my key fragments, but I discarded that idea because they weren't perfect runs of characters. I even noticed that it was breaking on the punctuation specifically but I ignored that idea in the moment for whatever reason. Rookie mistake.
 
 Flag: `DUCTF{crypto_is_fun_kjqlptzy}`
 
 ## no strings
 
-We're given a binary, and this is a reverse engineering challenge, so I first `strings`'d the binary, and then found nothing so I opened up the binary in Binary Ninja.
+We're given a binary, and this is a reverse engineering challenge, so I started by running `strings` on the binary. That didn't show anything interesting so I opened up the binary in Binary Ninja.
 
 ```c
 printf("flag? ");
@@ -84,9 +86,9 @@ while (true) {
 }
 ```
 
-It checks each character of the input against `flag[index * 2]` (which explains why nothing would show up in the output of `strings ./nostrings`).
+We can see that the program takes up to 0x45 bytes of input and checks each character of input against `flag[index * 2]`. `flag` is simply the flag but with a null byte inserted after each character. This encoding explains why nothing showed up in the output of `strings ./nostrings` (`strings` relies on null bytes to locate candidates for strings).
 
-Double clicking the `flag` symbol in Binary Ninja just instantly solves the challenge, because Binary Ninja recognises it as some sort of wide character encoding and decodes it correctly.
+Double clicking the `flag` symbol in Binary Ninja instantly solves the challenge Binary Ninja recognises the data as some sort of wide character encoding and decodes it correctly.
 
 ```c
 00404050  wchar16 const (* flag)[0x1e] = data_402008 {u"DUCTF{stringent_strings_string"}
@@ -152,7 +154,7 @@ if b'DUCTF' in bytes(buf2):
     print(open('./flag.txt', 'r').read())
 ```
 
-I assumed that `buf1` and `buf2` were both allocated on the heap (and likely one after another). `gets` gives us a trivial buffer overflow, so we can overflow from `buf1` to `buf2`. In libc each heap allocation has 16 bytes of metadata before it, so we have to overflow 512 bytes of `buf1`, then 16 bytes for the header of `buf2`, and then we can write `DUCTF` to the userdata portion of the `buf2` allocation. This lands `DUCTF` write at the start of `buf2`. Now that I'm writing this down I've realised that we get the flag as long as `DUCTF` is anywhere in `buf2`, so I could've overshot for safety, but it felt good lining it up nicely.
+I assumed that `buf1` and `buf2` were both allocated on the heap (and likely one after another). `gets` gives us a trivial buffer overflow, so we can overflow from `buf1` to `buf2`. In libc each heap allocation has 16 bytes of metadata before it, so we have to overflow 512 bytes of `buf1`, then 16 bytes for the header of `buf2`, and then we can write `DUCTF` to the userdata portion of the `buf2` allocation. This lands `DUCTF` right at the start of `buf2`. Now that I'm writing this down I've realised that we get the flag as long as `DUCTF` is anywhere in `buf2`, so I could've overshot for safety, but lining it up nicely felt pro.
 
 ```py
 from pwn import process
@@ -163,6 +165,8 @@ print(p.recvall())
 ```
 
 I didn't note down exactly when I started working on this challenge, but I think it only took a few minutes.
+
+Pwning a Python program that uses C interoperability is a neat challenge idea!
 
 Flag: `DUCTF{C_is_n0t_s0_f0r31gn_f0r_incr3d1bl3_pwn3rs}`
 
@@ -244,7 +248,7 @@ for i, x in enumerate(xs):
 print("".join(map(chr, out)))
 ```
 
-Another nice 10 minutes challenge.
+Another nice 10 minute challenge.
 
 Flag: `DUCTF{r3v_is_3asy_1f_y0u_can_r34d_ass3mbly_r1ght?}`
 
@@ -281,11 +285,11 @@ print(out)
 
 The first thing that jumped out at me is that `cipher.stream(64)` essentially ends up giving you the full internal state of the cipher as it is at the end of producing that stream. That happens because the internal state is 64 bytes, and each `b` operation removes the first byte of the state while appending the newly produced byte (which it also returns) to the end of the state. So after 64 `b` operations we know the full state.
 
-Given that we know the current state of the cipher, and we know that the state of the cipher 64 operations ago was flag, our goal should be to find a way to reverse the operation that `b` performs on the cipher's state.
+Given that we can discover the internal state of the cipher after 64 operations, and we know that the initial state of the cipher is the flag, our goal should be to find a way to reverse the operation that `b` performs on the cipher's state.
 
 Looking at the implementation of `b`, I could see that we had to compute `b1`, and that we know `b` and `b2`. Somewhat confusingly, the function reassigns the `b1` and `b2` variables, which led to a mistake that took me 5-10 minutes to debug (I was using the `b2` retrieved from the state directly instead of passing it through the 'rotate right by 5' operation first). I'm going to call the second values of `b1` and `b2`, `b1'` and `b2'` respectively.
 
-We know `b` and we can compute `b2' = ror(b2, 5)`, so we can compute `b1'` using subtraction (modulo 256). Then all we have to do is compute `b1` from `b1'`. Once again we can use a bruteforce to avoid reversing the maths directly (which in this case might also be the only way? I dunno I haven't put much thought into that).
+We know `b2` because it becomes the first byte of the internal state, so we can compute `b2' = ror(b2, 5)`. We also know `b` because it becomes the last byte of the internal state, so we can compute `b1' = b - b2' (mod 256)`. Then all we have to do is compute `b1` from `b1'`. Once again we can use a bruteforce to avoid reversing the maths directly (which in this case might also be the only way? I dunno I haven't put much thought into that).
 
 Piecing it all together, I ended up with the following solve script;
 
@@ -314,6 +318,8 @@ print(bytes(state).decode())
 ```
 
 This challenge took me about 20 minutes (much of which was spent debugging the aforementioned error in my solve script).
+
+It's a nice introduction to RNG challenges!
 
 Flag: `DUCTF{i_d0nt_th1nk_th4ts_h0w_1t_w0rks_actu4lly_92f45fb961ecf420}`
 
@@ -387,7 +393,7 @@ int main() {
 
 We get a shell if we enter the index `7`, but `read_int_lower_than(NUM_USERS - 1)` stops us from directly entering `7`. Luckily the program casts the return value of `read_int_lower_than` from an `int` to an `unsigned short`, which gives us an opportunity to mess with things.
 
-As long as the least significant two bytes of our chosen index (represented as a signed 32 bit integer) are `7`, then we'll get admin.
+As long as the least significant two bytes of our chosen index (represented as a signed 16 bit integer) are `7`, then we'll get admin.
 
 `read_int_lower_than` allows negative numbers, so we can enter a negative number with `0x0007` as its lower two bytes and get a shell.
 
@@ -427,7 +433,7 @@ print(n)
 # 6954494065942554678316751997792528753841173212407363342283423753536991947310058248515278
 ```
 
-Basically the only thing we can do to begin is to factorise `n`. I used `factorint` from `sympy` to do so, and go the following factorisation:
+Basically the only thing we can do to begin is to factorise `n`. I used `factorint` from `sympy` to do so, and got the following factorisation:
 
 ```py
 {2: 1, 3: 1, 19: 1, 31: 1, 83: 1, 3331: 1, mpz(165219437): 1, mpz(550618493): 1, mpz(66969810339969829): 1, 1168302403781268101731523384107546514884411261: 1}
@@ -480,7 +486,7 @@ print(out)
 # bDacadn3af1b79cfCma8bse3F7msFdT_}11m8cicf_fdnbssUc{UarF_d3m6T813Usca?tf_FfC3tebbrrffca}Cd18ir1ciDF96n9_7s7F1cb8a07btD7d6s07a3608besfb7tmCa6sasdnnT11ssbsc0id3dsasTs?1m_bef_enU_91_1ta_417r1n8f1e7479ce}9}n8cFtF4__3sef0amUa1cmiec{b8nn9n}dndsef0?1b88c1993014t10aTmrcDn_sesc{a7scdadCm09T_0t7md61bDn8asan1rnam}sU
 ```
 
-It uses randomness, but only chooses from 1337 possible, so we can bruteforce! (I'm starting to sense a theme...)
+It uses randomness, but only chooses from 1337 possible values, so we can bruteforce! (I'm starting to sense a theme...)
 
 There's not too much to this one other than remembering to strip the newline from the input file when reading it in (if your code works like mine and uses `len(out)` as the number of random choices).
 
@@ -562,9 +568,9 @@ print(canvas)
                                                                   .=w.*
 ```
 
-By reversing the art rendering process we can obtain the result of `x % n` for each character `x` of the flag and each moduli from `[2, 3, 5, 7]`. By the Chinese Remainder Theorem (CRT), these values (called residues) allow us to distinguish between all values from 0 up to and including 209 (`2 * 3 * 5 * 7 - 1`).
+By reversing the art rendering process we can obtain the result of `x % n` for each character `x` of the flag and each modulus `n` from `[2, 3, 5, 7]`. By the Chinese Remainder Theorem (CRT), these values (called residues) allow us to distinguish between all values from 0 up to and including 209 (`2 * 3 * 5 * 7 - 1`).
 
-There is nice maths we can do to reverse it, but I wanted to solve this challenge quickly, and there are only 128 possible values for each character of the flag (if we assume that it's ASCII). I think you can guess what approach I took instead of implementing a CRT solver...
+There is nice maths we can do to reverse it, but I wanted to solve this challenge quickly, and there are only 128 possible values for each character of the flag (if we assume that it's ASCII). I think you can guess which approach I took instead of implementing a CRT solver...
 
 ```py
 palette = '.=w-o^*'
@@ -644,7 +650,7 @@ Stripped:   No
 
 It turns out that the binary is 32 bit!
 
-Unfortunately for me, I haven't done any 32 bit stuff in quite a while, so I needed a bit of a refresher. I probably could've looked up 32 bit pwn resources online, but I generally find that figuring things out for myself is much more valuable, so I ran the program under GDB instead and started poking.
+Unfortunately for me, I haven't done any 32 bit stuff in quite a while, so I needed a bit of a refresher. I probably could've looked up 32 bit pwn resources online, but I generally find that figuring things out for myself is much more valuable, so I ran the program under GDB and started poking.
 
 First I set a breakpoint just before the `read` to check out the layout of the stack around the buffer that we get to write to. Immediately after our buffer there is a stack address of some sort, which I assumed was probably the saved ebp (I was wrong).
 
@@ -660,7 +666,7 @@ Once I had seen the layout of the stack, I set a breakpoint at the end of main j
     0x5664029c <+110>:   ret
 ```
 
-As I stepped through I discovered that the value that we partially control on the stack makes its way into esp (offset by 4) right before the function returns. The x86 `ret` instruction pops the return address off the stack, so we effectively return to whatever lives at `our_partially_controlled_value - 0x4`. Under normal operation, the return address is stored between the current stack frame and the one below, so it should be stored near our buffer. That's good for us because it means that our buffer should be within a one byte change of the original address.
+As I stepped through the execution I discovered that the value that we partially control on the stack makes its way into esp (offset by 4) right before the function returns. The x86 `ret` instruction pops the return address off the stack, so we effectively return to whatever pointer lives at `our_partially_controlled_value - 0x4`. Under normal operation, the return address is stored between the current stack frame and the one below, so it should be stored near our buffer. That's good for us because it means that our buffer should be within a one byte change of the original address.
 
 My exploit strategy was to fill the buffer with the `win` address (which we can easily compute from the `init` address that the program leaks for us) and then overwrite the least significant byte of the saved `esp` address with an arbitrary fixed value (in my case `\x20`) and hope that the stack slide works out such that the tweaked `esp` value points to one of our return addresses. The stack slide is randomised for each process, so we can just retry the exploit until we get a hit. Note that we don't actually have to spam the `win` address, because on a successful exploit our controlled esp will always line up with the 4th copy of the win address due to the way things align, but in the moment it was easier to just spam them rather than think it through.
 
@@ -714,14 +720,13 @@ int main() {
 
 This is clearly a 'skill check'-type challenge rather than an exploitation one. The challenge is testing whether we can manipulate type confusions effectively in C.
 
-In challenge like these where the layout of the stack is important, it can be a good idea to check the stack layout with a decompiler such as Binary Ninja instead of trying to guess the stack layout yourself, because compilers do all sorts of funny things.
+In challenges like these where the layout of the stack is important, it can be a good idea to check the stack layout with a decompiler such as Binary Ninja instead of trying to guess the stack layout yourself, because compilers do all sorts of funny things.
 
 In our case, `d` is at `rbp-0x26`, `z` is at `rbp-0x24`, `s` is at `rbp-0x14`, and `f` is at `rbp-0x20`.
 
 The first write we get overrides `d`, `z`, and two bytes of `f`. We later get to overwrite `f` in full, so we only have to worry about `d` and `z` for now. We want `d` to be 13337 (0x3419) and `z` to be `-1` (0xffffffff). Therefore we want the bitpattern of the value we provide to be `0x6767_ffff_ffff_3419` (where the 0x6767 part is unconstrained). We have to provide the value as a double, so we need to choose our upper two bytes such that the value represents a valid double. I tried `ffff` and that gave me NaN (no good). Then I tried `0000` and that worked a charm. The double value corresponding to `0x0000_ffff_ffff_3419` is `1.390671161309104e-309` (and scanf luckily supports `e` notation when parsing floating point numbers).
 
-> [!NOTE]
-> I enjoy Swift's integer/floating point APIs, so I actually did the initial experimentation in a Swift REPL. I typed `Double(bitPattern: 0x0000_ffff_ffff_3419)` to retrieve the double value corresponding to the bytes I wanted. It was only later while cleaning up the solve script for this writeup that I replace the hardcoded double value from my Swift experimentation with a value dynamically computed using the `struct` library (and emulating what that simple Swift expression was doing).
+> NOTE: I enjoy Swift's integer/floating point APIs, so I actually did the initial experimentation in a Swift REPL. I typed `Double(bitPattern: 0x0000_ffff_ffff_3419)` to retrieve the double value corresponding to the bytes I wanted. It was only later while cleaning up the solve script for this writeup that I replace the hardcoded double value from my Swift experimentation with a value dynamically computed using the `struct` library (and emulating what that simple Swift expression was doing).
 
 Next we get to write a 4 byte integer to `s`, which has to have the value `"FLAG"`. This is pretty standard in binary exploitation, and we can use `u32` to achieve the conversion from bytes to integer that we want.
 
@@ -777,7 +782,7 @@ The next logical step is to open the program in Binary Ninja to see what it's ac
 - The second number must not be 0 or 1
 - We get the flag if `num1 s/ num2 == num1` (where `s/` is signed integer division)
 
-I figured that there must be some funny ARM edgecase that leads to this mathematically impossible (when interpreted over the integers) set up being satisfiable.
+I figured that there must be some funny ARM edgecase that leads to this mathematically impossible (when interpreted over the integers) setup being satisfiable.
 
 A quick search for "arm signed division quirk" brought me to [some documentation for the ARM sdiv instruction](https://mikhailarkhipov.github.io/ARM-doc/A32/sdiv.html). Of particular interest to us, the documentation discusses an edge case related to overflow;
 
@@ -787,13 +792,13 @@ This differs from the equivalent x86 [idiv](https://www.felixcloutier.com/x86/id
 
 Luckily for us, the ARM documentation gives us the exact numbers that trigger this edge case, and confirms that the given inputs will satisfy `num1 s/ num2 == num1`.
 
-```
+```console
 root@e06a3c3c2c8a:/app# ./number-mashing
 Give me some numbers: 2147483648 4294967295
 Correct! DUCTF{w0w_y0u_just_br0ke_math!!}
 ```
 
-This was a nice beginner challenge, and it taught me something new! It probably took like 10 minutes all up if I include setting up the custom Dockerfile.
+This was a nice beginner challenge, and it taught me something new! It probably took like 15 minutes all up if I include setting up the custom Dockerfile.
 
 Flag: `DUCTF{w0w_y0u_just_br0ke_math!!}`
 
@@ -832,7 +837,7 @@ int main() {
 
 `std::cin >> buf` is basically equivalent to `gets` and gives us a trivial buffer overflow. Our goal is to end up with `v` containing the string `DUCTF` after our input, and `buf` sits directly before `v` in memory (I never actually verified that statically but I figured that if my first exploit attempt failed then I'd double check if there was any padding).
 
-Clearly we want to rewrite `v` in some way. To do so in a way that achieves our goal, we'll have to know how a `std::vector` gets laid out in memory. With a quick search I found [a blog post that documents the memory layout of std::vector](http://www.max-sperling.bplaced.net/?p=4983). A `std::vector` is made up of three pointers, a pointer to the start of the vector, a pointer to the end of the vector, and a pointer to the end of the vector's allocation (which might include reserved but unused space).
+Clearly we want to rewrite `v` in some way. To do so in a way that achieves our goal, we'll have to know how a `std::vector` gets laid out in memory. With a quick search I found [a blog post that documents the memory layout of std::vector](http://www.max-sperling.bplaced.net/?p=4983). A `std::vector` is made up of three pointers, a pointer to the start of the vector's content, a pointer to the end of the vector's content, and a pointer to the end of the vector's allocation (which might include reserved but unused space).
 
 To change the content of `v`, we'll have to rewrite these pointers so that they point to memory containing the text `DUCTF`. Luckily for us, the program was compiled without PIE, so the addresses of global symbols (such as `buf` and `v`) are fixed.
 
@@ -854,7 +859,7 @@ p.sendline(b"exit")
 print(p.recvall().decode())
 ```
 
-```
+```console
 $ python3 solve.py
 [*] '/share/the-joseph-challenge/baby/vector-overflow/vector_overflow'
     Arch:       amd64-64-little
@@ -938,8 +943,7 @@ We'll clearly need a way to leak memory to leak the canary and a program or libc
 
 If we overflow the name buffer and one more byte, then we'll overwrite the least-significant byte of the stack canary (which is located immediately after the name buffer in this case). That least-significant byte is always a null byte, to make it harder to leak the canary with certain types of buffer overflows and leaks. By overwriting that null byte and leaving the canary intact, we ensure that the canary will get printed when we next request a personalised greeting.
 
-> [!NOTE]
-> When a program uses `read`, it will stop short of the requested count if it reaches a newline, or if it receives partial data and no more data is immediately available. Because of that second stop condition, we can send input without a newline by using `p.send` (instead of the usual `p.sendline`).
+> NOTE: When a program uses `read`, it will stop short of the requested count if it reaches a newline, or if it receives partial data and no more data is immediately available. Because of that second stop condition, we can send input without a newline by using `p.send` (instead of the usual `p.sendline`).
 
 Once we've leaked the canary, we're free to overwrite it, so now we can apply the same leak technique except targetting the saved return address instead of the canary. This gives us an address in `libc_start_main` (in particular, the address of the instruction immediately following `libc_start_main`'s call to the program's actual main function). This address will have a constant offset from the base of `libc`. We can pause our exploit script using `pause()` (from pwntools) just after obtaining (and logging) our libc leak, and then attach to our target process with `gdb` to get the base address of libc;
 
